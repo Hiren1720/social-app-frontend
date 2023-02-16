@@ -5,9 +5,17 @@ import {useParams} from "react-router-dom";
 import {getTokenObject} from "../../Helper/TokenHandler";
 import PersonalDetail from "./PersonalDetail";
 import Followers from "./Followers";
-import {getFollowers, getRequests, sendRequest, updateRequest} from "../../Actions/requestActions";
+import {
+    getFollowers,
+    getRequests,
+    removeFollower,
+    sendRequest,
+    setRequest,
+    updateRequest
+} from "../../Actions/requestActions";
 import './User.css';
 import Loader from "../Layouts/Loader";
+import ButtonLoader from "../ButtonLoader";
 
 const Profile = () => {
     const [user, setUser] = useState({});
@@ -16,9 +24,18 @@ const Profile = () => {
     const dispatch = useDispatch();
     const profile = useSelector(state => state.userData.profile);
     const loading = useSelector(state => state.userData.loading);
+    const buttonLoading = useSelector(state => state.requestData.buttonLoading);
     const requests = useSelector(state => state.requestData.requests);
+    const requestResult = useSelector(state => state.requestData.requestResult);
     const [active, setActive] = useState('Profile');
     const tabs = ['Profile', 'Followers', 'Followings'];
+    useEffect(()=>{
+        if(requestResult && requestResult?.success){
+            dispatch(getRequests({type: 'allRequest'}));
+            dispatch(setRequest());
+        }
+        // eslint-disable-next-line
+    },[requestResult]);
     useEffect(() => {
         if (id) {
             dispatch(getProfile({id: id}));
@@ -51,6 +68,8 @@ const Profile = () => {
 
         } else if (status === 'Follow') {
             dispatch(sendRequest({toUserId: item?._id, fromUserId: userToken?.user_id}));
+        }else if(status === 'UnFollow'){
+            dispatch(removeFollower({followerId:userToken?.user_id,followingId:item?._id,status:'UnFollow'}));
         } else if (status === 'Requested') {
             let req = requests && requests.data && requests.data.filter(ele => ele?.fromUserId === userToken?.user_id).find((ele) => ele?.toUserId === item?._id);
             if (req) {
@@ -64,6 +83,9 @@ const Profile = () => {
         if (status === 'pending') {
             data = 'Requested';
         }
+        else if(userToken?._doc?.following.includes(_id)){
+            data = 'UnFollow'
+        }
         return data;
     }
     return (
@@ -72,10 +94,8 @@ const Profile = () => {
                 <div className="flex justify-center m-4">
                     <div className="w-full">
                         {(user) ? <>
-                                <div
-                                    className="cover-photo w-full h-[200px] rounded-tr-lg rounded-tl-lg"/>
-                                <div
-                                    className="absolute md:top-[200px] max-[1180px]:left-[100px] max-[680px]:left-[60px] max-[768px]:top-[200px] max-[610px]:left-[200px] max-[520px]:left-[180px] max-[480px]:left-[120px] max-[380px]:left-[120px] max-[360px]:left-[100px] justify-center text-center left-[150px] ">
+                                <div className="cover-photo w-full h-[200px] rounded-tr-lg rounded-tl-lg"/>
+                                <div className="absolute md:top-[200px] max-[1180px]:left-[100px] max-[680px]:left-[60px] max-[768px]:top-[200px] max-[610px]:left-[200px] max-[520px]:left-[180px] max-[480px]:left-[120px] max-[380px]:left-[120px] max-[360px]:left-[100px] justify-center text-center left-[150px] ">
                                     <div className='bg-white rounded-[100px] p-[3px]'><img
                                         className="h-[200px] min-[280px]:h-[150px] min-[280px]:w-[150px] w-[200px] rounded-full"
                                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
@@ -85,14 +105,14 @@ const Profile = () => {
                                         {user?.name}
                                     </div>
                                 </div>
-                                <div className="w-full bg-white border px-4 pt-4">
+                                <div className="w-full bg-white border border-r-[2px] border-l-[2px] px-4 pt-4">
                                     <div className='flex h-[60px] md:mt-4 sm:mt-4 max-[640px]:mt-4 max-[610px]:justify-center max-[610px]:mt-[140px]  max-[640px]:justify-end sm:justify-end md:justify-end '>
                                         <div className='mx-4 max-[400px]:mx-2'>
                                             <button onClick={(e) => handleButton(e, user, getRequestStatus(user))}
-                                                    className='bg-white border-[3px] border-grey rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>{userToken?.user_id === id ? "Edit Profile" : getRequestStatus(user)}
+                                                    className='bg-white border-[3px] border-grey rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>{buttonLoading ? <ButtonLoader/> : userToken?.user_id === id ? "Edit Profile" : getRequestStatus(user)}
                                             </button>
                                         </div>
-                                        <div className='mx-4 max-[400px]:mx-2'>
+                                        <div className='mx-4 max-[400px]:mx-2 hidden'>
                                             <button
                                                 className='bg-white border-[3px] border-gray rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>Call
                                             </button>

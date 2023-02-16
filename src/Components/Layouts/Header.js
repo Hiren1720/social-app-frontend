@@ -18,7 +18,7 @@ const Header = () => {
         {name:'Followers',path:'/followers'},
         {name:'Followings',path:'/followings'},
         {name:'Requests',path:'/requests'},
-        {name:'Post',path:'/post/create'},
+        {name:'Post',path:'/post'},
     ]
     const [active,setActive] = useState('Dashboard');
     const [open,setOpen] = useState(false);
@@ -39,6 +39,7 @@ const Header = () => {
             setActive('Dashboard');
         }
         setCollapse(false);
+        setOpen(false);
         // eslint-disable-next-line
     },[pathName,requests]);
     const handleProfile = () => {
@@ -47,7 +48,7 @@ const Header = () => {
     };
     return (
         <>
-            <nav className="relative sticky top-0 bg-gray-800 z-40" onMouseUp={()=> setOpen(false)}>
+            <nav className="relative sticky top-0 bg-gray-800 z-40">
                 <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                     <div className="relative flex h-16 items-center justify-between">
                         <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -98,8 +99,8 @@ const Header = () => {
                             </button>
 
                             <div className="relative ml-3">
-                                <div>
-                                    <button type="button" onClick={()=> setOpen(!open)}
+                                <div onClick={()=> setOpen(!open)}>
+                                    <button type="button"
                                             className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                             id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                                         <span className="sr-only">Open user menu</span>
@@ -121,7 +122,7 @@ const Header = () => {
                         </div>
                     </div>
                 </div>
-                {collapse ? <div className="sm:hidden" id="mobile-menu">
+                {collapse ? <div className="sm:hidden z-40 absolute bg-gray-800 w-full" id="mobile-menu">
                     <div className="space-y-1 px-2 pt-2 pb-3">
                         {navBars.map((ele,index)=>(
                             <span onClick={()=> {navigate(ele.path); setActive(ele.name)}} key={index}

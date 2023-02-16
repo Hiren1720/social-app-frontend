@@ -3,42 +3,45 @@ import {useNavigate} from 'react-router-dom';
 import {BsHandThumbsUp,BsHandThumbsUpFill, BsShare,BsDot} from 'react-icons/bs';
 import {TfiComment} from 'react-icons/tfi';
 import {useDispatch, useSelector} from "react-redux";
+import {ToastContainer, toast} from 'react-toastify';
 import {createLike, getAllLikes, getAllPost} from "../../Actions/postActions";
 import {getTokenObject} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
 import Modal from 'react-modal';
-import {createComment, getCommentsById, resetCommentResult} from "../../Actions/commentAction";
+import {getCommentsById} from "../../Actions/commentAction";
 import ButtonLoader from "../ButtonLoader";
+import useWidthHeight from "../../Hooks/useWidthHeight";
 
-const customStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        width: '400px',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-    },
-};
 Modal.setAppElement('#modal')
 
-const BlogPage = () => {
+const BlogPage = ({socket}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let userToken = getTokenObject();
+    const {width} = useWidthHeight();
     const posts = useSelector(state => state.postData.posts);
     const likes = useSelector(state => state.postData.likes);
     const comments = useSelector(state => state.postData.comments);
     const loading = useSelector(state => state.postData.loading);
     const likeLoading = useSelector(state => state.postData.likeLoading);
     const commentLoading = useSelector(state => state.postData.commentLoading);
-    const commentResult = useSelector(state => state.postData.commentResult);
     const [blog, setBlog] = useState([]);
     const [showLike, setShowLike] = useState(false);
-    const [showComment, setShowComment] = useState({show:false,id:''});
+    const [showComment, setShowComment] = useState({show:false,data:{}});
     const [comment, setComment] = useState('');
     let subtitle;
+
+    const customStyles = {
+        content: {
+            top: '50%',
+            left: '50%',
+            width: width < 380 ? '300px' : '400px',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+        },
+    };
 
     function afterOpenModal() {
         subtitle.style.color = '#f00';
@@ -47,14 +50,15 @@ const BlogPage = () => {
     function closeModal() {
         setShowLike(false);
     }
-    useEffect(()=> {
-        if(commentResult && commentResult?.success){
-            setShowComment({show:false,id:''});
+    useEffect(()=>{
+        socket.on('message',(data)=>{
+            toast(data?.text,{type:'success'});
+            setShowComment({show:false,data:{}});
             setComment('');
-            dispatch(resetCommentResult())
-        }
+            dispatch(getAllPost());
+        })
         // eslint-disable-next-line
-    },[commentResult])
+    },[])
     useEffect(()=>{
         if(posts && posts.length){
             setBlog([...posts]);
@@ -90,12 +94,15 @@ const BlogPage = () => {
         dispatch(getAllLikes(likes));
         setShowLike(true);
     }
-    const handleAddComment = (id) => {
-        dispatch(getCommentsById(id))
-        setShowComment({show:true,id:id});
+    const handleAddComment = (data) => {
+        dispatch(getCommentsById(data?._id))
+        setShowComment({show:true,data:data});
     }
     const handleSaveComment = () => {
-        dispatch(createComment({content:comment,createdBy:userToken?.user_id,postId:showComment?.id}))
+        socket.emit('commentNotification',{content:comment,id:showComment?.data?.createdBy,createdBy:userToken?.user_id,postId:showComment?.data?._id,userName:userToken?._doc?.userName})
+        setShowComment({show:false,data:{}});
+        setComment('');
+        dispatch(getAllPost());
     }
     const handleOnChange = (e) => {
         setComment(e.target.value)
@@ -105,7 +112,7 @@ const BlogPage = () => {
             {loading ? <Loader/>:
             <div className=''>
                 {blog.map((ele,index) => (
-                    <div className="flex mx-[150px] my-10 max-[890px]:mx-[100px] max-[690px]:mx-[80px] max-[649px]:mx-[50px] max-[380px]:mx-[20px] rounded overflow-hidden border-[grey] border-[2px] shadow-lg" key={index}>
+                    <div className="flex mx-[150px] my-10 max-[890px]:mx-[100px] max-[690px]:mx-[80px] max-[649px]:mx-[30px] max-[380px]:mx-[20px] rounded overflow-hidden border-[grey] border-[2px] shadow-lg" key={index}>
                         <div className='w-full'>
                             <div className='flex items-center mt-2 ml-2'>
                                 <div className="">
@@ -115,7 +122,7 @@ const BlogPage = () => {
                                 </div>
                                 <div className="ml-4">
                                     <div
-                                        className="w-full mb-6 mb-0 relative text-gray-600 focus-within:text-gray-400">
+                                        className="w-full mb-0 relative text-gray-600 focus-within:text-gray-400">
                                         <div className='text-black font-bold cursor-pointer' onClick={(e)=> handleProfile(e,ele?.createdBy)}>
                                             {ele?.author_info[0]?.userName}
                                         </div>
@@ -137,10 +144,13 @@ const BlogPage = () => {
                             <div className="px-6 pt-4 pb-2">
                                 {ele?.hashTags.length ? ele.hashTags.map((tag,id) => (<span key={id} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{tag}</span>)):null}
                             </div>
-                            <div className="flex items-center mb-3 flex-wrap max-[560px]:text-[14px] max-[589px]:text-[15px]">
-                                <div className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer" onClick={()=> handleCreateLike(ele?._id)}>{ele?.likes.includes(userToken?.user_id) ? <BsHandThumbsUpFill/>:<BsHandThumbsUp/>}&nbsp;&nbsp;<span onClick={(e)=> handleShowLikes(e,ele?.likes)}>{ele?.likes.length} likes</span></div>
-                                <div className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer" onClick={()=> handleAddComment(ele?._id)}><TfiComment/>&nbsp;&nbsp;{ele?.comments.length} comments</div>
+                            <div className="flex items-center text-gray-500 mb-3 flex-wrap max-[560px]:text-[14px] max-[589px]:text-[15px]">
+                                <div className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer" onClick={()=> handleCreateLike(ele?._id)}>{ele?.likes.includes(userToken?.user_id) ? <BsHandThumbsUpFill color='#3C5AF0'/>:<BsHandThumbsUp color='#3C5AF0'/>}&nbsp;&nbsp;<span onClick={(e)=> handleShowLikes(e,ele?.likes)}>{ele?.likes.length} likes</span></div>
+                                <div className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer" onClick={()=> handleAddComment(ele)}><TfiComment/>&nbsp;&nbsp;{ele?.comments.length} comments</div>
                                 <div className="flex mx-4 max-[550px]:mx-3 items-center font-bold"><BsShare/>&nbsp;&nbsp;share</div>
+                            </div>
+                            <div className='ml-3 mb-2'>
+                                # post from <span className='ml-1 text-[#79CCF4]'>{ele?.device}</span>
                             </div>
                         </div>
                     </div>))}
@@ -188,7 +198,7 @@ const BlogPage = () => {
                                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                                          alt=""/>
                                 </div>
-                                <div className='ml-2 cursor-pointer' onClick={(e)=> handleProfile(e,ele?.user?._id)}>{ele?.user?.userName}:<span className='font-bold'>{ele?.content}</span></div>
+                                <div className='ml-2 cursor-pointer' onClick={(e)=> handleProfile(e,ele?.createdBy)}>{ele?.author_info[0]?.userName}:<span className='font-bold'>{ele?.content}</span></div>
                             </div>
                         )
                     }):
@@ -211,6 +221,7 @@ const BlogPage = () => {
                     <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onClick={()=> setShowComment({show:false,id:''})}>Close</button>
                 </div>
             </Modal>
+            <ToastContainer/>
         </>
     )
 };

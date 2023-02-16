@@ -6,10 +6,12 @@ import {useDispatch, useSelector} from "react-redux";
 import {createPost} from "../../Actions/postActions";
 import {getTokenObject} from "../../Helper/TokenHandler";
 import {GrFormClose} from 'react-icons/gr';
+import getDeviceName from "../../Helper/getDeviceName";
 
 const CreatePost = () => {
     const dispatch = useDispatch();
     let userToken = getTokenObject();
+    const device = getDeviceName()
     const users = useSelector(state => state.userData.users);
     const loading = useSelector(state => state.postData.loading);
     const postResult = useSelector(state => state.postData.postResult);
@@ -89,7 +91,7 @@ const CreatePost = () => {
     }
     const handleCreate = async (e) => {
         const time = new Date().toISOString();
-        dispatch(createPost({...post, createdTime: time, updatedTime: time, createdBy: userToken?.user_id}))
+        dispatch(createPost({...post, createdTime: time, updatedTime: time, createdBy: userToken?.user_id,device:device}))
     };
     let {title, content} = post;
     return (

@@ -9,7 +9,7 @@ import * as types from '../../Actions/Types'
 import {httpGet} from "../../Helper/api";
 export function* getRequests({payload}) {
     try{
-        yield put({ type: types.SET_LOADING,loading:true })
+        yield put({ type: types.SET_BUTTON_LOADING,loading:true })
         let result = yield call(httpGet,`/request/getByType/${payload?.type}`)
 
         yield put({

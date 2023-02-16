@@ -9,7 +9,7 @@ import * as types from '../../Actions/Types'
 import {httpPost} from "../../Helper/api";
 export function* removeFollower({payload}) {
     try{
-        yield put({ type: types.SET_LOADING,loading:true })
+        yield put({ type: types.SET_BUTTON_LOADING,loading:true })
         let result = yield call(httpPost,{url:`/follower/removeFollower`,body:payload});
 
         yield put({

@@ -13,6 +13,7 @@ import {getTokenObject} from "../../Helper/TokenHandler";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {useNavigate} from "react-router-dom";
+import useWidthHeight from "../../Hooks/useWidthHeight";
 
 const Followers = ({user,type,setActive}) => {
     const [followers,setFollowers] = useState([]);
@@ -22,6 +23,7 @@ const Followers = ({user,type,setActive}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let userToken = getTokenObject();
+    const {width} = useWidthHeight();
     let userData = userToken?._doc;
     useEffect(()=>{
         if(data && data?.data && data?.data.length){
@@ -38,12 +40,14 @@ const Followers = ({user,type,setActive}) => {
             dispatch(setRequest());
         }
         // eslint-disable-next-line
-    },[requestResult])
+    },[requestResult]);
+    let isOne = width < 780;
+    let isTwo = width < 1080;
     const settings = {
         dots: false,
         infinite: false,
         speed: 500,
-        slidesToShow: 3,
+        slidesToShow: isOne ? 1 : isTwo ? 2 : 3,
         slidesToScroll: 1,
         arrows: true,
         nextArrow: <FaArrowRight />,
@@ -85,11 +89,11 @@ const Followers = ({user,type,setActive}) => {
     }
     return (
         <>
-            <div className="w-full bg-white border px-4 py-4 justify-start rounded-br-lg">
+            <div className="w-full bg-white border-[2px] px-4 py-4 justify-start rounded-b-lg">
                 <Slider {...settings}>
                     {followers && followers.length && followers.map((ele,index)=> (
                         <div key={index}>
-                            <div className="flex p-4 border mx-2 h-[120px] justify-between rounded-[10px] cursor-pointer hover:bg-grey-900" onClick={(e)=> handleProfile(e,ele)}>
+                            <div className="flex p-4 border-[2px] mx-2 h-[100px] justify-between rounded-[10px] cursor-pointer hover:bg-grey-900" onClick={(e)=> handleProfile(e,ele)}>
                                 <div className='flex items-center'>
                                     <div className="">
                                         <img className="h-10 w-10 rounded-full"
@@ -98,11 +102,11 @@ const Followers = ({user,type,setActive}) => {
                                     </div>
                                     <div className="ml-4">
                                         <div
-                                            className="w-full mb-6 md:mb-0 relative text-gray-600 focus-within:text-gray-400">
-                                            <div className='font-semibold '>
+                                            className="w-full relative text-gray-600 focus-within:text-gray-400">
+                                            <div className='font-semibold max-[480px]:text-[14px]'>
                                                 {ele?.name}
                                             </div>
-                                            <div className='text-gray-500'>
+                                            <div className='text-gray-500 max-[480px]:text-[14px]'>
                                                 {ele?.userName}
                                             </div>
                                         </div>
@@ -110,7 +114,7 @@ const Followers = ({user,type,setActive}) => {
                                 </div>
                                 <div className="flex items-center">
                                     <button onClick={(e) => handleSendRequest(e, ele,getRequestStatus(ele))}
-                                            className={`appearance-none block w-75 text-blue-700 rounded py-2 px-4 leading-tight ${ele?._id === userToken.user_id ? 'hidden':''} ${getRequestStatus(ele) === 'UnFollow' ? '' : 'bg-gray-200 focus:border-gray-400 border border-gray-200'}`}
+                                            className={`appearance-none max-[480px]:text-[14px] block w-75 text-blue-700 rounded py-2 px-4 leading-tight ${ele?._id === userToken.user_id ? 'hidden':''} ${getRequestStatus(ele) === 'UnFollow' ? '' : 'bg-gray-200 focus:border-gray-400 border border-gray-200'}`}
                                             id="grid-last-name" type="button">{getRequestStatus(ele)}
                                     </button>
                                 </div>

@@ -1,16 +1,7 @@
 import * as tokenUtil from '../Helper/TokenHandler';
-// let API_END_POINT = 'https://react-crud-demo.vercel.app/api'
-let API_END_POINT = 'http://localhost:4040/api'
+let API_END_POINT = 'https://social-app-backend-weld.vercel.app/api'
+// let API_END_POINT = 'http://localhost:4040/api'
 
-export const htpPost = async (request) => {
-    return await fetch(`${API_END_POINT}${request.url}`,{
-        method:'POST',
-        headers:{
-            'Content-Type': 'application/json'
-        },
-        body:JSON.stringify(request.body)
-    })
-}
 export const httpAuth = async (request) => {
     return await fetch(`${API_END_POINT}${request.url}`,{
         method:'POST',
@@ -65,23 +56,7 @@ export const httpGet = (REQUEST) => {
             return json;
         });
 };
-export const htpGet = async (url,data) => {
-    return await fetch(`${API_END_POINT}${url}`,{
-        method:'GET',
-        headers:{
-            'Content-Type': 'application/json'
-        },
-    }).then(resp => resp.json())
-}
 
-// export const htpDelete = async (url,data) => {
-//     return await fetch(`${API_END_POINT}${url}`,{
-//         method:'DELETE',
-//         headers:{
-//             'Content-Type': 'application/json'
-//         },
-//     }).then(resp => resp.json())
-// }
 // const checkAndRegenerateToken = async (response, refresh_token) => {
 //     if (refresh_token) {
 //         // const REFRESh_TOKEN_URL = `${window?._env_?.REACT_APP_AUTH}/Refresh?refreshToken=${refresh_token}`;
