@@ -7,10 +7,11 @@ import {
 import * as types from '../../Actions/Types'
 
 import {httpGet} from "../../Helper/api";
-export function* gerAllUsers() {
+export function* gerAllUsers({payload}) {
     try{
         yield put({ type: types.SET_LOADING,loading:true })
-        let REQUEST = '/user/userAll'
+        let {page = 0,searchValue,pageSize} = payload;
+        let REQUEST = `/user/userAll?page=${page}&pageSize=${pageSize}&searchValue=${searchValue}`;
         let result = yield call(httpGet,REQUEST)
 
         yield put({

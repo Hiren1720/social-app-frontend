@@ -14,6 +14,7 @@ const initialState = {
         "state": "",
         status: false,
     },
+    loggedInUser:null,
     profile: null,
     userResult: null,
     users: []
@@ -35,7 +36,7 @@ const user = (state = initialState, action) => {
             return {...state, users: action.payload, loading: action.loading};
         case types.GET_PROFILE_SUCCESS:
         case types.GET_PROFILE_FAILURE:
-            return {...state, profile: action.payload, loading: action.loading};
+            return {...state, [action?.state]: action.payload, loading: action.loading};
         default:
             return state;
     }

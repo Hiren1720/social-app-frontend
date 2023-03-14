@@ -91,7 +91,7 @@ const CreatePost = () => {
     }
     const handleCreate = async (e) => {
         const time = new Date().toISOString();
-        dispatch(createPost({...post, createdTime: time, updatedTime: time, createdBy: userToken?.user_id,device:device}))
+        dispatch(createPost({...post, createdTime: time, updatedTime: time, createdBy: userToken?._id,device:device}))
     };
     let {title, content} = post;
     return (

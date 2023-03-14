@@ -2,19 +2,20 @@ import {
     put,
     call,
     all,
-    takeLatest
+    takeEvery
 } from 'redux-saga/effects';
-import * as types from '../../Actions/Types'
-
+import * as types from '../../Actions/Types';
 import {httpGet} from "../../Helper/api";
+
 export function* getProfile({payload}) {
     try{
-        yield put({ type: types.SET_LOADING,loading:true })
+        yield put({ type: payload?.isLoggedInUser ? types.SET_BUTTON_LOADING : types.SET_LOADING,loading: true })
         let result = yield call(httpGet,`/user/profile/${payload?.id}`);
 
         yield put({
             type: types.GET_PROFILE_SUCCESS,
             payload: result?.data,
+            state: payload?.isLoggedInUser ? 'loggedInUser':'profile',
             loading:false
         });
     }
@@ -22,11 +23,12 @@ export function* getProfile({payload}) {
         yield put({
             type: types.GET_PROFILE_FAILURE,
             payload: null,
+            state: payload?.isLoggedInUser ? 'loggedInUser':'profile',
             loading:false
         });
     }
 
 }
 export function* getProfileSaga() {
-    yield all([takeLatest(types.GET_PROFILE_STATE, getProfile)]);
+    yield all([takeEvery(types.GET_PROFILE_STATE, getProfile)]);
 }

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {loginUser, setUserData} from "../../Actions/userActions";
-import {ToastContainer, toast} from 'react-toastify';
+import {toast} from 'react-toastify';
 import ButtonLoader from "../ButtonLoader";
 
 const Login = () => {
@@ -75,40 +75,11 @@ const Login = () => {
                             </Link>
                         </div>
                         <div className="flex flex-col items-start mt-2">
-                            If you don't have an account?<Link to="/register" className="text-blue-500 font-bold">Sign In</Link>
+                            If you don't have an account?<Link to="/sign-up" className="text-blue-500 font-bold">Sign Up</Link>
                         </div>
                     </form>
                 </div>
-                <div
-                    className="flex hidden w-[500px] h-[500px] bg-[#2d343e] justify-evenly items-center rounded-[5px] flex-col p-8">
-                    <h1>Login</h1>
-                    <input
-                        placeholder="Enter your email"
-                        name={"email"}
-                        value={email}
-                        onChange={(e) => handleOnChange(e)}
-                        className="h-[50px] w-[80%] bg-[#404450] rounded-[5px] border-none pl-[10px]"
-                    />
-                    <input
-                        placeholder="Enter your password"
-                        type="password"
-                        name={"password"}
-                        value={password}
-                        onChange={(e) => handleOnChange(e)}
-                        onKeyPress={(e) => handleOnKeyPress(e)}
-                        className="h-[50px] w-[80%] bg-[#404450] rounded-[5px] border-none pl-[10px]"
-                    />
-                    <button
-                        className="w-[100px] pt-[0.5rem] pr-[1rem] pb-[0.5rem] pl-[1rem] border-none bg-[#ffac41] rounded-[5px] text-[black] cursor-pointer"
-                        onClick={handleOnSubmit}>Submit
-                    </button>
-                    <div className="flex flex-col items-start">
-                        <Link to="/login" className="text-[blue]">Forgot Password?</Link>
-                        If you don't have an account?<Link to="/register" className="text-[blue]">Sign In</Link>
-                    </div>
-                </div>
             </div>
-            <ToastContainer/>
         </>
     );
 };

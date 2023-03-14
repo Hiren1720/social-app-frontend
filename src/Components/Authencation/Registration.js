@@ -2,11 +2,13 @@ import React, {useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {registerUser, setUserData} from "../../Actions/userActions";
+import ButtonLoader from "../ButtonLoader";
 
 const Registration = () => {
     const dispatch = useDispatch();
     const user = useSelector( state => state.userData.user);
     const userResult = useSelector( state => state.userData.userResult);
+    const loading = useSelector(state => state.userData.loading);
     const navigate = useNavigate()
 
     useEffect(()=>{
@@ -33,7 +35,7 @@ const Registration = () => {
             dispatch(setUserData('user',{...user,[name]: value}))
         }
     }
-    const handleCreate = async (e) => {
+    const handleCreate = (e) => {
         dispatch(registerUser(user))
     }
     let {name,email,contact,gender,hobby,password,userName,birthDate,state} = user;
@@ -191,7 +193,7 @@ const Registration = () => {
 
                     </div>
                     <div onClick={(e)=> {handleCreate(e)}} className='w-[100%] text-center pt-[0.5rem] pr-[1rem] pb-[0.5rem] pl-[1rem] mb-2 border-none bg-[#ffac41] rounded-[5px] text-[black] cursor-pointer'>
-                        <button>Submit</button>
+                        <button>{loading ? <ButtonLoader/> : 'Submit'}</button>
                     </div>
                     <div onClick={(e)=> {navigate('/login')}} className='w-[100%] text-center pt-[0.5rem] pr-[1rem] pb-[0.5rem] pl-[1rem] mb-2 border border-[red] rounded-[5px] text-[black] cursor-pointer'>
                         <button>Cancel</button>

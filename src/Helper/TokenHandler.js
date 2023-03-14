@@ -1,10 +1,10 @@
 import jwt_decode from 'jwt-decode';
 export const getAccessToken = () => {
-   return localStorage.getItem("accessToken");
+   return JSON.parse(localStorage.getItem("accessToken"));
 };
 
 export const setAccessToken = (data) => {
-    localStorage.setItem("accessToken", data);
+    localStorage.setItem("accessToken", JSON.stringify(data));
 };
 
 export const removeAccessToken = () => {
@@ -14,7 +14,7 @@ export const getTokenObject = () => {
     let decoded = '';
     let token = getAccessToken();
     if (token) {
-        decoded = jwt_decode(token);
+        decoded = jwt_decode(token?.accessToken);
     }
     return decoded;
 };

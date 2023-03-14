@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {BsHandThumbsUp,BsHandThumbsUpFill, BsShare,BsDot} from 'react-icons/bs';
 import {TfiComment} from 'react-icons/tfi';
 import {useDispatch, useSelector} from "react-redux";
-import {ToastContainer, toast} from 'react-toastify';
+import {toast} from 'react-toastify';
 import {createLike, getAllLikes, getAllPost} from "../../Actions/postActions";
 import {getTokenObject} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
@@ -57,6 +57,11 @@ const BlogPage = ({socket}) => {
             setComment('');
             dispatch(getAllPost());
         })
+        socket.on('messageFrom',(data)=>{
+            setShowComment({show:false,data:{}});
+            setComment('');
+            dispatch(getAllPost());
+        })
         // eslint-disable-next-line
     },[])
     useEffect(()=>{
@@ -73,7 +78,7 @@ const BlogPage = ({socket}) => {
         // eslint-disable-next-line
     },[]);
     const handleCreateLike = (id) => {
-        dispatch(createLike({ "postId":id, "likeBy":userToken?.user_id}))
+        dispatch(createLike({ "postId":id, "likeBy":userToken?._id}))
     }
     const handleProfile = (e,userId) => {
         navigate(`/profile/${userId}`)
@@ -99,7 +104,8 @@ const BlogPage = ({socket}) => {
         setShowComment({show:true,data:data});
     }
     const handleSaveComment = () => {
-        socket.emit('commentNotification',{content:comment,id:showComment?.data?.createdBy,createdBy:userToken?.user_id,postId:showComment?.data?._id,userName:userToken?._doc?.userName})
+        socket.emit('test',"test");
+        // socket.emit('commentNotification',{content:comment,id:showComment?.data?.createdBy,createdBy:userToken?.user_id,postId:showComment?.data?._id,userName:userToken?._doc?.userName})
         setShowComment({show:false,data:{}});
         setComment('');
         dispatch(getAllPost());
@@ -145,7 +151,7 @@ const BlogPage = ({socket}) => {
                                 {ele?.hashTags.length ? ele.hashTags.map((tag,id) => (<span key={id} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{tag}</span>)):null}
                             </div>
                             <div className="flex items-center text-gray-500 mb-3 flex-wrap max-[560px]:text-[14px] max-[589px]:text-[15px]">
-                                <div className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer" onClick={()=> handleCreateLike(ele?._id)}>{ele?.likes.includes(userToken?.user_id) ? <BsHandThumbsUpFill color='#3C5AF0'/>:<BsHandThumbsUp color='#3C5AF0'/>}&nbsp;&nbsp;<span onClick={(e)=> handleShowLikes(e,ele?.likes)}>{ele?.likes.length} likes</span></div>
+                                <div className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer" onClick={()=> handleCreateLike(ele?._id)}>{ele?.likes.includes(userToken?._id) ? <BsHandThumbsUpFill color='#3C5AF0'/>:<BsHandThumbsUp color='#3C5AF0'/>}&nbsp;&nbsp;<span onClick={(e)=> handleShowLikes(e,ele?.likes)}>{ele?.likes.length} likes</span></div>
                                 <div className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer" onClick={()=> handleAddComment(ele)}><TfiComment/>&nbsp;&nbsp;{ele?.comments.length} comments</div>
                                 <div className="flex mx-4 max-[550px]:mx-3 items-center font-bold"><BsShare/>&nbsp;&nbsp;share</div>
                             </div>
@@ -221,7 +227,6 @@ const BlogPage = ({socket}) => {
                     <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onClick={()=> setShowComment({show:false,id:''})}>Close</button>
                 </div>
             </Modal>
-            <ToastContainer/>
         </>
     )
 };

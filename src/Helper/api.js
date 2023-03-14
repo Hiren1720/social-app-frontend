@@ -1,6 +1,6 @@
 import * as tokenUtil from '../Helper/TokenHandler';
-let API_END_POINT = 'https://social-app-backend-weld.vercel.app/api'
-// let API_END_POINT = 'http://localhost:4040/api'
+// let API_END_POINT = 'https://social-app-backend-weld.vercel.app/api'
+let API_END_POINT = 'http://localhost:4040/api'
 
 export const httpAuth = async (request) => {
     return await fetch(`${API_END_POINT}${request.url}`,{
@@ -18,14 +18,15 @@ export const httpPost = (request) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token?.accessToken}`
         },
         body: JSON.stringify(request.body),
     };
     return fetch(url, requestOptions)
         .then(async (response) => {
             if (response?.status === 401) {
-                window.location.href = '/login';
+                await checkAndRegenerateToken(token?.refreshToken);
+                return httpGet(request);
             }
             return response
                 .json()
@@ -37,18 +38,19 @@ export const httpPost = (request) => {
         .then((json) => json);
 };
 export const httpGet = (REQUEST) => {
-    let token = tokenUtil.getAccessToken();;
+    let token = tokenUtil.getAccessToken();
     const requestOptions = {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token?.accessToken}`
         }
     };
     return fetch(`${API_END_POINT}${REQUEST}`, requestOptions)
         .then(async (response) => {
             if (response?.status === 401) {
-                window.location.href='/login'
+                await checkAndRegenerateToken(token?.refreshToken);
+                return httpGet(REQUEST);
             }
             return response.json()
         })
@@ -57,18 +59,17 @@ export const httpGet = (REQUEST) => {
         });
 };
 
-// const checkAndRegenerateToken = async (response, refresh_token) => {
-//     if (refresh_token) {
-//         // const REFRESh_TOKEN_URL = `${window?._env_?.REACT_APP_AUTH}/Refresh?refreshToken=${refresh_token}`;
-//         // var refreshToken = await httpPostRefreshToken({ url: REFRESh_TOKEN_URL, body: {} });
-//         // if (!refreshToken.error) {
-//         //     tokenUtil.setAccessToken(JSON.stringify(refreshToken));
-//         // }
-//         // else {
-//             window.location.href="/login";
-//         // }
-//     }
-//     else{
-//         window.location.href="/login";
-//     }
-// }
+const checkAndRegenerateToken = async (refresh_token) => {
+    if (refresh_token) {
+        let data = await httpAuth({ url: '/user/refreshToken', body: {refreshToken:refresh_token} });
+        if (data.success) {
+            tokenUtil.setAccessToken(data?.token);
+        }
+        else {
+            window.location.href="/login";
+        }
+    }
+    else{
+        window.location.href="/login";
+    }
+}

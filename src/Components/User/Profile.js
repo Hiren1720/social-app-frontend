@@ -23,6 +23,7 @@ const Profile = () => {
     let userToken = getTokenObject();
     const dispatch = useDispatch();
     const profile = useSelector(state => state.userData.profile);
+    const userData = useSelector(state => state.userData.loggedInUser);
     const loading = useSelector(state => state.userData.loading);
     const buttonLoading = useSelector(state => state.requestData.buttonLoading);
     const requests = useSelector(state => state.requestData.requests);
@@ -32,6 +33,7 @@ const Profile = () => {
     useEffect(()=>{
         if(requestResult && requestResult?.success){
             dispatch(getRequests({type: 'allRequest'}));
+            dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
             dispatch(setRequest());
         }
         // eslint-disable-next-line
@@ -39,6 +41,7 @@ const Profile = () => {
     useEffect(() => {
         if (id) {
             dispatch(getProfile({id: id}));
+            dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
             dispatch(getRequests({type: 'allRequest'}));
             dispatch(getFollowers({state: 'followers', id: id}));
             dispatch(getFollowers({state: 'followings', id: id}));
@@ -64,14 +67,14 @@ const Profile = () => {
     }
     const handleButton = (e, item, status) => {
         e.stopPropagation();
-        if (userToken?.user_id === id) {
+        if (userToken?._id === id) {
 
         } else if (status === 'Follow') {
-            dispatch(sendRequest({toUserId: item?._id, fromUserId: userToken?.user_id}));
+            dispatch(sendRequest({toUserId: item?._id, fromUserId: userToken?._id}));
         }else if(status === 'UnFollow'){
-            dispatch(removeFollower({followerId:userToken?.user_id,followingId:item?._id,status:'UnFollow'}));
+            dispatch(removeFollower({followerId:userToken?._id,followingId:item?._id,status:'UnFollow'}));
         } else if (status === 'Requested') {
-            let req = requests && requests.data && requests.data.filter(ele => ele?.fromUserId === userToken?.user_id).find((ele) => ele?.toUserId === item?._id);
+            let req = requests && requests.data && requests.data.filter(ele => ele?.fromUserId === userToken?._id).find((ele) => ele?.toUserId === item?._id);
             if (req) {
                 dispatch(updateRequest({id: req?._id, status: status}));
             }
@@ -83,7 +86,7 @@ const Profile = () => {
         if (status === 'pending') {
             data = 'Requested';
         }
-        else if(userToken?._doc?.following.includes(_id)){
+        else if(userData && userData?.following.includes(_id)){
             data = 'UnFollow'
         }
         return data;

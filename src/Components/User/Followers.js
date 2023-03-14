@@ -24,7 +24,7 @@ const Followers = ({user,type,setActive}) => {
     const navigate = useNavigate();
     let userToken = getTokenObject();
     const {width} = useWidthHeight();
-    let userData = userToken?._doc;
+    let userData = userToken;
     useEffect(()=>{
         if(data && data?.data && data?.data.length){
             setFollowers([...data?.data]);
@@ -56,13 +56,13 @@ const Followers = ({user,type,setActive}) => {
     const handleSendRequest = async (e,item,status) => {
         e.stopPropagation();
         if(status === 'Follow'){
-            await dispatch(sendRequest({toUserId: item?._id, fromUserId: userToken?.user_id}));
+            await dispatch(sendRequest({toUserId: item?._id, fromUserId: userToken?._id}));
         }
         else if(status === 'UnFollow'){
-            await dispatch(removeFollower({followerId:item?._id,followingId:userToken?.user_id,status:'UnFollow'}));
+            await dispatch(removeFollower({followerId:item?._id,followingId:userToken?._id,status:'UnFollow'}));
         }
         else if(status === 'Remove'){
-            await dispatch(removeFollower({followerId:userToken?.user_id,followingId:item?._id,status: 'Remove'}));
+            await dispatch(removeFollower({followerId:userToken?._id,followingId:item?._id,status: 'Remove'}));
         }
         else if(status === 'Requested'){
             await dispatch(updateRequest({id:item?._id,status:status}));

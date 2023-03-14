@@ -5,6 +5,10 @@ import {useDispatch, useSelector} from "react-redux";
 import {logout} from "../../Actions/userActions";
 import {getRequests} from "../../Actions/requestActions";
 import {getTokenObject} from "../../Helper/TokenHandler";
+import {AiFillHome} from 'react-icons/ai';
+import {HiUsers} from 'react-icons/hi';
+import {FaUserPlus,FaUsers} from 'react-icons/fa';
+import {MdAddComment} from 'react-icons/md';
 
 
 
@@ -14,11 +18,11 @@ const Header = () => {
     const requests = useSelector(state => state.requestData.userRequests);
     const pathName = window.location.pathname;
     const navBars = [
-        {name:'Dashboard',path:'/'},
-        {name:'Followers',path:'/followers'},
-        {name:'Followings',path:'/followings'},
-        {name:'Requests',path:'/requests'},
-        {name:'Post',path:'/post'},
+        {name:'Dashboard',path:'/',icon:<AiFillHome size={15}/>,},
+        {name:'Followers',path:'/followers',icon:<HiUsers/>,},
+        {name:'Users',path:'/users',icon:<FaUsers/>,},
+        {name:'Requests',path:'/requests',icon:<FaUserPlus/>,},
+        {name:'Post',path:'/post',icon:<MdAddComment/>},
     ]
     const [active,setActive] = useState('Dashboard');
     const [open,setOpen] = useState(false);
@@ -43,7 +47,7 @@ const Header = () => {
         // eslint-disable-next-line
     },[pathName,requests]);
     const handleProfile = () => {
-        navigate(`/profile/${userToken?.user_id}`);
+        navigate(`/profile/${userToken?._id}`);
         setOpen(false);
     };
     return (
@@ -79,9 +83,17 @@ const Header = () => {
                             <div className="hidden sm:ml-6 sm:block">
                                 <div className="flex space-x-4">
                                     {navBars.map((ele,index)=>(
-                                        <span onClick={()=> {navigate(ele.path); setActive(ele.name)}} key={index}
-                                              className={`px-3 cursor-pointer py-2 rounded-md text-sm font-medium ${active === ele.name?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
-                                              aria-current="page">{ele?.name}{' '}{(ele?.name ==='Requests' && requests && requests.data && requests.data.length) ? `(${requests?.data?.length})`:''}</span>
+                                        <div className='relative inline-flex w-fit' key={index}>
+                                            {(ele?.name ==='Requests' && requests?.data?.length) ? <div
+                                                className="absolute top-0 right-0 bottom-auto left-auto z-10 inline-block translate-x-2/4 -translate-y-1/2 rotate-0 skew-x-0 skew-y-0 scale-x-100 scale-y-100 whitespace-nowrap rounded-full bg-indigo-700 py-1 px-2.5 text-center align-baseline text-xs font-bold leading-none text-white">
+                                                {requests?.data?.length}
+                                            </div>:null}
+                                            <span onClick={()=> {navigate(ele.path); setActive(ele.name)}}
+                                                className={`px-3 cursor-pointer py-2 rounded-md text-sm font-medium ${active === ele.name?'bg-gray-700 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+                                                aria-current="page">
+                                                {ele?.icon}
+                                            </span>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -125,9 +137,16 @@ const Header = () => {
                 {collapse ? <div className="sm:hidden z-40 absolute bg-gray-800 w-full" id="mobile-menu">
                     <div className="space-y-1 px-2 pt-2 pb-3">
                         {navBars.map((ele,index)=>(
-                            <span onClick={()=> {navigate(ele.path); setActive(ele.name)}} key={index}
-                                  className={`block px-3 py-2 rounded-md text-base font-medium ${active === ele.name?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
-                                  aria-current="page">{ele?.name}{' '}{(ele?.name ==='Requests' && requests && requests.data && requests.data.length) ? `(${requests?.data?.length})`:''}</span>
+                            <div className='relative inline-flex w-fit' key={index}>
+                                {(ele?.name ==='Requests' && requests?.data?.length) ? <div
+                                    className="absolute top-0 right-0 bottom-auto left-auto z-10 inline-block translate-x-2/4 -translate-y-1/2 rotate-0 skew-x-0 skew-y-0 scale-x-100 scale-y-100 whitespace-nowrap rounded-full bg-indigo-700 py-1 px-2.5 text-center align-baseline text-xs font-bold leading-none text-white">
+                                    {requests?.data?.length}
+                                </div>:null}
+                                <span onClick={()=> {navigate(ele.path); setActive(ele.name)}}
+                                      className={`block px-3 py-2 rounded-md text-base font-medium ${active === ele.name?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
+                                      aria-current="page">{ele?.icon}{ele?.name}
+                                </span>
+                            </div>
                         ))}
                     </div>
                 </div>:null}
