@@ -53,6 +53,7 @@ const BlogPage = ({socket}) => {
     useEffect(()=>{
         socket.on('message',(data)=>{
             toast(data?.text,{type:'success'});
+            new Notification(data?.text)
             setShowComment({show:false,data:{}});
             setComment('');
             dispatch(getAllPost());
@@ -104,11 +105,9 @@ const BlogPage = ({socket}) => {
         setShowComment({show:true,data:data});
     }
     const handleSaveComment = () => {
-        socket.emit('test',"test");
-        // socket.emit('commentNotification',{content:comment,id:showComment?.data?.createdBy,createdBy:userToken?.user_id,postId:showComment?.data?._id,userName:userToken?._doc?.userName})
+        socket.emit('commentNotification',{content:comment,id:showComment?.data?.createdBy,createdBy:userToken?._id,postId:showComment?.data?._id,userName:userToken?.userName})
         setShowComment({show:false,data:{}});
         setComment('');
-        dispatch(getAllPost());
     }
     const handleOnChange = (e) => {
         setComment(e.target.value)

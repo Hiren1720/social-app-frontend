@@ -12,7 +12,7 @@ import PostPage from "./Components/Posts/Posts";
 import CreatePost from "./Components/Posts/CreatePost";
 import {getTokenObject} from "./Helper/TokenHandler";
 import Users from "./Components/User/Users";
-import {ToastContainer} from "react-toastify";
+import {ToastContainer,toast} from "react-toastify";
 
 function App() {
   const [socket] = React.useState(io('http://localhost:4040/', {
@@ -20,15 +20,20 @@ function App() {
   }));
   let user = getTokenObject();
   useEffect(()=>{
-    if(user && user?.user_id){
-      socket.emit('joinUserId',user?.user_id)
+    if(user && user?._id){
+      socket.emit('joinUserId',user?._id)
+    }
+    if (!("Notification" in window)) {
+      toast.error("Browser does not support desktop notification");
+    } else {
+      // toast.success("Notifications are supported");
+      Notification.requestPermission();
     }
     // eslint-disable-next-line
   },[user])
   return (
     <div className="App">
         <BrowserRouter>
-
           <Routes>
             <Route path='/login' element={<Login socket={socket}/>}  />
             <Route path='/sign-up' element={<Registration/>}  />

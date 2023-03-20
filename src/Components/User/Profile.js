@@ -112,7 +112,7 @@ const Profile = () => {
                                     <div className='flex h-[60px] md:mt-4 sm:mt-4 max-[640px]:mt-4 max-[610px]:justify-center max-[610px]:mt-[140px]  max-[640px]:justify-end sm:justify-end md:justify-end '>
                                         <div className='mx-4 max-[400px]:mx-2'>
                                             <button onClick={(e) => handleButton(e, user, getRequestStatus(user))}
-                                                    className='bg-white border-[3px] border-grey rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>{buttonLoading ? <ButtonLoader/> : userToken?.user_id === id ? "Edit Profile" : getRequestStatus(user)}
+                                                    className='bg-white border-[3px] border-grey rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>{buttonLoading ? <ButtonLoader/> : userToken?._id === id ? "Edit Profile" : getRequestStatus(user)}
                                             </button>
                                         </div>
                                         <div className='mx-4 max-[400px]:mx-2 hidden'>
