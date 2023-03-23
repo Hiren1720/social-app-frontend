@@ -13,6 +13,7 @@ import CreatePost from "./Components/Posts/CreatePost";
 import {getTokenObject} from "./Helper/TokenHandler";
 import Users from "./Components/User/Users";
 import {ToastContainer,toast} from "react-toastify";
+import VerifyOTP from "./Components/Authencation/VerifyOTP";
 
 function App() {
   const [socket] = React.useState(io('http://localhost:4040/', {
@@ -37,6 +38,7 @@ function App() {
           <Routes>
             <Route path='/login' element={<Login socket={socket}/>}  />
             <Route path='/sign-up' element={<Registration/>}  />
+            <Route path='/verify-otp' element={<VerifyOTP/>}  />
             <Route path='/' element={<Header/>} >
               <Route index element={<PostPage socket={socket}/>}  />
               <Route path='post' element={<CreatePost/>}  />

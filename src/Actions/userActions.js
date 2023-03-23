@@ -20,6 +20,12 @@ export const loginUser = (payload) =>{
         payload
     }
 };
+export const verifyOTP = (payload) =>{
+    return {
+        type: types.VERIFY_OTP_STATE,
+        payload
+    }
+};
 
 export const getAllUsers = (payload) =>{
     return {

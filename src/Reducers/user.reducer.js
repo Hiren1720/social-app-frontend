@@ -2,6 +2,11 @@ import * as types from '../Actions/Types'
 
 const initialState = {
     loading: false,
+    loginData:{
+        email:'',
+        password:'',
+        otp:''
+    },
     user: {
         "name": "",
         "password": "",
@@ -17,6 +22,7 @@ const initialState = {
     loggedInUser:null,
     profile: null,
     userResult: null,
+    verifyOTPResult:null,
     users: []
 }
 
@@ -31,6 +37,9 @@ const user = (state = initialState, action) => {
         case types.USER_LOGIN_SUCCESS:
         case types.USER_LOGIN_FAILURE:
             return {...state, userResult: action.payload, loading: action.loading};
+        case types.VERIFY_OTP_SUCCESS:
+        case types.VERIFY_OTP_FAILURE:
+            return {...state, verifyOTPResult: action.payload, loading: action.loading};
         case types.GET_USER_STATE_SUCCESS:
         case types.GET_USER_STATE_FAILURE:
             return {...state, users: action.payload, loading: action.loading};
