@@ -49,14 +49,20 @@ const VerifyOTP = () => {
     const handleOnResend = async () => {
         dispatch(loginUser({...user,type: 'resend'}));
     };
-    const handleOnSubmit = async () => {
-        dispatch(verifyOTP({...user}));
+    const handleOnSubmit = async (e,value) => {
+        dispatch(verifyOTP(value ? {...user,otp:value}:{...user}));
     };
     const handleOnKeyPress = async (e) => {
         if (e.key === "Enter") {
             await handleOnSubmit();
         }
     };
+    const handleKeyDown = async (event)=>{
+        let charCode = String.fromCharCode(event.which).toLowerCase();
+        if((event.ctrlKey || event.metaKey) && charCode === 'v') {
+            await handleOnSubmit(event.target.value);
+        }
+    }
     const {otp} = user;
     return (
         <>
@@ -76,12 +82,14 @@ const VerifyOTP = () => {
                                 name={"otp"}
                                 value={otp}
                                 onChange={(e) => handleOnChange(e)}
-                                onKeyPress={(e) => handleOnKeyPress(e)}/>
+                                onKeyPress={(e) => handleOnKeyPress(e)}
+                                onKeyUp={(e)=> handleKeyDown(e)}
+                            />
                         </div>
                         <div className="flex items-center justify-between">
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                type="button" onClick={handleOnSubmit} disabled={loading}>
+                                type="button" onClick={(e)=> handleOnSubmit(e)} disabled={loading}>
                                 {loading ?
                                     <ButtonLoader/> : "Verify"}
                             </button>

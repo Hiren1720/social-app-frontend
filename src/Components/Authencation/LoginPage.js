@@ -14,7 +14,7 @@ const Login = () => {
 
     useEffect(() => {
         if (userResult && userResult.success) {
-            navigate("/verify-otp");
+            navigate("/");
         }
         else if(userResult?.error){
             toast(userResult?.error,{type:'error'});

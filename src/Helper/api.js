@@ -1,6 +1,5 @@
 import * as tokenUtil from '../Helper/TokenHandler';
-let API_END_POINT = 'https://social-app-backend-weld.vercel.app/api'
-// let API_END_POINT = 'http://localhost:4040/api'
+let API_END_POINT = process.env.NODE_ENV === 'development'? process.env.REACT_APP_DEV_API:process.env.REACT_APP_PROD_API;
 
 export const httpAuth = async (request) => {
     return await fetch(`${API_END_POINT}${request.url}`,{
@@ -64,12 +63,15 @@ const checkAndRegenerateToken = async (refresh_token) => {
         let data = await httpAuth({ url: '/user/refreshToken', body: {refreshToken:refresh_token} });
         if (data.success) {
             tokenUtil.setAccessToken(data?.token);
+            return true;
         }
         else {
             window.location.href="/login";
+            return false;
         }
     }
     else{
         window.location.href="/login";
+        return false;
     }
 }
