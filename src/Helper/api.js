@@ -1,5 +1,6 @@
 import * as tokenUtil from '../Helper/TokenHandler';
-let API_END_POINT = process.env.NODE_ENV === 'development'? process.env.REACT_APP_DEV_API:process.env.REACT_APP_PROD_API;
+// let API_END_POINT = process.env.NODE_ENV === 'development'? process.env.REACT_APP_DEV_API:process.env.REACT_APP_PROD_API;
+let API_END_POINT = 'https://social-app-api.vercel.app/api';
 
 export const httpAuth = async (request) => {
     return await fetch(`${API_END_POINT}${request.url}`,{
