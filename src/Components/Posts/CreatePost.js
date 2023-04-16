@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
-// import { MentionsInput, Mention } from 'react-mentions'
+import { MentionsInput, Mention } from 'react-mentions'
 import {getAllUsers} from "../../Actions/userActions";
 import {useDispatch, useSelector} from "react-redux";
-import {createPost} from "../../Actions/postActions";
+import {createPost,resetPostResult} from "../../Actions/postActions";
 import {getTokenObject} from "../../Helper/TokenHandler";
 import {GrFormClose} from 'react-icons/gr';
 import getDeviceName from "../../Helper/getDeviceName";
@@ -15,7 +15,8 @@ const CreatePost = () => {
     const users = useSelector(state => state.userData.users);
     const loading = useSelector(state => state.postData.loading);
     const postResult = useSelector(state => state.postData.postResult);
-    // const [mentionUsers,setMentionUsers] = useState([]);
+    const [mentionUsers,setMentionUsers] = useState([]);
+    const [mentions,setMentions] = useState('');
     const [file, setFile] = useState(null);
     const [importError,setImportError] = useState(null);
     const [post, setPost] = useState({
@@ -25,26 +26,27 @@ const CreatePost = () => {
         likes: [],
         hashTags: [],
         comments: [],
-        // mentions:[],
+        mentions:[],
     });
     // const [mentions,setMentions] =  useState('');
     const navigate = useNavigate()
     useEffect(() => {
-        dispatch(getAllUsers())
+        dispatch(getAllUsers({searchValue:'',pageSize:100,page:0}))
         // eslint-disable-next-line
     }, []);
     useEffect(() => {
         if (users && users.length) {
-            // let item = users.map((ele)=>{
-            //     return {id:'@' + ele?.userName,display:'@' + ele?.userName};
-            // });
-            // setMentionUsers([...item]);
+            let item = users.map((ele)=>{
+                return {id:'@' + ele?.userName,display:'@' + ele?.userName};
+            });
+            setMentionUsers([...item]);
         }
         // eslint-disable-next-line
     }, [users]);
     useEffect(()=> {
         if(postResult){
             navigate('/');
+            dispatch(resetPostResult())
         }
         // eslint-disable-next-line
     },[postResult])
@@ -67,14 +69,14 @@ const CreatePost = () => {
             setPost({...post, [name]: value})
         }
     };
-    // const handleMentions = (e,data,value) => {
-    //     if(value !== "@"){
-    //         setMentions(e.target.value);
-    //     }
-    //     else {
-    //         setMentions(e.target.value);
-    //     }
-    // };
+    const handleMentions = (e,data,value) => {
+        if(value !== "@"){
+            setMentions(e.target.value);
+        }
+        else {
+            setMentions(e.target.value);
+        }
+    };
     const handleOnImportFile = (fileData) => {
         let extension = fileData[0].name.split('.').pop().replace(' ','');
         if(fileData.length > 1){
@@ -90,8 +92,12 @@ const CreatePost = () => {
         }
     }
     const handleCreate = async (e) => {
+        let mUsers = post?.mentions?.map((ele)=> {
+            let user = users.find((item)=> item?.userName === ele)
+            return {id:user?._id,name:user?.userName};
+        });
         const time = new Date().toISOString();
-        dispatch(createPost({...post, createdTime: time, updatedTime: time, createdBy: userToken?._id,device:device}))
+        dispatch(createPost({...post,mentions:mUsers, createdTime: time, updatedTime: time, createdBy: userToken?._id,device:device}))
     };
     let {title, content} = post;
     return (
@@ -164,38 +170,38 @@ const CreatePost = () => {
                                 </div>}
                         </div>
                     </div>
-                    {/*<div className="flex flex-wrap -mx-3 mb-6">*/}
-                    {/*    <div className="w-full px-3">*/}
-                    {/*        <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"*/}
-                    {/*               htmlFor="grid-password">*/}
-                    {/*            Mentions*/}
-                    {/*        </label>*/}
-                    {/*        <div>*/}
-                    {/*            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{'tag'}</span>*/}
-                    {/*        </div>*/}
-                    {/*        <MentionsInput value={mentions} onChange={(e,data,value)=>{ handleMentions(e,data,value)}} className={'h-[40px]'}>*/}
-                    {/*            <Mention*/}
-                    {/*                trigger="@"*/}
-                    {/*                data={mentionUsers}*/}
-                    {/*                markup={'@[display](__id__)'}*/}
-                    {/*                appendSpaceOnAdd={true}*/}
-                    {/*                style={{*/}
-                    {/*                    backgroundColor: "#00ffff",*/}
-                    {/*                    borderRadius:'5px',*/}
-                    {/*                }}*/}
-                    {/*                onAdd={(id)=>{*/}
-                    {/*                    setMentionUsers([...mentionUsers.filter(ele => ele.id !== id)]);*/}
-                    {/*                    let value = id.slice(1);*/}
-                    {/*                    setPost({...post,mentions:[...post.mentions,value]});*/}
-                    {/*                }}*/}
-                    {/*            />*/}
-                    {/*            <Mention*/}
-                    {/*                trigger="#"*/}
-                    {/*                data={[{id:'Hiren Bhuva'}]}*/}
-                    {/*            />*/}
-                    {/*        </MentionsInput>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
+                    <div className="flex flex-wrap -mx-3 mb-6">
+                        <div className="w-full px-3">
+                            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                   htmlFor="grid-password">
+                                Mentions
+                            </label>
+                            <div>
+                                <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{'tag'}</span>
+                            </div>
+                            <MentionsInput value={mentions} onChange={(e,data,value)=>{ handleMentions(e,data,value)}} className={'h-[40px]'}>
+                                <Mention
+                                    trigger="@"
+                                    data={mentionUsers}
+                                    markup={'@[display](__id__)'}
+                                    appendSpaceOnAdd={true}
+                                    style={{
+                                        backgroundColor: "#00ffff",
+                                        borderRadius:'5px',
+                                    }}
+                                    onAdd={(id)=>{
+                                        setMentionUsers([...mentionUsers.filter(ele => ele.id !== id)]);
+                                        let value = id.slice(1);
+                                        setPost({...post,mentions:[...post.mentions,value]});
+                                    }}
+                                />
+                                <Mention
+                                    trigger="#"
+                                    data={[{id:'Hiren Bhuva'}]}
+                                />
+                            </MentionsInput>
+                        </div>
+                    </div>
                     <div className='row flex h-[60px] md:mt-4 sm:mt-4 '>
                         <div className='w-full mr-1'>
                             <button onClick={(e) => handleCreate(e)}

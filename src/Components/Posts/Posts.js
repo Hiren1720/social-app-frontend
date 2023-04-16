@@ -147,7 +147,7 @@ const BlogPage = ({socket}) => {
                                 </p>
                             </div>
                             <div className="px-6 pt-4 pb-2">
-                                {ele?.hashTags.length ? ele.hashTags.map((tag,id) => (<span key={id} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{tag}</span>)):null}
+                                {ele?.mentions?.length ? ele.mentions.map((mention,id) => (<span key={id} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{mention?.name}</span>)):null}
                             </div>
                             <div className="flex items-center text-gray-500 mb-3 flex-wrap max-[560px]:text-[14px] max-[589px]:text-[15px]">
                                 <div className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer" onClick={()=> handleCreateLike(ele?._id)}>{ele?.likes.includes(userToken?._id) ? <BsHandThumbsUpFill color='#3C5AF0'/>:<BsHandThumbsUp color='#3C5AF0'/>}&nbsp;&nbsp;<span onClick={(e)=> handleShowLikes(e,ele?.likes)}>{ele?.likes.length} likes</span></div>

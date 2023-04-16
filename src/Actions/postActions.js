@@ -6,6 +6,14 @@ export const createPost = (payload) => {
     }
 };
 
+export const resetPostResult = (payload) => {
+    return {
+        type: types.SET_POST_STATE_FAILURE,
+        payload: null,
+        loading:false
+    }
+};
+
 export const getAllPost = (payload) => {
     return {
         type: types.GET_POST_STATE,
