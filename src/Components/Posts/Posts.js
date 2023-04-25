@@ -11,6 +11,7 @@ import Modal from 'react-modal';
 import {getCommentsById} from "../../Actions/commentAction";
 import ButtonLoader from "../ButtonLoader";
 import useWidthHeight from "../../Hooks/useWidthHeight";
+import {url} from '../../Helper/constants';
 
 Modal.setAppElement('#modal')
 
@@ -122,7 +123,7 @@ const BlogPage = ({socket}) => {
                             <div className='flex items-center mt-2 ml-2'>
                                 <div className="">
                                     <img className="h-10 w-10 rounded-full"
-                                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                         src={ele?.author_info[0]?.profile_url ? `${url}/${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                          alt=""/>
                                 </div>
                                 <div className="ml-4">
@@ -174,7 +175,7 @@ const BlogPage = ({socket}) => {
                             <div key={index} className='flex items-center mt-2 ml-2'>
                                 <div className="">
                                     <img className="h-5 w-5 rounded-full"
-                                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                         src={ele?.profile_url ? `${url}/${ele?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                          alt=""/>
                                 </div>
                                 <div className='ml-4 cursor-pointer' onClick={(e)=> handleProfile(e,ele?._id)}>{ele?.userName}</div>
@@ -200,7 +201,7 @@ const BlogPage = ({socket}) => {
                             <div key={index} className='flex items-center mt-2 ml-2'>
                                 <div className="">
                                     <img className="h-5 w-5 rounded-full"
-                                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                         src={ele?.author_info[0]?.profile_url ? `${url}/${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                          alt=""/>
                                 </div>
                                 <div className='ml-2 cursor-pointer' onClick={(e)=> handleProfile(e,ele?.createdBy)}>{ele?.author_info[0]?.userName}:<span className='font-bold'>{ele?.content}</span></div>

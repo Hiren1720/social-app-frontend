@@ -4,14 +4,14 @@ import {
     all,
     takeLatest
 } from 'redux-saga/effects';
-import * as types from '../../Actions/Types'
+import * as types from '../../Actions/Types';
+import {httpFormDataAuth} from "../../Helper/api";
 
-import {httpAuth} from "../../Helper/api";
 export function* userRegister({payload}) {
     try{
         yield put({ type: types.SET_LOADING,loading:true })
         let request = {url:'/user/register',body:payload}
-        let result = yield call(httpAuth,request)
+        let result = yield call(httpFormDataAuth,request)
         yield put({
             type: types.SAVE_USER_STATE_SUCCESS,
             payload: result,

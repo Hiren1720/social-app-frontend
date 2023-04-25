@@ -17,6 +17,7 @@ const initialState = {
         "gender": "",
         "hobby": [],
         "state": "",
+        'profile':{},
         status: false,
     },
     loggedInUser:null,

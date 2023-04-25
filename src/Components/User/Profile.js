@@ -16,6 +16,7 @@ import {
 import './User.css';
 import Loader from "../Layouts/Loader";
 import ButtonLoader from "../ButtonLoader";
+import {url} from '../../Helper/constants';
 
 const Profile = () => {
     const [user, setUser] = useState({});
@@ -101,7 +102,7 @@ const Profile = () => {
                                 <div className="absolute md:top-[200px] max-[1180px]:left-[100px] max-[680px]:left-[60px] max-[768px]:top-[200px] max-[610px]:left-[200px] max-[520px]:left-[180px] max-[480px]:left-[120px] max-[380px]:left-[120px] max-[360px]:left-[100px] justify-center text-center left-[150px] ">
                                     <div className='bg-white rounded-[100px] p-[3px]'><img
                                         className="h-[200px] min-[280px]:h-[150px] min-[280px]:w-[150px] w-[200px] rounded-full"
-                                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                        src={user?.profile_url ? `${url}/${user?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                         alt=""/>
                                     </div>
                                     <div className='font-bold mt-6 text-[24px]'>

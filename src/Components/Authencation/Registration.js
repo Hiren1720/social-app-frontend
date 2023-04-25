@@ -19,7 +19,7 @@ const Registration = () => {
         // eslint-disable-next-line
     },[userResult])
     const handleChange = (e) => {
-        let {name,value,checked} = e.target
+        let {name,value,checked,files} = e.target
         if(name === 'hobby'){
             if(checked && !user.hobby.includes(value)){
                 user.hobby.push(value)
@@ -31,12 +31,18 @@ const Registration = () => {
                 dispatch(setUserData('user',{...user}))
             }
         }
+        else if(name === 'profile'){
+            dispatch(setUserData('user',{...user,[name]:files[0]}))
+        }
         else{
             dispatch(setUserData('user',{...user,[name]: value}))
         }
     }
     const handleCreate = (e) => {
-        dispatch(registerUser(user))
+        let formData = new FormData();
+        formData.append('profile',user?.profile);
+        formData.append('user',JSON.stringify(user));
+        dispatch(registerUser(formData))
     }
     let {name,email,contact,gender,hobby,password,userName,birthDate,state} = user;
     return (
@@ -107,6 +113,17 @@ const Registration = () => {
                                 id="grid-date" name='birthDate' type="datetime-local" value={birthDate} onChange={(e)=> handleChange(e)} placeholder="Birth Date"/>
                         </div>
                     </div>
+                    <div className="flex flex-wrap -mx-3 mb-6">
+                        <div className="w-full px-3">
+                            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                   htmlFor="grid-date">
+                                Profile
+                            </label>
+                            <input
+                                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                id="grid-profile" name='profile' type="file" onChange={(e)=> handleChange(e)} placeholder="Profile"/>
+                        </div>
+                    </div>
                     <div className="flex flex-wrap -mx-3 mb-2">
                         <div className="w-full px-3 mb-6 md:mb-0">
                             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -116,7 +133,7 @@ const Registration = () => {
                             <div className="relative">
                                 <select name='state' value={state} onChange={(e)=> handleChange(e)}
                                         className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                        id="grid-state">
+                                        id="grid-state" placeholder='Select State'>
                                     <option value=''>Select State</option>
                                     <option value='Gujarat'>Gujarat</option>
                                     <option value='Maharashtra'>Maharashtra</option>
@@ -141,13 +158,13 @@ const Registration = () => {
                             </label>
                         </div>
                         <div className="flex items-center pl-4 rounded border border-gray-200 dark:border-gray-700">
-                            <input id="bordered-radio-1" type="radio" value="Male" name="gender" checked={gender === 'Male'} onChange={(e)=> handleChange(e)}
+                            <input id="bordered-radio-1" type="radio" value="Male" placeholder='Male' name="gender" checked={gender === 'Male'} onChange={(e)=> handleChange(e)}
                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                             <label htmlFor="bordered-radio-1"
                                    className="py-4 ml-2 w-full text-sm font-medium text-gray-900 dark:text-gray-300">Male</label>
                         </div>
                         <div className="flex items-center pl-4 rounded border border-gray-200 dark:border-gray-700">
-                            <input id="bordered-radio-2" type="radio" value="Female"  name="gender" checked={gender === 'Female'} onChange={(e)=> handleChange(e)}
+                            <input id="bordered-radio-2" type="radio" value="Female" placeholder='Female' name="gender" checked={gender === 'Female'} onChange={(e)=> handleChange(e)}
                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                             <label htmlFor="bordered-radio-2"
                                    className="py-4 ml-2 w-full text-sm font-medium text-gray-900 dark:text-gray-300">Female</label>
@@ -167,25 +184,25 @@ const Registration = () => {
                             </label>
                         </div>
                         <div className="flex items-center pl-4 rounded border border-gray-200 dark:border-gray-700">
-                            <input id="bordered-checkbox-1" type="checkbox" value="Programming" name="hobby" checked={hobby.includes('Programming')} onChange={(e)=> handleChange(e)}
+                            <input id="bordered-checkbox-1" type="checkbox" placeholder="Programming" value="Programming" name="hobby" checked={hobby.includes('Programming')} onChange={(e)=> handleChange(e)}
                                    className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                             <label htmlFor="bordered-checkbox-1"
                                    className="py-4 ml-2 w-full text-sm font-medium text-gray-900 dark:text-gray-300">Programming</label>
                         </div>
                         <div className="flex items-center pl-4 rounded border border-gray-200 dark:border-gray-700">
-                            <input checked={hobby.includes('Reading')} id="bordered-checkbox-2" type="checkbox" value="Reading" name="hobby" onChange={(e)=> handleChange(e)}
+                            <input checked={hobby.includes('Reading')} id="bordered-checkbox-2" placeholder="Reading" type="checkbox" value="Reading" name="hobby" onChange={(e)=> handleChange(e)}
                                    className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                             <label htmlFor="bordered-checkbox-2"
                                    className="py-4 ml-2 w-full text-sm font-medium text-gray-900 dark:text-gray-300">Reading</label>
                         </div>
                         <div className="flex items-center pl-4 rounded border border-gray-200 dark:border-gray-700">
-                            <input checked={hobby.includes('Gaming')} id="bordered-checkbox-3" type="checkbox" value="Gaming" name="hobby" onChange={(e)=> handleChange(e)}
+                            <input checked={hobby.includes('Gaming')} id="bordered-checkbox-3" placeholder="Gaming" type="checkbox" value="Gaming" name="hobby" onChange={(e)=> handleChange(e)}
                                    className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                             <label htmlFor="bordered-checkbox-3"
                                    className="py-4 ml-2 w-full text-sm font-medium text-gray-900 dark:text-gray-300">Gaming</label>
                         </div>
                         <div className="flex items-center pl-4 rounded border border-gray-200 dark:border-gray-700">
-                            <input checked={hobby.includes('Riding')} id="bordered-checkbox-4" type="checkbox" value="Riding" name="hobby" onChange={(e)=> handleChange(e)}
+                            <input checked={hobby.includes('Riding')} id="bordered-checkbox-4" placeholder="Riding" type="checkbox" value="Riding" name="hobby" onChange={(e)=> handleChange(e)}
                                    className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                             <label htmlFor="bordered-checkbox-4"
                                    className="py-4 ml-2 w-full text-sm font-medium text-gray-900 dark:text-gray-300">Riding</label>

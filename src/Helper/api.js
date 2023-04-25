@@ -1,7 +1,6 @@
 import * as tokenUtil from '../Helper/TokenHandler';
-// let API_END_POINT = process.env.NODE_ENV === 'development'? process.env.REACT_APP_DEV_API:process.env.REACT_APP_PROD_API;
-let API_END_POINT = 'https://social-app-api.vercel.app/api';
-// let API_END_POINT = 'http://localhost:4040/api';
+import {url} from './constants';
+const API_END_POINT = `${url}/api`;
 
 export const httpAuth = async (request) => {
     return await fetch(`${API_END_POINT}${request.url}`,{
@@ -10,6 +9,12 @@ export const httpAuth = async (request) => {
           'Content-Type': 'application/json'
         },
         body:JSON.stringify(request.body)
+    }).then((res)=> res.json())
+}
+export const httpFormDataAuth = async (request) => {
+    return await fetch(`${API_END_POINT}${request.url}`,{
+        method:'POST',
+        body:request.body
     }).then((res)=> res.json())
 }
 export const httpPost = (request) => {
