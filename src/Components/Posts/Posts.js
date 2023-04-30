@@ -146,6 +146,7 @@ const BlogPage = ({socket}) => {
                                 <p className="text-gray-700 text-base">
                                     {ele?.content}
                                 </p>
+                                {ele?.imageUrl ? <img src={`${url}${ele?.imageUrl}`} height='300' width='300'/> :''}
                             </div>
                             <div className="px-6 pt-4 pb-2">
                                 {ele?.mentions?.length ? ele.mentions.map((mention,id) => (<span key={id} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{mention?.name}</span>)):null}

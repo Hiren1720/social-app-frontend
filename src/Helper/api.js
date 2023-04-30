@@ -20,13 +20,16 @@ export const httpFormDataAuth = async (request) => {
 export const httpPost = (request) => {
     let token = tokenUtil.getAccessToken();
     const url = API_END_POINT + request.url;
+    let headers = request?.isFormData ? {
+        'Authorization': `Bearer ${token?.accessToken}`
+    }:{
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token?.accessToken}`
+    }
     const requestOptions = {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token?.accessToken}`
-        },
-        body: JSON.stringify(request.body),
+        headers: headers,
+        body: request?.isFormData ? request?.body : JSON.stringify(request.body),
     };
     return fetch(url, requestOptions)
         .then(async (response) => {

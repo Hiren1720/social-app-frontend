@@ -10,7 +10,7 @@ import {httpPost} from "../../Helper/api";
 export function* createPost({payload}) {
     try{
         yield put({ type: types.SET_POST_LOADING,loading:true })
-        let request = {url:'/post/create',body:payload}
+        let request = {url:'/post/create',body:payload,isFormData:true}
         let result = yield call(httpPost,request)
         yield put({
             type: types.SET_POST_STATE_SUCCESS,

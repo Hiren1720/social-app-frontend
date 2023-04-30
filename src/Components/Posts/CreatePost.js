@@ -62,10 +62,7 @@ const CreatePost = () => {
                 setPost({...post})
             }
         }
-        if (name === 'imageUrl') {
-            setPost({...post, [name]: e.target.files[0]?.name});
-            setFile(e.target.files[0]?.name);
-        } else {
+        else {
             setPost({...post, [name]: value})
         }
     };
@@ -87,8 +84,17 @@ const CreatePost = () => {
         }
         else{
             setImportError(null);
-            setFile(fileData[0]);
-            setPost({...post,imageUrl: fileData[0]?.name});
+            const selectedfile = fileData;
+            if (selectedfile.length > 0) {
+                const [imageFile] = selectedfile;
+                const fileReader = new FileReader();
+                fileReader.onload = () => {
+                    const srcData = fileReader.result;
+                    setFile(srcData);
+                };
+                fileReader.readAsDataURL(imageFile);
+            }
+            setPost({...post,imageUrl: fileData[0]});
         }
     }
     const handleCreate = async (e) => {
@@ -97,7 +103,11 @@ const CreatePost = () => {
             return {id:user?._id,name:user?.userName};
         });
         const time = new Date().toISOString();
-        dispatch(createPost({...post,mentions:mUsers, createdTime: time, updatedTime: time, createdBy: userToken?._id,device:device}))
+        let formData = new FormData();
+        formData.append('postImage',post?.imageUrl);
+        let postData = {...post,mentions:mUsers, createdTime: time, updatedTime: time, createdBy: userToken?._id,device:device}
+        formData.append('post',JSON.stringify(postData));
+        dispatch(createPost(formData))
     };
     let {title, content} = post;
     return (
@@ -127,7 +137,7 @@ const CreatePost = () => {
                                 name='content' value={content} onChange={(e) => handleChange(e)}/>
                         </div>
                     </div>
-                    <div className="flex flex-wrap -mx-3 mb-6 hidden">
+                    <div className="flex flex-wrap -mx-3 mb-6">
                         <div className="w-full px-3">
                             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                    htmlFor="grid-password">
@@ -165,7 +175,7 @@ const CreatePost = () => {
                                     </div>:''}
                                 </>:
                                 <div className='flex row mt-2 w-full'>
-                                    <div>{file?.name}</div>
+                                    <div><img src={file} height='150' width='150'/></div>
                                     <div className='ml-1 cursor-pointer'><GrFormClose size={28} onClick={()=>setFile(null)}/></div>
                                 </div>}
                         </div>
