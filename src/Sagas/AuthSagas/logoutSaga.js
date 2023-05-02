@@ -7,14 +7,15 @@ import {
 import * as types from '../../Actions/Types'
 
 import {httpPost} from "../../Helper/api";
-import {removeAccessToken} from "../../Helper/TokenHandler";
+import {removeLocalStorageData} from "../../Helper/TokenHandler";
 export function* userLogOut({payload}) {
     try{
         yield put({ type: types.SET_LOADING,loading:true })
         let request = {url:'/user/logout',body: payload}
         let result = yield call(httpPost,request)
         if(result && result.success){
-            removeAccessToken();
+            removeLocalStorageData('accessToken');
+            removeLocalStorageData('user');
             window.location.href = '/login';
         }
         yield put({

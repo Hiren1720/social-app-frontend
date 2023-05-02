@@ -6,7 +6,7 @@ import {
 } from 'redux-saga/effects'
 import * as types from '../../Actions/Types';
 import {httpAuth} from "../../Helper/api";
-import {setAccessToken} from "../../Helper/TokenHandler";
+import {setLocalStorageData} from "../../Helper/TokenHandler";
 
 export function* userLogin({payload}) {
     try{
@@ -14,7 +14,8 @@ export function* userLogin({payload}) {
         let request = {url:'/user/login',body:payload}
         let result = yield call(httpAuth,request)
         if(result && result.success){
-            setAccessToken(result.token);
+            setLocalStorageData('accessToken',result.token);
+            setLocalStorageData('user',result?.data);
             window.location.href = '/';
         }
         yield put({

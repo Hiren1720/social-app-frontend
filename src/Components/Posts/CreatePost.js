@@ -4,13 +4,13 @@ import { MentionsInput, Mention } from 'react-mentions'
 import {getAllUsers} from "../../Actions/userActions";
 import {useDispatch, useSelector} from "react-redux";
 import {createPost,resetPostResult} from "../../Actions/postActions";
-import {getTokenObject} from "../../Helper/TokenHandler";
+import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {GrFormClose} from 'react-icons/gr';
 import getDeviceName from "../../Helper/getDeviceName";
 
 const CreatePost = () => {
     const dispatch = useDispatch();
-    let userToken = getTokenObject();
+    let userToken = getLocalStorageData('user');
     const device = getDeviceName()
     const users = useSelector(state => state.userData.users);
     const loading = useSelector(state => state.postData.loading);
@@ -175,7 +175,7 @@ const CreatePost = () => {
                                     </div>:''}
                                 </>:
                                 <div className='flex row mt-2 w-full'>
-                                    <div><img src={file} height='150' width='150'/></div>
+                                    <div><img src={file} height='150' width='150' alt='PostImage'/></div>
                                     <div className='ml-1 cursor-pointer'><GrFormClose size={28} onClick={()=>setFile(null)}/></div>
                                 </div>}
                         </div>

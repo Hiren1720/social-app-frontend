@@ -10,7 +10,7 @@ import Followers from "./Components/FollowFollowing/Followers";
 import Profile from "./Components/User/Profile";
 import PostPage from "./Components/Posts/Posts";
 import CreatePost from "./Components/Posts/CreatePost";
-import {getTokenObject} from "./Helper/TokenHandler";
+import {getLocalStorageData} from "./Helper/TokenHandler";
 import Users from "./Components/User/Users";
 import {ToastContainer,toast} from "react-toastify";
 import VerifyOTP from "./Components/Authencation/VerifyOTP";
@@ -19,7 +19,7 @@ function App() {
   const [socket] = React.useState(io('http://localhost:4040/', {
     transports: ["websocket"]
   }));
-  let user = getTokenObject();
+  let user = getLocalStorageData('user');
   useEffect(()=>{
     if(user && user?._id){
       socket.emit('joinUserId',user?._id)

@@ -1,17 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {Outlet} from "react-router";
-import {useNavigate} from "react-router-dom";
+import {useNavigate,Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {logout} from "../../Actions/userActions";
 import {getRequests} from "../../Actions/requestActions";
-import {getTokenObject} from "../../Helper/TokenHandler";
+import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {AiFillHome} from 'react-icons/ai';
 import {HiUsers} from 'react-icons/hi';
 import {FaUserPlus,FaUsers} from 'react-icons/fa';
 import {MdAddComment} from 'react-icons/md';
 import {url} from '../../Helper/constants';
-
-
 
 const Header = () => {
     const dispatch = useDispatch();
@@ -28,13 +25,13 @@ const Header = () => {
     const [active,setActive] = useState('Dashboard');
     const [open,setOpen] = useState(false);
     const [collapse,setCollapse] = useState(false);
-    let userToken = getTokenObject();
+    let userToken = getLocalStorageData('user');
     useEffect(()=>{
         if(userToken){
             dispatch(getRequests({type:'user'}))
         }
         // eslint-disable-next-line
-    },[pathName]);
+    },[]);
     useEffect(()=> {
         if(pathName !== '/'){
             let path = pathName.slice(1).charAt(0).toUpperCase() + pathName.slice(2);
@@ -118,7 +115,7 @@ const Header = () => {
                                             id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                                         <span className="sr-only">Open user menu</span>
                                         <img className="h-8 w-8 rounded-full"
-                                             src={`${url}/${userToken?.profile_url}`}
+                                             src={`${url}${userToken?.profile_url}`}
                                              alt=""/>
                                     </button>
                                 </div>

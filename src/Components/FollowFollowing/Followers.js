@@ -3,8 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {
     getFollowers,
 } from "../../Actions/requestActions";
-import {getProfile} from "../../Actions/userActions";
-import {getTokenObject} from "../../Helper/TokenHandler";
+import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
 import UserSlider from "../Common/UserSlider";
 
@@ -14,12 +13,11 @@ const Followers = () => {
     const followers = useSelector(state => state.requestData.followers);
     const followings = useSelector(state => state.requestData.followings);
     const loading = useSelector(state => state.requestData.loading);
-    let userToken = getTokenObject();
+    let userToken = getLocalStorageData('user');
 
     useEffect(() => {
         dispatch(getFollowers({type: 'user', state: 'followers', id: userToken?._id}))
         dispatch(getFollowers({state: 'followings', id: userToken?._id}));
-        dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
         // eslint-disable-next-line
     }, []);
 

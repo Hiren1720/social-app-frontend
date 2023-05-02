@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {getProfile} from "../../Actions/userActions";
 import {useParams} from "react-router-dom";
-import {getTokenObject} from "../../Helper/TokenHandler";
+import {getLocalStorageData} from "../../Helper/TokenHandler";
 import PersonalDetail from "./PersonalDetail";
 import Followers from "./Followers";
 import {
@@ -21,10 +21,9 @@ import {url} from '../../Helper/constants';
 const Profile = () => {
     const [user, setUser] = useState({});
     const {id} = useParams();
-    let userToken = getTokenObject();
+    const userData = getLocalStorageData('user');
     const dispatch = useDispatch();
     const profile = useSelector(state => state.userData.profile);
-    const userData = useSelector(state => state.userData.loggedInUser);
     const loading = useSelector(state => state.userData.loading);
     const buttonLoading = useSelector(state => state.requestData.buttonLoading);
     const requests = useSelector(state => state.requestData.requests);
@@ -34,7 +33,7 @@ const Profile = () => {
     useEffect(()=>{
         if(requestResult && requestResult?.success){
             dispatch(getRequests({type: 'allRequest'}));
-            dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
+            dispatch(getProfile({id: userData?._id,isLoggedInUser:true}));
             dispatch(setRequest());
         }
         // eslint-disable-next-line
@@ -42,7 +41,7 @@ const Profile = () => {
     useEffect(() => {
         if (id) {
             dispatch(getProfile({id: id}));
-            dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
+            dispatch(getProfile({id: userData?._id,isLoggedInUser:true}));
             dispatch(getRequests({type: 'allRequest'}));
             dispatch(getFollowers({state: 'followers', id: id}));
             dispatch(getFollowers({state: 'followings', id: id}));
@@ -68,14 +67,14 @@ const Profile = () => {
     }
     const handleButton = (e, item, status) => {
         e.stopPropagation();
-        if (userToken?._id === id) {
+        if (userData?._id === id) {
 
         } else if (status === 'Follow') {
-            dispatch(sendRequest({toUserId: item?._id, fromUserId: userToken?._id}));
+            dispatch(sendRequest({toUserId: item?._id, fromUserId: userData?._id}));
         }else if(status === 'UnFollow'){
-            dispatch(removeFollower({followerId:userToken?._id,followingId:item?._id,status:'UnFollow'}));
+            dispatch(removeFollower({followerId:userData?._id,followingId:item?._id,status:'UnFollow'}));
         } else if (status === 'Requested') {
-            let req = requests && requests.data && requests.data.filter(ele => ele?.fromUserId === userToken?._id).find((ele) => ele?.toUserId === item?._id);
+            let req = requests && requests.data && requests.data.filter(ele => ele?.fromUserId === userData?._id).find((ele) => ele?.toUserId === item?._id);
             if (req) {
                 dispatch(updateRequest({id: req?._id, status: status}));
             }
@@ -102,7 +101,7 @@ const Profile = () => {
                                 <div className="absolute md:top-[200px] max-[1180px]:left-[100px] max-[680px]:left-[60px] max-[768px]:top-[200px] max-[610px]:left-[200px] max-[520px]:left-[180px] max-[480px]:left-[120px] max-[380px]:left-[120px] max-[360px]:left-[100px] justify-center text-center left-[150px] ">
                                     <div className='bg-white rounded-[100px] p-[3px]'><img
                                         className="h-[200px] min-[280px]:h-[150px] min-[280px]:w-[150px] w-[200px] rounded-full"
-                                        src={user?.profile_url ? `${url}/${user?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                        src={user?.profile_url ? `${url}${user?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                         alt=""/>
                                     </div>
                                     <div className='font-bold mt-6 text-[24px]'>
@@ -113,7 +112,7 @@ const Profile = () => {
                                     <div className='flex h-[60px] md:mt-4 sm:mt-4 max-[640px]:mt-4 max-[610px]:justify-center max-[610px]:mt-[140px]  max-[640px]:justify-end sm:justify-end md:justify-end '>
                                         <div className='mx-4 max-[400px]:mx-2'>
                                             <button onClick={(e) => handleButton(e, user, getRequestStatus(user))}
-                                                    className='bg-white border-[3px] border-grey rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>{buttonLoading ? <ButtonLoader/> : userToken?._id === id ? "Edit Profile" : getRequestStatus(user)}
+                                                    className='bg-white border-[3px] border-grey rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>{buttonLoading ? <ButtonLoader/> : userData?._id === id ? "Edit Profile" : getRequestStatus(user)}
                                             </button>
                                         </div>
                                         <div className='mx-4 max-[400px]:mx-2 hidden'>

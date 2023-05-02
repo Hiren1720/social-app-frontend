@@ -18,7 +18,7 @@ export const httpFormDataAuth = async (request) => {
     }).then((res)=> res.json())
 }
 export const httpPost = (request) => {
-    let token = tokenUtil.getAccessToken();
+    let token = tokenUtil.getLocalStorageData('accessToken');
     const url = API_END_POINT + request.url;
     let headers = request?.isFormData ? {
         'Authorization': `Bearer ${token?.accessToken}`
@@ -47,7 +47,7 @@ export const httpPost = (request) => {
         .then((json) => json);
 };
 export const httpGet = (REQUEST) => {
-    let token = tokenUtil.getAccessToken();
+    let token = tokenUtil.getLocalStorageData('accessToken');
     const requestOptions = {
         method: 'GET',
         headers: {
@@ -72,7 +72,7 @@ const checkAndRegenerateToken = async (refresh_token) => {
     if (refresh_token) {
         let data = await httpAuth({ url: '/user/refreshToken', body: {refreshToken:refresh_token} });
         if (data.success) {
-            tokenUtil.setAccessToken(data?.token);
+            tokenUtil.setLocalStorageData('accessToken',data?.token);
             return true;
         }
         else {

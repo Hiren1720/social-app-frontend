@@ -5,7 +5,7 @@ import {TfiComment} from 'react-icons/tfi';
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from 'react-toastify';
 import {createLike, getAllLikes, getAllPost} from "../../Actions/postActions";
-import {getTokenObject} from "../../Helper/TokenHandler";
+import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
 import Modal from 'react-modal';
 import {getCommentsById} from "../../Actions/commentAction";
@@ -18,7 +18,7 @@ Modal.setAppElement('#modal')
 const BlogPage = ({socket}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    let userToken = getTokenObject();
+    let userToken = getLocalStorageData('user');
     const {width} = useWidthHeight();
     const posts = useSelector(state => state.postData.posts);
     const likes = useSelector(state => state.postData.likes);
@@ -123,7 +123,7 @@ const BlogPage = ({socket}) => {
                             <div className='flex items-center mt-2 ml-2'>
                                 <div className="">
                                     <img className="h-10 w-10 rounded-full"
-                                         src={ele?.author_info[0]?.profile_url ? `${url}/${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                         src={ele?.author_info[0]?.profile_url ? `${url}${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                          alt=""/>
                                 </div>
                                 <div className="ml-4">
@@ -138,15 +138,12 @@ const BlogPage = ({socket}) => {
                                     <BsDot/> {handleDate(ele?.createdAt)}
                                 </div>
                             </div>
-                            <div className='mt-2 hidden'>
-                                <img className="" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Sunset in the mountains"/>
-                            </div>
                             <div className="px-6 py-4">
                                 <div className="font-bold text-xl mb-2">{ele?.title}</div>
                                 <p className="text-gray-700 text-base">
                                     {ele?.content}
                                 </p>
-                                {ele?.imageUrl ? <img src={`${url}${ele?.imageUrl}`} height='300' width='300'/> :''}
+                                {ele?.imageUrl ? <img src={`${url}${ele?.imageUrl}`} height='300' width='300' alt=""/> :''}
                             </div>
                             <div className="px-6 pt-4 pb-2">
                                 {ele?.mentions?.length ? ele.mentions.map((mention,id) => (<span key={id} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{mention?.name}</span>)):null}
@@ -176,7 +173,7 @@ const BlogPage = ({socket}) => {
                             <div key={index} className='flex items-center mt-2 ml-2'>
                                 <div className="">
                                     <img className="h-5 w-5 rounded-full"
-                                         src={ele?.profile_url ? `${url}/${ele?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                         src={ele?.profile_url ? `${url}${ele?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                          alt=""/>
                                 </div>
                                 <div className='ml-4 cursor-pointer' onClick={(e)=> handleProfile(e,ele?._id)}>{ele?.userName}</div>
@@ -202,7 +199,7 @@ const BlogPage = ({socket}) => {
                             <div key={index} className='flex items-center mt-2 ml-2'>
                                 <div className="">
                                     <img className="h-5 w-5 rounded-full"
-                                         src={ele?.author_info[0]?.profile_url ? `${url}/${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                         src={ele?.author_info[0]?.profile_url ? `${url}${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                          alt=""/>
                                 </div>
                                 <div className='ml-2 cursor-pointer' onClick={(e)=> handleProfile(e,ele?.createdBy)}>{ele?.author_info[0]?.userName}:<span className='font-bold'>{ele?.content}</span></div>

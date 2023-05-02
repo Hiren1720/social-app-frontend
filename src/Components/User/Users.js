@@ -1,7 +1,6 @@
 import React, {useEffect,useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {getAllUsers, getProfile} from "../../Actions/userActions";
-import {getTokenObject} from "../../Helper/TokenHandler";
+import {getAllUsers} from "../../Actions/userActions";
 import Loader from "../Layouts/Loader";
 import UserSlider from "../Common/UserSlider";
 import { FaSearch,FaFilter} from "react-icons/fa";
@@ -15,11 +14,9 @@ const Users = () => {
     const dispatch = useDispatch();
     const loading = useSelector(state => state.userData.loading);
     const users = useSelector(state => state.userData.users);
-    let userToken = getTokenObject();
 
     useEffect(() => {
         dispatch(getAllUsers({page,pageSize:4,searchValue}));
-        dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
         dispatch(getRequests({type: 'allRequest'}));
         // eslint-disable-next-line
     }, []);

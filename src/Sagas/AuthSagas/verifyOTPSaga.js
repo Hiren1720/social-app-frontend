@@ -7,14 +7,15 @@ import {
 import * as types from '../../Actions/Types'
 
 import {httpAuth} from "../../Helper/api";
-import {setAccessToken} from "../../Helper/TokenHandler";
+import {setLocalStorageData} from "../../Helper/TokenHandler";
 export function* verifyOTP({payload}) {
     try{
         yield put({ type: types.SET_LOADING,loading:true })
         let request = {url:'/user/verify-otp',body:payload}
         let result = yield call(httpAuth,request)
         if(result && result.success){
-            setAccessToken(result.token);
+            setLocalStorageData('accessToken',result.token);
+            setLocalStorageData('user',result?.data);
             window.location.href = '/';
         }
         yield put({

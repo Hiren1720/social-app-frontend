@@ -7,9 +7,9 @@ import {
     setRequest,
     updateRequest
 } from "../../Actions/requestActions";
-import {getTokenObject} from "../../Helper/TokenHandler";
+import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Slider from "react-slick";
-import {getAllUsers, getProfile} from "../../Actions/userActions";
+import {getAllUsers} from "../../Actions/userActions";
 import {useNavigate} from "react-router";
 import useWidthHeight from "../../Hooks/useWidthHeight";
 import { FaArrowRight,FaArrowLeft} from "react-icons/fa";
@@ -20,14 +20,12 @@ const UserSlider = ({data,title}) => {
     const dispatch = useDispatch();
     const requestResult = useSelector(state => state.requestData.requestResult);
     const requests = useSelector(state => state.requestData.requests);
-    const userData = useSelector(state => state.userData.loggedInUser);
     const navigate = useNavigate();
     const {width} = useWidthHeight();
-    let userToken = getTokenObject();
+    let userToken = getLocalStorageData('user');
     useEffect(()=>{
         if(requestResult && requestResult?.success){
             dispatch(getAllUsers());
-            dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
             dispatch(getRequests({type: 'allRequest'}));
             dispatch(setRequest());
         }
@@ -67,9 +65,9 @@ const UserSlider = ({data,title}) => {
         let data = 'Follow';
         if (status === 'pending') {
             data = 'Requested';
-        } else if (title === 'Followers' && userData?.followers.includes(_id)) {
+        } else if (title === 'Followers' && userToken?.followers.includes(_id)) {
             data = 'Remove';
-        }else if ((title === 'Followings' || title === 'Users') && userData?.following.includes(_id)) {
+        }else if ((title === 'Followings' || title === 'Users') && userToken?.following.includes(_id)) {
             data = 'UnFollow';
         } else {
             data = 'Follow';
@@ -111,7 +109,7 @@ const UserSlider = ({data,title}) => {
                                     </div>
                                     <div className="flex items-center">
                                         <button onClick={(e) => handleSendRequest(e, ele,getRequestStatus(ele))}
-                                                className={`appearance-none max-[480px]:text-[14px] block w-75 text-blue-700 rounded py-2 px-4 leading-tight ${ele?._id === userData?._id ? 'hidden':''} bg-gray-200 focus:border-gray-400 border border-gray-200`}
+                                                className={`appearance-none max-[480px]:text-[14px] block w-75 text-blue-700 rounded py-2 px-4 leading-tight ${ele?._id === userToken?._id ? 'hidden':''} bg-gray-200 focus:border-gray-400 border border-gray-200`}
                                                 id="grid-last-name" type="button">{getRequestStatus(ele)}
                                         </button>
                                     </div>

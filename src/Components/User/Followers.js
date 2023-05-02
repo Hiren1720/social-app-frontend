@@ -9,7 +9,7 @@ import {
     setRequest,
     updateRequest
 } from "../../Actions/requestActions";
-import {getTokenObject} from "../../Helper/TokenHandler";
+import {getLocalStorageData} from "../../Helper/TokenHandler";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {useNavigate} from "react-router-dom";
@@ -22,7 +22,7 @@ const Followers = ({user,type,setActive}) => {
     const requestResult = useSelector(state => state.requestData.requestResult);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    let userToken = getTokenObject();
+    let userToken = getLocalStorageData('user');
     const {width} = useWidthHeight();
     let userData = userToken;
     useEffect(()=>{
