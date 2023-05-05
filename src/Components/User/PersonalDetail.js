@@ -4,6 +4,7 @@ const PersonalDetail = ({user}) => {
     let date = new Date(user?.birthDate).toLocaleString('default', { month: 'long' });
     let month = new Date(user?.birthDate).getDate();
     let year = new Date(user?.birthDate).getFullYear();
+
     return (
         <>
             <div className="w-full py-2 justify-start ">

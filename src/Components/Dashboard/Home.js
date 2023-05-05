@@ -305,10 +305,7 @@ const Home = ({socket}) =>{
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
-
-
                             </div>
                         </>
                     </> : <></>}

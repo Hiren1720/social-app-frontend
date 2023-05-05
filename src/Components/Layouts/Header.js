@@ -30,7 +30,6 @@ const Header = () => {
         if(userToken){
             dispatch(getRequests({type:'user'}))
         }
-        // eslint-disable-next-line
     },[]);
     useEffect(()=> {
         if(pathName !== '/'){
@@ -42,7 +41,6 @@ const Header = () => {
         }
         setCollapse(false);
         setOpen(false);
-        // eslint-disable-next-line
     },[pathName,requests]);
     const handleProfile = () => {
         navigate(`/profile/${userToken?._id}`);

@@ -33,14 +33,12 @@ const Followers = ({user,type,setActive}) => {
         else {
             setFollowers([]);
         }
-        // eslint-disable-next-line
     },[data]);
     useEffect(()=>{
         if(requestResult && requestResult?.success){
             dispatch(getRequests({type: 'allRequest'}));
             dispatch(setRequest());
         }
-        // eslint-disable-next-line
     },[requestResult]);
     let isOne = width < 780;
     let isTwo = width < 1080;

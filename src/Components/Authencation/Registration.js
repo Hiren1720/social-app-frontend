@@ -15,6 +15,7 @@ const Registration = () => {
     const navigate = useNavigate();
     const pathName = window.location.pathname;
     let userToken = getLocalStorageData('user');
+
     useEffect(()=>{
         if(pathName === '/edit-profile'){
             setImage(`${url}/${userToken?.profile_url}`)

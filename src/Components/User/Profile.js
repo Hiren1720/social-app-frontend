@@ -22,7 +22,6 @@ import ButtonLoader from "../ButtonLoader";
 import {url} from '../../Helper/constants';
 import Posts from '../Posts/Posts';
 import useWidthHeight from "../../Hooks/useWidthHeight";
-import Registration from '../Authencation/Registration';
 import {useNavigate} from "react-router";
 const Profile = ({socket}) => {
     const [user, setUser] = useState({});

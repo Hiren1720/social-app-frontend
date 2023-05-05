@@ -28,7 +28,7 @@ const CreatePost = () => {
         comments: [],
         mentions:[],
     });
-    // const [mentions,setMentions] =  useState('');
+
     const navigate = useNavigate()
     useEffect(() => {
         dispatch(getAllUsers({searchValue:'',pageSize:100,page:0}))

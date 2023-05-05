@@ -32,6 +32,7 @@ function App() {
     }
     // eslint-disable-next-line
   },[user])
+
   return (
     <div className="App  w-full h-screen bg-[#eef0f3] ">
       <BrowserRouter>

@@ -1,7 +1,5 @@
 import React from "react";
 
-
-
 const Loader = () => {
     return <div className="flex justify-center items-center h-screen bg-grey-300">
         <div className="grid gap-2">

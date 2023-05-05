@@ -26,7 +26,7 @@ const Login = () => {
             toast(userResult?.error,{type:'error'});
             dispatch(setUserData('userResult', null));
         }
-        // eslint-disable-next-line
+
     }, [userResult]);
     const handleOnChange = (event) => {
         let {name, value} = event.target;

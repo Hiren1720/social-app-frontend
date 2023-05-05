@@ -85,7 +85,6 @@ const BlogPage = ({socket}) => {
 
     useEffect(()=> {
         dispatch(getAllPost());
-        // eslint-disable-next-line
     },[]);
     const handleCreateLike = (id) => {
         dispatch(createLike({ "postId":id, "likeBy":userToken?._id}))

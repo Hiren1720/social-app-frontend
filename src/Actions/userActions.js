@@ -48,6 +48,7 @@ export const getProfile = (payload) =>{
     }
 };
 
+
 export const updateUser = (payload) =>{
     return {
         type: types.UPDATE_USER_STATE,

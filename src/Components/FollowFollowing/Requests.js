@@ -17,7 +17,6 @@ const Requests = () => {
         } else {
             setRowData([]);
         }
-        // eslint-disable-next-line
     }, [requests])
     const handleRequest = (id, status) => {
         dispatch(updateRequest({id: id, status: status}))
