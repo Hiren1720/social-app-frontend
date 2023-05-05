@@ -8,12 +8,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import Requests from "./Components/FollowFollowing/Requests";
 import Followers from "./Components/FollowFollowing/Followers";
 import Profile from "./Components/User/Profile";
-import PostPage from "./Components/Posts/Posts";
 import CreatePost from "./Components/Posts/CreatePost";
 import {getLocalStorageData} from "./Helper/TokenHandler";
 import Users from "./Components/User/Users";
 import {ToastContainer,toast} from "react-toastify";
 import VerifyOTP from "./Components/Authencation/VerifyOTP";
+import Home from "./Components/Dashboard/Home";
 
 function App() {
   const [socket] = React.useState(io('http://localhost:4040/', {
@@ -33,23 +33,24 @@ function App() {
     // eslint-disable-next-line
   },[user])
   return (
-    <div className="App">
-        <BrowserRouter>
-          <Routes>
-            <Route path='/login' element={<Login socket={socket}/>}  />
-            <Route path='/sign-up' element={<Registration/>}  />
-            <Route path='/verify-otp' element={<VerifyOTP/>}  />
-            <Route path='/' element={<Header/>} >
-              <Route index element={<PostPage socket={socket}/>}  />
-              <Route path='post' element={<CreatePost/>}  />
-              <Route path='profile/:id' element={<Profile/>}  />
-              <Route path='requests' element={<Requests/>}  />
-              <Route path='followers' element={<Followers/>}  />
-              <Route path='users' element={<Users/>}  />
-            </Route>
-            <Route path='*' element={<h1>404 Page not found.</h1>}/>
-          </Routes>
-        </BrowserRouter>
+    <div className="App  w-full h-screen bg-[#eef0f3] ">
+      <BrowserRouter>
+        <Routes>
+          <Route path='/login' element={<Login socket={socket}/>}  />
+          <Route path='/sign-up' element={<Registration/>}  />
+          <Route path='/verify-otp' element={<VerifyOTP/>}  />
+          <Route path='/' element={<Header/>} >
+            <Route index element={<Home socket={socket}/>}/>
+            <Route path='post' element={<CreatePost/>}  />
+            <Route path='profile/:id' element={<Profile socket={socket}/>}  />
+            <Route path='/edit-profile' element={<Registration/>}  />
+            <Route path='requests' element={<Requests/>}  />
+            <Route path='followers' element={<Followers/>}  />
+            <Route path='users' element={<Users/>}  />
+          </Route>
+          <Route path='*' element={<h1>404 Page not found.</h1>}/>
+        </Routes>
+      </BrowserRouter>
       <ToastContainer/>
     </div>
   );

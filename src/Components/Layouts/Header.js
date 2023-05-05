@@ -16,11 +16,11 @@ const Header = () => {
     const requests = useSelector(state => state.requestData.userRequests);
     const pathName = window.location.pathname;
     const navBars = [
-        {name:'Dashboard',path:'/',icon:<AiFillHome size={15}/>,},
-        {name:'Followers',path:'/followers',icon:<HiUsers/>,},
-        {name:'Users',path:'/users',icon:<FaUsers/>,},
-        {name:'Requests',path:'/requests',icon:<FaUserPlus/>,},
-        {name:'Post',path:'/post',icon:<MdAddComment/>},
+        {name:'Home',path:'/',icon:<AiFillHome class="ml-3" size={15}/>,},
+        {name:'Followers',path:'/followers',icon:<HiUsers class="ml-5"/>,},
+        {name:'Users',path:'/users',icon:<FaUsers class="ml-3"/>,},
+        {name:'Requests',path:'/requests',icon:<FaUserPlus class="ml-5"/>,},
+        {name:'Post',path:'/post',icon:<MdAddComment class="ml-2"/>},
     ]
     const [active,setActive] = useState('Dashboard');
     const [open,setOpen] = useState(false);
@@ -50,8 +50,8 @@ const Header = () => {
     };
     return (
         <>
-            <nav className="relative sticky top-0 bg-gray-800 z-40">
-                <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+            <nav className="relative sticky top-0 bg-[#234e70] z-40 ">
+                <div className="mx-auto max-w-6xl px-2 sm:px-6 lg:px-8">
                     <div className="relative flex h-16 items-center justify-between">
                         <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                             <button type="button"
@@ -59,24 +59,24 @@ const Header = () => {
                                     aria-controls="mobile-menu" onClick={()=> setCollapse(!collapse)} aria-expanded="false">
                                 <span className="sr-only">Open main menu</span>
                                 {!collapse ? <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                     viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                                    <path strokeLinecap="round" strokeLinejoin="round"
-                                          d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
-                                </svg>:
-                                <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                     viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>}
+                                                  viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+                                    </svg>:
+                                    <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                         viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>}
                             </button>
                         </div>
-                        <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                        <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-between ">
                             <div className="flex flex-shrink-0 items-center">
                                 <img className="block h-8 w-auto lg:hidden"
                                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                                      alt="Your Company"/>
-                                    <img className="hidden h-8 w-auto lg:block"
-                                         src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                                         alt="Your Company"/>
+                                <img className="hidden h-8 w-auto lg:block"
+                                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                                     alt="Your Company"/>
                             </div>
                             <div className="hidden sm:ml-6 sm:block">
                                 <div className="flex space-x-4">
@@ -87,10 +87,11 @@ const Header = () => {
                                                 {requests?.data?.length}
                                             </div>:null}
                                             <span onClick={()=> {navigate(ele.path); setActive(ele.name)}}
-                                                className={`px-3 cursor-pointer py-2 rounded-md text-sm font-medium ${active === ele.name?'bg-gray-700 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'}`}
-                                                aria-current="page">
-                                                {ele?.icon}
+                                                  className={`px-3 gap-2 cursor-pointer py-2 text-center rounded-md text-sm font-medium ${active === ele.name?'bg-[#234e70] text-[#fa6a48] ':'text-gray-300 hover:bg-[#234e70] hover:text-[#fa6a48] '}`}
+                                                  aria-current="page">
+                                                {ele?.icon}<span>{ele?.name}</span>
                                             </span>
+
                                         </div>
                                     ))}
                                 </div>
@@ -114,8 +115,9 @@ const Header = () => {
                                             className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                             id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                                         <span className="sr-only">Open user menu</span>
-                                        <img className="h-8 w-8 rounded-full"
-                                             src={`${url}${userToken?.profile_url}`}
+                                        {/*<img className="h-8 w-8 rounded-full"*/}
+                                        <img className="h-8 w-8 rounded-full object-cover"
+                                             src={`${url}/${userToken?.profile_url}`}
                                              alt=""/>
                                     </button>
                                 </div>
@@ -124,9 +126,9 @@ const Header = () => {
                                     role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                                     tabIndex="-1">
                                     <span onClick={()=> handleProfile()} className={`block px-4 py-2 text-sm cursor-pointer hover:text-white hover:bg-gray-900 hover:rounded-[6px] text-gray-700 ${pathName.includes('/profile/') ? 'bg-gray-900 text-white rounded-[6px]':''}`} role="menuitem"
-                                       tabIndex="-1" id="user-menu-item-0">Your Profile</span>
+                                          tabIndex="-1" id="user-menu-item-0">Your Profile</span>
                                     <span onClick={()=> dispatch(logout())} className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:text-white hover:bg-gray-900 hover:rounded-[6px]" role="menuitem"
-                                       tabIndex="-1" id="user-menu-item-2">Sign out</span>
+                                          tabIndex="-1" id="user-menu-item-2">Sign out</span>
                                 </div>
                             </div>
                         </div>

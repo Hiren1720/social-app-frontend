@@ -17,6 +17,7 @@ import {getAllLikesSaga} from "./PostSagas/getAllLikesSaga";
 import {createCommentSaga} from "./CommentSagas/createCommentSaga";
 import {getCommentsSaga} from "./CommentSagas/getCommentsSaga";
 import {getMentionPostsSaga} from "./PostSagas/getMentionPostsSaga";
+import {updateUserSaga} from "./AuthSagas/updateUserDataSaga";
 
 export default function* root() {
     yield all([
@@ -38,5 +39,6 @@ export default function* root() {
         createCommentSaga(),
         getCommentsSaga(),
         getMentionPostsSaga(),
+        updateUserSaga(),
     ]);
 }

@@ -47,6 +47,9 @@ const user = (state = initialState, action) => {
         case types.GET_PROFILE_SUCCESS:
         case types.GET_PROFILE_FAILURE:
             return {...state, [action?.state]: action.payload, loading: action.loading};
+        case types.UPDATE_USER_STATE_SUCCESS:
+        case types.UPDATE_USER_STATE_FAILURE:
+            return {...state, userResult: action.payload, loading: action.loading};
         default:
             return state;
     }
