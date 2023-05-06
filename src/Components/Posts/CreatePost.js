@@ -28,7 +28,7 @@ const CreatePost = () => {
         comments: [],
         mentions:[],
     });
-    // const [mentions,setMentions] =  useState('');
+
     const navigate = useNavigate()
     useEffect(() => {
         dispatch(getAllUsers({searchValue:'',pageSize:100,page:0}))
@@ -186,10 +186,41 @@ const CreatePost = () => {
                                    htmlFor="grid-password">
                                 Mentions
                             </label>
-                            <div>
-                                <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{'tag'}</span>
-                            </div>
-                            <MentionsInput value={mentions} onChange={(e,data,value)=>{ handleMentions(e,data,value)}} className={'h-[40px]'}>
+
+                            <MentionsInput value={mentions} onChange={(e,data,value)=>{ handleMentions(e,data,value)}}
+                                           id="grid-first-name" type="text" name='mention'
+                                           className="w-full bg-gray-200 text-gray-700 rounded py-3 px-4 mb-3 leading-tight"
+                                           style={{
+                                               control: {
+                                                   fontSize: 14,
+                                                   fontWeight: 'normal',
+                                               },
+                                               highlighter: {
+                                                   padding: 2,
+                                                   marginLeft:-4,
+                                                   border: '2px inset transparent',
+                                               },
+                                               '&multiLine': {
+                                                   input: {
+                                                       padding: 14,
+                                                   },
+                                               },
+                                               suggestions: {
+                                                   list: {
+                                                       backgroundColor: 'white',
+                                                       border: '1px solid rgba(0,0,0,0.15)',
+                                                       fontSize: 14,
+                                                   },
+                                                   item: {
+                                                       padding: '5px 15px',
+                                                       borderBottom: '1px solid rgba(0,0,0,0.15)',
+                                                       '&focused': {
+                                                           backgroundColor: '#cee4e5',
+                                                       },
+                                                   },
+                                               },
+                                           }}
+                            >
                                 <Mention
                                     trigger="@"
                                     data={mentionUsers}

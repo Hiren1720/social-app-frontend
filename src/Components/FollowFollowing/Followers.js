@@ -7,7 +7,6 @@ import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
 import UserSlider from "../Common/UserSlider";
 
-
 const Followers = () => {
     const dispatch = useDispatch();
     const followers = useSelector(state => state.requestData.followers);

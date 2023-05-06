@@ -15,7 +15,6 @@ import useWidthHeight from "../../Hooks/useWidthHeight";
 import { FaArrowRight,FaArrowLeft} from "react-icons/fa";
 import {url} from '../../Helper/constants';
 
-
 const UserSlider = ({data,title}) => {
     const dispatch = useDispatch();
     const requestResult = useSelector(state => state.requestData.requestResult);

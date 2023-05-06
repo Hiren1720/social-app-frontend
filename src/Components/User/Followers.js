@@ -14,6 +14,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {useNavigate} from "react-router-dom";
 import useWidthHeight from "../../Hooks/useWidthHeight";
+import {url} from "../../Helper/constants";
 
 const Followers = ({user,type,setActive}) => {
     const [followers,setFollowers] = useState([]);
@@ -32,14 +33,12 @@ const Followers = ({user,type,setActive}) => {
         else {
             setFollowers([]);
         }
-        // eslint-disable-next-line
     },[data]);
     useEffect(()=>{
         if(requestResult && requestResult?.success){
             dispatch(getRequests({type: 'allRequest'}));
             dispatch(setRequest());
         }
-        // eslint-disable-next-line
     },[requestResult]);
     let isOne = width < 780;
     let isTwo = width < 1080;
@@ -89,39 +88,64 @@ const Followers = ({user,type,setActive}) => {
     }
     return (
         <>
-            <div className="w-full bg-white border-[2px] px-4 py-4 justify-start rounded-b-lg">
-                <Slider {...settings}>
-                    {followers && followers.length && followers.map((ele,index)=> (
-                        <div key={index}>
-                            <div className="flex p-4 border-[2px] mx-2 h-[100px] justify-between rounded-[10px] cursor-pointer hover:bg-grey-900" onClick={(e)=> handleProfile(e,ele)}>
-                                <div className='flex items-center'>
-                                    <div className="">
-                                        <img className="h-10 w-10 rounded-full"
-                                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                             alt=""/>
+            <div className="w-full px-3 py-3 justify-center grid min-[1300px]:grid-cols-2 max-[1000px]:grid-cols-2 max-[600px]:grid-cols-1 gap-y-1 gap-x-10 rounded-b-lg  ">
+                {followers && followers.length && followers.map((ele,index)=> (
+                    <div key={index}>
+                        <div
+                            className="relative shadow-lg shadow-gray-700 max-w-md mx-auto md:max-w-2xl mt-6 min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-xl mt-16 ">
+                            <div className="px-6">
+                                <div className="flex flex-wrap justify-center">
+                                    <div className="w-full flex justify-center">
+                                        <img
+                                            src= {ele?.profile_url ? `${url}/${ele?.profile_url}` :"https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
+                                            className="rounded-full align-middle object-cover border-none absolute mt-2 w-[100px] h-[100px]"/>
                                     </div>
-                                    <div className="ml-4">
-                                        <div
-                                            className="w-full relative text-gray-600 focus-within:text-gray-400">
-                                            <div className='font-semibold max-[480px]:text-[14px]'>
-                                                {ele?.name}
+                                    <div className="w-full text-center mt-20">
+                                        <div className="flex justify-center lg:pt-4 pt-8 pb-0">
+                                            <div className="lg:p-3 p-2 text-center">
+                                                    <span
+                                                        className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.followers?.length}</span>
+                                                <span className="text-sm text-slate-400">Post</span>
                                             </div>
-                                            <div className='text-gray-500 max-[480px]:text-[14px]'>
-                                                {ele?.userName}
+                                            <div className="lg:p-3 p-2 text-center">
+                                                    <span
+                                                        className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.followers?.length}</span>
+                                                <span className="text-sm text-slate-400">Followers</span>
+                                            </div>
+
+                                            <div className="lg:p-3 p-2 text-center">
+                                                    <span
+                                                        className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.following?.length}</span>
+                                                <span className="text-sm text-slate-400">Following</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center">
+                                <div className="text-center mt-1">
+                                    <h3 className="text-2xl text-slate-700 font-bold leading-normal mb-1">{ele?.userName}</h3>
+                                    <div className="text-xs mt-0 mb-2 text-slate-400 font-bold uppercase">
+                                        <i className="fas fa-map-marker-alt mr-2 text-slate-400 opacity-75"></i>{ele?.name}
+                                    </div>
+                                </div>
+                                <div className='flex gap-5 pt-4'>
                                     <button onClick={(e) => handleSendRequest(e, ele,getRequestStatus(ele))}
-                                            className={`appearance-none max-[480px]:text-[14px] block w-75 text-blue-700 rounded py-2 px-4 leading-tight ${ele?._id === userToken.user_id ? 'hidden':''} ${getRequestStatus(ele) === 'UnFollow' ? '' : 'bg-gray-200 focus:border-gray-400 border border-gray-200'}`}
-                                            id="grid-last-name" type="button">{getRequestStatus(ele)}
+                                            className={`block uppercase mx-auto shadow bg-[#234e70] hover:[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded ${ele?._id === userToken.user_id ? 'hidden':''} ${getRequestStatus(ele) === 'UnFollow' ? '' : 'bg-[#fa6a48]'}`}>{getRequestStatus(ele)}
                                     </button>
+                                    <button
+                                        className="block uppercase mx-auto shadow bg-[#fa6a48] hover:bg-[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded">Message
+                                    </button>
+                                </div>
+                                <div className="mt-4 py-4 border-t border-slate-200 text-center">
+                                    <div className="flex flex-wrap justify-center">
+                                        <div className="w-full px-4" onClick={(e)=> handleProfile(e,ele)}>
+                                            View Profile
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    ))}
-                </Slider>
+                    </div>
+                ))}
             </div>
         </>
     )

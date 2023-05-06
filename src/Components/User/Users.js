@@ -20,6 +20,7 @@ const Users = () => {
         dispatch(getRequests({type: 'allRequest'}));
         // eslint-disable-next-line
     }, []);
+
     const handleClearSearch = () => {
         setSearchValue('');
         dispatch(getAllUsers({page,pageSize:4,searchValue:''}));
