@@ -12,11 +12,7 @@ const Login = () => {
     const userResult = useSelector(state => state.userData.userResult);
     const user = useSelector(state => state.userData.loginData);
     const loading = useSelector(state => state.userData.loading);
-    const [users, setUsers] = useState( JSON.parse(localStorage.getItem('users')) || []);
-
-    useEffect(()=>{
-        setUsers(JSON.parse(localStorage.getItem('users')) || [])
-    },[users]);
+    const users = getLocalStorageData('users') || [];
 
     useEffect(() => {
         if (userResult && userResult.success) {
@@ -26,7 +22,6 @@ const Login = () => {
             toast(userResult?.error,{type:'error'});
             dispatch(setUserData('userResult', null));
         }
-
     }, [userResult]);
     const handleOnChange = (event) => {
         let {name, value} = event.target;
@@ -45,15 +40,12 @@ const Login = () => {
         let user = users.find(ele => ele?._id === id);
         setLocalStorageData('accessToken',user?.token);
         setLocalStorageData('user',user);
-
         navigate('/');
     };
 
     const handleDeleteAccount = (id) =>{
         users.splice(id, 1);
-        setUsers([users]);
         setLocalStorageData('users', users)
-
     };
     const {email, password} = user;
     return (
@@ -95,7 +87,6 @@ const Login = () => {
                                         <div className="flex flex-col items-center">
                                             <img className="mb-3 w-16 h-16 rounded-full shadow-lg" onClick={()=>{handleSwitchAccount(ele?._id)}}
                                                  src={ele?.profile_url ? `${url}${ele?.profile_url}` : "https://flowbite.com/docs/images/people/profile-picture-3.jpg"} alt="Bonnie image"/>
-                                            {/*<h3 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">Bonnie Green</h3>*/}
                                             <span className="text-sm text-gray-500 dark:text-gray-400">{ele?.name}</span>
                                         </div>
                                     </div>
@@ -115,7 +106,7 @@ const Login = () => {
                                     <div className='flex justify-center w-full gap-10 flex-col md:flex-row'>
                                         <div className="mt-4 w-full">
                                             <label className="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
-                                            <input type="email" placeholder="Enter your email"
+                                            <input
                                                    className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
                                                    id="email" type="text" placeholder="Email" name={"email"}
                                                    value={email}
@@ -125,11 +116,9 @@ const Login = () => {
                                         <div className="mt-4 w-full">
                                             <div className="flex justify-between">
                                                 <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                                                {/*<a href="#" className="text-xs text-gray-500">Forget Password?</a>*/}
                                             </div>
                                             <input id="password" type="password" placeholder="Password"
                                                    className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                                   id="password" type="password" placeholder="Password"
                                                    name={"password"}
                                                    value={password}
                                                    onChange={(e) => handleOnChange(e)}

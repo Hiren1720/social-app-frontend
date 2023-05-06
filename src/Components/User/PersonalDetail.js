@@ -36,7 +36,7 @@ const PersonalDetail = ({user}) => {
                         </div>
                         <div className='col ml-7 max-[460px]:ml-1 max-[420px]:mx-0 grid md:grid-cols-1 text-base gap-2'>
                             <div className='mx-4 my-4 grid grid-cols-1'>
-                                <div>{new Date(user?.birthDate).toLocaleString('default', { month: 'long' })} {new Date(user?.birthDate).getDate()}, {new Date(user?.birthDate).getFullYear()}</div>*/}
+                                <div>{new Date(user?.birthDate).toLocaleString('default', { month: 'long' })} {new Date(user?.birthDate).getDate()}, {new Date(user?.birthDate).getFullYear()}</div>
                                 <label htmlFor="last-name" className="block  font-medium text-gray-700 mb-[10px]">
                                     Birthday</label>
                                 <input type="text" name="bdate" placeholder="02/02/2001" id="bdate"

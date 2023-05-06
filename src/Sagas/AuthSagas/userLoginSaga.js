@@ -16,9 +16,12 @@ export function* userLogin({payload}) {
         if(result && result.success){
             setLocalStorageData('accessToken',result.token);
             setLocalStorageData('user',result?.data);
-
-            let users = getLocalStorageData('users');
-            if(!users.map((ele)=> ele?._id).includes(result?.data?._id)){
+            let users = getLocalStorageData('users') || [];
+            let user = users.findIndex(ele => ele?._id === result?.data?._id)
+            if(user !== -1){
+                users[user] = {...result?.data,token:result.token};
+                setLocalStorageData('users',users);
+            }else {
                 users.push({...result?.data,token:result.token});
                 setLocalStorageData('users',users);
             }

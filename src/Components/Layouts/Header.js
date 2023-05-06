@@ -29,6 +29,8 @@ const Header = () => {
     useEffect(()=>{
         if(userToken){
             dispatch(getRequests({type:'user'}))
+        }else {
+            navigate('/login')
         }
     },[]);
     useEffect(()=> {
@@ -37,7 +39,7 @@ const Header = () => {
             setActive(path);
         }
         else {
-            setActive('Dashboard');
+            setActive('Home');
         }
         setCollapse(false);
         setOpen(false);
