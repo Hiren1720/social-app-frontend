@@ -132,7 +132,7 @@ const BlogPage = ({socket}) => {
                                         <div className="flex items-center space-x-3">
                                             <div className="">
                                                 <img className="h-8 w-8 rounded-full bg-slate-400 object-cover"
-                                                     src={ele?.author_info[0]?.profile_url ? `${url}/${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                                     src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https')? ele?.author_info[0]?.profile_url :`${url}/${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                                      alt=""/>
                                             </div>
                                             {/*<div className="h-8 w-8 rounded-full bg-slate-400 bg-[url('https://i.pravatar.cc/32')]"></div>*/}
@@ -218,7 +218,7 @@ const BlogPage = ({socket}) => {
                                                     <div className="flex items-center space-x-4">
                                                         <div className="flex-shrink-0">
                                                             <img className="h-8 w-8 rounded-full object-cover"
-                                                                 src={ele?.profile_url ? `${url}/${ele?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                                                 src={ele?.profile_url ? ele?.profile_url.includes('https')? ele?.profile_url:`${url}/${ele?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                                                  alt=""/>
                                                         </div>
                                                         <div className="flex-1 min-w-0">
@@ -264,7 +264,7 @@ const BlogPage = ({socket}) => {
                                                         <div className="flex items-center space-x-4">
                                                             <div className="flex-shrink-0">
                                                                 <img className="h-8 w-8 rounded-full object-cover"
-                                                                     src={ele?.author_info[0]?.profile_url ? `${url}/${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                                                     src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https')? ele?.author_info[0]?.profile_url:`${url}/${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                                                      alt=""/>
                                                             </div>
                                                             <div className="flex-1 min-w-0">

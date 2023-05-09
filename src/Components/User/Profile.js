@@ -129,7 +129,7 @@ const Profile = ({socket}) => {
                                                         <img
                                                             className="shadow-xl bg-[white] p-[5px] object-cover
                                                     transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-110 duration-300 rounded-full align-middle border-none absolute -m-20 -ml-20 lg:-ml-16 max-w-150-px w-40 h-40"
-                                                            src={user?.profile_url ? `${url}/${user?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                                            src={user?.profile_url ? user?.profile_url.includes('https')? user?.profile_url:`${url}/${user?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                                             alt=""/>
                                                     </div>
                                                 </div>

@@ -97,7 +97,7 @@ const Followers = ({user,type,setActive}) => {
                                 <div className="flex flex-wrap justify-center">
                                     <div className="w-full flex justify-center">
                                         <img
-                                            src= {ele?.profile_url ? `${url}/${ele?.profile_url}` :"https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
+                                            src= {ele?.profile_url ? ele?.profile_url.includes('https')?ele?.profile_url:`${url}/${ele?.profile_url}` :"https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
                                             className="rounded-full align-middle object-cover border-none absolute mt-2 w-[100px] h-[100px]"/>
                                     </div>
                                     <div className="w-full text-center mt-20">

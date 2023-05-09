@@ -18,7 +18,7 @@ const Registration = () => {
 
     useEffect(()=>{
         if(pathName === '/edit-profile'){
-            setImage(`${url}/${userToken?.profile_url}`)
+            setImage(userToken?.profile_url.includes('https')? userToken?.profile_url :`${url}/${userToken?.profile_url}`)
             dispatch(setUserData('user',{...userToken}))
         }
     },[pathName]);

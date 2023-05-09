@@ -56,7 +56,7 @@ const Home = ({socket}) =>{
                                                         {/*<img className="h-full w-full rounded-full" src='https://horizon-tailwind-react-git-tailwind-components-horizon-ui.vercel.app/static/media/avatar11.1060b63041fdffa5f8ef.png' alt="" />*/}
                                                         <img
                                                             className="h-full w-full rounded-full object-cover"
-                                                            src={userData?.profile_url ? `${url}/${userData?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                                            src={userData?.profile_url ? userData?.profile_url.includes('https')? userData?.profile_url: `${url}/${userData?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                                             alt=""/>
                                                     </div>
                                                 </div>
@@ -201,7 +201,7 @@ const Home = ({socket}) =>{
                                                         <div
                                                             className="flex  items-center justify-center rounded-full border-[4px] border-white bg-pink-400 dark:!border-navy-700">
                                                             <img className="rounded-full h-[45px] w-[50px] object-cover"
-                                                                 src={userData?.profile_url ? `${url}/${userData?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                                                 src={userData?.profile_url ? userData?.profile_url.includes('https')? userData?.profile_url:`${url}/${userData?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                                                  alt=""/>
                                                         </div>
                                                         <div className="relative w-full">

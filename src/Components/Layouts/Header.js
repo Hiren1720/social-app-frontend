@@ -117,7 +117,7 @@ const Header = () => {
                                         <span className="sr-only">Open user menu</span>
                                         {/*<img className="h-8 w-8 rounded-full"*/}
                                         <img className="h-8 w-8 rounded-full object-cover"
-                                             src={`${url}/${userToken?.profile_url}`}
+                                             src={userToken?.profile_url.includes('https') ? userToken?.profile_url : `${url}/${userToken?.profile_url}`}
                                              alt=""/>
                                     </button>
                                 </div>
