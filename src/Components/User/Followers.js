@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import Slider from "react-slick";
 import {useDispatch, useSelector} from "react-redux";
-import { FaArrowRight,FaArrowLeft} from "react-icons/fa";
 import {
     getRequests,
     removeFollower,
@@ -10,13 +8,10 @@ import {
     updateRequest
 } from "../../Actions/requestActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import {useNavigate} from "react-router-dom";
-import useWidthHeight from "../../Hooks/useWidthHeight";
 import {url} from "../../Helper/constants";
 
-const Followers = ({user,type,setActive}) => {
+const Followers = ({type,setActive}) => {
     const [followers,setFollowers] = useState([]);
     const data = useSelector(state => state.requestData[type]);
     const requests = useSelector(state => state.requestData.requests);
@@ -24,7 +19,6 @@ const Followers = ({user,type,setActive}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let userToken = getLocalStorageData('user');
-    const {width} = useWidthHeight();
     let userData = userToken;
     useEffect(()=>{
         if(data && data?.data && data?.data.length){
@@ -40,18 +34,6 @@ const Followers = ({user,type,setActive}) => {
             dispatch(setRequest());
         }
     },[requestResult]);
-    let isOne = width < 780;
-    let isTwo = width < 1080;
-    const settings = {
-        dots: false,
-        infinite: false,
-        speed: 500,
-        slidesToShow: isOne ? 1 : isTwo ? 2 : 3,
-        slidesToScroll: 1,
-        arrows: true,
-        nextArrow: <FaArrowRight />,
-        prevArrow: <FaArrowLeft />
-    };
     const handleSendRequest = async (e,item,status) => {
         e.stopPropagation();
         if(status === 'Follow'){
@@ -137,7 +119,7 @@ const Followers = ({user,type,setActive}) => {
                                 </div>
                                 <div className="mt-4 py-4 border-t border-slate-200 text-center">
                                     <div className="flex flex-wrap justify-center">
-                                        <div className="w-full px-4" onClick={(e)=> handleProfile(e,ele)}>
+                                        <div className="w-full px-4 cursor-pointer" onClick={(e)=> handleProfile(e,ele)}>
                                             View Profile
                                         </div>
                                     </div>

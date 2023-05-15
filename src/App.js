@@ -40,6 +40,7 @@ function App() {
           <Route path='/login' element={<Login socket={socket}/>}  />
           <Route path='/sign-up' element={<Registration/>}  />
           <Route path='/verify-otp' element={<VerifyOTP/>}  />
+          <Route path='/reset-password' element={<h1>Reset Your Password</h1>}  />
           <Route path='/' element={<Header/>} >
             <Route index element={<Home socket={socket}/>}/>
             <Route path='post' element={<CreatePost/>}  />

@@ -1,13 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {getProfile} from "../../Actions/userActions";
+import {getProfile, getProfileViewers} from "../../Actions/userActions";
 import {Link, useParams} from "react-router-dom";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import PersonalDetail from "./PersonalDetail";
 import Followers from "./Followers";
-import {CgProfile} from 'react-icons/cg'
 import {BsFillPlusSquareFill, BsGoogle, BsFacebook, BsTwitter, BsPinterest} from "react-icons/bs";
-import {AiFillStar, AiOutlineStar} from 'react-icons/ai'
+import {AiFillStar, AiOutlineStar} from 'react-icons/ai';
+import {FaUserCheck} from 'react-icons/fa';
+import {RiUserUnfollowFill} from 'react-icons/ri';
 import {
     getFollowers,
     getRequests,
@@ -29,6 +30,7 @@ const Profile = ({socket}) => {
     const userData = getLocalStorageData('user');
     const dispatch = useDispatch();
     const profile = useSelector(state => state.userData.profile);
+    const profileViewers = useSelector(state => state.userData.profileViewers);
     const loading = useSelector(state => state.userData.loading);
     const buttonLoading = useSelector(state => state.requestData.buttonLoading);
     const requests = useSelector(state => state.requestData.requests);
@@ -52,6 +54,9 @@ const Profile = ({socket}) => {
             dispatch(getRequests({type: 'allRequest'}));
             dispatch(getFollowers({state: 'followers', id: id}));
             dispatch(getFollowers({state: 'followings', id: id}));
+            if(id === userData?._id){
+                dispatch(getProfileViewers());
+            }
         }
         // eslint-disable-next-line
     }, [id]);
@@ -91,14 +96,14 @@ const Profile = ({socket}) => {
         }
     }
 
-    const getRequestStatus = ({_id}) => {
+    const getRequestStatus = ({_id},isViewer) => {
         let status = requests && requests.data && requests.data.find((ele) => ele?.toUserId === _id)?.status;
-        let data = 'Follow';
+        let data = isViewer ? <BsFillPlusSquareFill/> : 'Follow';
         if (status === 'pending') {
-            data = 'Requested';
+            data = isViewer ? <FaUserCheck/>:'Requested';
         }
         else if(userData && userData?.following.includes(_id)){
-            data = 'UnFollow'
+            data = isViewer ? <RiUserUnfollowFill/>:'UnFollow'
         }
         return data;
     }
@@ -219,7 +224,7 @@ const Profile = ({socket}) => {
                                             </div>
                                             <div className='flex h-[60px]  max-[610px]:justify-center max-[640px]:justify-end sm:justify-end md:justify-end '>
                                                 <div className='mx-4 max-[400px]:mx-2'>
-                                                    <button onClick={(e) => handleButton(e, user, getRequestStatus(user))}
+                                                    <button onClick={(e) => handleButton(e, user, getRequestStatus(user,false))}
                                                             className='bg-white border-[3px] border-grey rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>{buttonLoading ? <ButtonLoader/> : userData?._id === id ? "Edit Profile" : getRequestStatus(user)}
                                                     </button>
                                                 </div>
@@ -301,7 +306,7 @@ const Profile = ({socket}) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='mx-0 lg:visible max-[1024px]:hidden'>
+                                <div className={`${id === userData?._id ?'':'hidden' } mx-0 lg:visible max-[1024px]:hidden`}>
                                     <div className="container mx-auto lg:pt-16 flex-col lg:grid lg:gap-4 2xl:gap-6 lg:grid-cols-1 2xl:row-span-2">
                                         <div className="relative flex flex-col shadow-lg shadow-gray-400 min-w-0 break-words bg-white w-full mb-6 shadow rounded-lg -mt-24 max-[400px]:-mt-16 ">
                                             <div className="px-1 ">
@@ -314,61 +319,26 @@ const Profile = ({socket}) => {
                                                                     <h3>People Viewed Profile</h3>
                                                                 </div>
                                                                 <div>
-                                                                    <div className="m-auto text-gray-600 ">
-                                                                        <div
-                                                                            className="bg-white justify-between">
-                                                                            <div className="flex items-center justify-between px-4 py-6  gap-2 lg:gap-1">
-                                                                                <div className='flex'>
-                                                                                    <img className="w-12 h-12 rounded-full object-cover mr-4 "
-                                                                                         src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-                                                                                         alt="avatar"/>
-                                                                                    <div className="flex items-center justify-between">
-                                                                                        <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">Brad Adams </h2>
+                                                                    {profileViewers && profileViewers?.length ? profileViewers.map((ele,index)=>(
+                                                                        <div className="m-auto text-gray-600 " key={index}>
+                                                                            <div
+                                                                                className="bg-white justify-between">
+                                                                                <div className="flex items-center justify-between px-4 py-6  gap-2 lg:gap-1">
+                                                                                    <div className='flex'>
+                                                                                        <img className="w-12 h-12 rounded-full object-cover mr-4 "
+                                                                                             src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url :`${url}${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"}
+                                                                                             alt="avatar"/>
+                                                                                        <div className="flex items-center justify-between">
+                                                                                            <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">{ele?.author_info[0]?.name}</h2>
+                                                                                        </div>
                                                                                     </div>
-                                                                                </div>
-                                                                                <div className="flex items-center  text-2xl">
-                                                                                    <BsFillPlusSquareFill/>
+                                                                                    <div className="flex items-center hidden text-2xl">
+                                                                                        {getRequestStatus(ele?.author_info[0],true)}
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                    <div className="m-auto text-gray-600 ">
-                                                                        <div
-                                                                            className="bg-white justify-between">
-                                                                            <div className="flex items-center justify-between px-4 py-6  gap-2 lg:gap-1">
-                                                                                <div className='flex'>
-                                                                                    <img className="w-12 h-12 rounded-full object-cover mr-4 "
-                                                                                         src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-                                                                                         alt="avatar"/>
-                                                                                    <div className="flex items-center justify-between">
-                                                                                        <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">Brad Adams </h2>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div className="flex items-center  text-2xl">
-                                                                                    <BsFillPlusSquareFill/>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="m-auto text-gray-600 ">
-                                                                        <div
-                                                                            className="bg-white justify-between">
-                                                                            <div className="flex items-center justify-between px-4 py-6  gap-2 lg:gap-1">
-                                                                                <div className='flex'>
-                                                                                    <img className="w-12 h-12 rounded-full object-cover mr-4 "
-                                                                                         src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-                                                                                         alt="avatar"/>
-                                                                                    <div className="flex items-center justify-between">
-                                                                                        <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">Brad Adams </h2>
-                                                                                    </div>
-                                                                                </div>
-
-                                                                                <div className="flex items-center  text-2xl">
-                                                                                    <BsFillPlusSquareFill/>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                    )) :''}
                                                                 </div>
                                                             </div>
                                                         </div>

@@ -9,6 +9,8 @@ import {
 } from "../../Actions/requestActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import {getAllUsers} from "../../Actions/userActions";
 import {useNavigate} from "react-router";
 import useWidthHeight from "../../Hooks/useWidthHeight";

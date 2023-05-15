@@ -20,6 +20,14 @@ export const loginUser = (payload) =>{
         payload
     }
 };
+
+export const getProfileViewers = (payload) =>{
+    return {
+        type: types.GET_PROFILE_VIEWERS,
+        payload
+    }
+};
+
 export const verifyOTP = (payload) =>{
     return {
         type: types.VERIFY_OTP_STATE,
