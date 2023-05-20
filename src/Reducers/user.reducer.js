@@ -7,6 +7,13 @@ const initialState = {
         password:'',
         otp:''
     },
+    forgetPassword:{
+        email:''
+    },
+    resetPassword:{
+        password:'',
+        id:''
+    },
     user: {
         "name": "",
         "password": "",
@@ -25,6 +32,7 @@ const initialState = {
     profile: null,
     userResult: null,
     verifyOTPResult:null,
+    verifyForgetPasswordUser:null,
     users: []
 }
 
@@ -40,6 +48,8 @@ const user = (state = initialState, action) => {
         case types.USER_LOGIN_FAILURE:
         case types.UPDATE_USER_STATE_SUCCESS:
         case types.UPDATE_USER_STATE_FAILURE:
+        case types.RESET_PASSWORD_SUCCESS:
+        case types.RESET_PASSWORD_FAILURE:
             return {...state, userResult: action.payload, loading: action.loading};
         case types.VERIFY_OTP_SUCCESS:
         case types.VERIFY_OTP_FAILURE:
@@ -53,7 +63,9 @@ const user = (state = initialState, action) => {
         case types.GET_PROFILE_VIEWERS_SUCCESS:
         case types.GET_PROFILE_VIEWERS_FAILURE:
             return {...state, profileViewers: action.payload};
-
+        case types.FORGET_PASSWORD_SUCCESS:
+        case types.FORGET_PASSWORD_FAILURE:
+            return {...state, verifyForgetPasswordUser: action.payload, loading: action.loading}
         default:
             return state;
     }

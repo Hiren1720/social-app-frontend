@@ -62,4 +62,19 @@ export const updateUser = (payload) =>{
         type: types.UPDATE_USER_STATE,
         payload
     }
-}
+};
+
+export const forgetPassword = (payload) =>{
+    return {
+        type: types.FORGET_PASSWORD_STATE,
+        payload
+    }
+};
+
+
+export const resetPassword = (payload) =>{
+    return {
+        type: types.RESET_PASSWORD_STATE,
+        payload
+    }
+};

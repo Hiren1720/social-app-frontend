@@ -14,6 +14,8 @@ import Users from "./Components/User/Users";
 import {ToastContainer,toast} from "react-toastify";
 import VerifyOTP from "./Components/Authencation/VerifyOTP";
 import Home from "./Components/Dashboard/Home";
+import ForgetPassword from './Components/Authencation/ForgetPassword';
+import ResetPassword from './Components/Authencation/ResetPassword';
 
 function App() {
   const [socket] = React.useState(io('http://localhost:4040/', {
@@ -40,7 +42,8 @@ function App() {
           <Route path='/login' element={<Login socket={socket}/>}  />
           <Route path='/sign-up' element={<Registration/>}  />
           <Route path='/verify-otp' element={<VerifyOTP/>}  />
-          <Route path='/reset-password' element={<h1>Reset Your Password</h1>}  />
+          <Route path='/reset-password/:id' element={<ResetPassword/>}  />
+          <Route path='/forget-password' element={<ForgetPassword/>}/>
           <Route path='/' element={<Header/>} >
             <Route index element={<Home socket={socket}/>}/>
             <Route path='post' element={<CreatePost/>}  />

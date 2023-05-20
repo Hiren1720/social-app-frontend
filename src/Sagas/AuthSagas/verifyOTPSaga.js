@@ -7,7 +7,7 @@ import {
 import * as types from '../../Actions/Types'
 
 import {httpAuth} from "../../Helper/api";
-import {setLocalStorageData} from "../../Helper/TokenHandler";
+import {getLocalStorageData, setLocalStorageData} from "../../Helper/TokenHandler";
 export function* verifyOTP({payload}) {
     try{
         yield put({ type: types.SET_LOADING,loading:true })
@@ -16,6 +16,15 @@ export function* verifyOTP({payload}) {
         if(result && result.success){
             setLocalStorageData('accessToken',result.token);
             setLocalStorageData('user',result?.data);
+            let users = getLocalStorageData('users') || [];
+            let user = users.findIndex(ele => ele?._id === result?.data?._id)
+            if(user !== -1){
+                users[user] = {...result?.data,token:result.token};
+                setLocalStorageData('users',users);
+            }else {
+                users.push({...result?.data,token:result.token});
+                setLocalStorageData('users',users);
+            }
             window.location.href = '/';
         }
         yield put({
