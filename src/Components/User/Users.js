@@ -14,21 +14,21 @@ const Users = () => {
     const dispatch = useDispatch();
     const loading = useSelector(state => state.userData.loading);
     const users = useSelector(state => state.userData.users);
-
+console.log("Users", users)
     useEffect(() => {
-        dispatch(getAllUsers({page,pageSize:4,searchValue}));
+        dispatch(getAllUsers({page,pageSize:100,searchValue}));
         dispatch(getRequests({type: 'allRequest'}));
         // eslint-disable-next-line
     }, []);
 
     const handleClearSearch = () => {
         setSearchValue('');
-        dispatch(getAllUsers({page,pageSize:4,searchValue:''}));
+        dispatch(getAllUsers({page,pageSize:100,searchValue:''}));
     }
     return (
         <>
             {loading ? <Loader/> :
-                <div>
+                <div className='mx-48'>
                     <div className='flex flex-row mb-2 mt-4 px-3'>
                         <div
                             className="w-[300px] px-3 mb-6 md:mb-0 relative text-gray-600 focus-within:text-gray-400">

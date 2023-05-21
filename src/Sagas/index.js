@@ -19,7 +19,8 @@ import {getCommentsSaga} from "./CommentSagas/getCommentsSaga";
 import {getMentionPostsSaga} from "./PostSagas/getMentionPostsSaga";
 import {updateUserSaga} from "./AuthSagas/updateUserDataSaga";
 import {getProfileViewersSaga} from "./UserSagas/getProfileViewersSaga";
-
+import {userForgetPasswordSaga} from "./AuthSagas/forgetPasswordSaga";
+import {userResetPasswordSaga} from "./AuthSagas/resetPasswordSaga";
 export default function* root() {
     yield all([
         userRegisterSaga(),
@@ -42,5 +43,7 @@ export default function* root() {
         getMentionPostsSaga(),
         updateUserSaga(),
         getProfileViewersSaga(),
+        userForgetPasswordSaga(),
+        userResetPasswordSaga()
     ]);
 }

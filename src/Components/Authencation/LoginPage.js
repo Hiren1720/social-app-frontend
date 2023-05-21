@@ -1,11 +1,11 @@
-import React, {useEffect} from "react";
+import React, {useEffect,useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {loginUser, setUserData} from "../../Actions/userActions";
 import {toast} from 'react-toastify';
 import ButtonLoader from "../ButtonLoader";
 import {url} from '../../Helper/constants';
-import {getLocalStorageData, setLocalStorageData} from "../../Helper/TokenHandler";
+import {setLocalStorageData} from "../../Helper/TokenHandler";
 import {
     LoginSocialGoogle,
 } from 'reactjs-social-login';
@@ -15,11 +15,14 @@ const Login = () => {
     const userResult = useSelector(state => state.userData.userResult);
     const user = useSelector(state => state.userData.loginData);
     const loading = useSelector(state => state.userData.loading);
-    const users = getLocalStorageData('users') || [];
+    const [users, setUsers] = useState( JSON.parse(localStorage.getItem('users')) || []);
 
     useEffect(() => {
-        if (userResult && userResult.success) {
+        if (userResult && userResult.success && userResult?.provider) {
             navigate("/");
+        }
+        else if(userResult && userResult.success){
+            navigate("/verify-otp");
         }
         else if(userResult?.error){
             toast(userResult?.error,{type:'error'});
@@ -45,9 +48,9 @@ const Login = () => {
         setLocalStorageData('user',user);
         navigate('/');
     };
-
     const handleDeleteAccount = (id) =>{
         users.splice(id, 1);
+        setUsers([...users]);
         setLocalStorageData('users', users)
     };
     const {email, password} = user;
@@ -73,7 +76,8 @@ const Login = () => {
                     <div className='flex-col'>
                         <div className='flex'>
                             <div className='flex gap-5 grid md:grid-cols-5 mt-8 lg:grid-cols-7 sm:grid-cols-4 grid-cols-3 max-[400px]:grid-cols-1   '>
-                                { users ? users.map((ele,index) => (<div className="">
+                                {console.log('users',users)}
+                                { users ? users.map((ele,index) => (<div className="" key={index}>
                                     <div
                                         className="min-[488px]:w-[120px] max-[400px]:w-[200px]  p-2.5 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                                         <div className="flex justify-end">
@@ -133,11 +137,12 @@ const Login = () => {
                                         <div className="mb-3 flex flex-wrap content-center mt-5">
                                             <input id="remember" type="checkbox" className="mr-1 checked:bg-purple-700 w-8"/>
                                             <label htmlFor="remember" className="mr-auto text-md font-bold">Remember for 30 days</label>
-                                            <a href="#" className="text-md font-bold text-purple-700 underline">Forgot password?</a>
+                                            <Link to='/forget-password' className="text-md font-bold text-purple-700 underline">Forgot password?</Link>
                                         </div>
                                     </div>
                                     <div className="mt-8 md:px-32">
                                         <button
+
                                             className=" text-white font-bold py-2 px-4 w-full rounded hover:bg-green-900 bg-green-500"
                                             type="button" onClick={handleOnSubmit} disabled={loading}>
                                             {loading ?

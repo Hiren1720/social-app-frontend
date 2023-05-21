@@ -6,7 +6,7 @@ export const httpAuth = async (request) => {
     return await fetch(`${API_END_POINT}${request.url}`,{
         method:'POST',
         headers:{
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body:JSON.stringify(request.body)
     }).then((res)=> res.json())
@@ -15,6 +15,16 @@ export const httpFormDataAuth = async (request) => {
     return await fetch(`${API_END_POINT}${request.url}`,{
         method:'POST',
         body:request.body
+    }).then((res)=> res.json())
+}
+export const httpUserUpdateDataAuth = async (request) => {
+    let token = tokenUtil.getLocalStorageData('accessToken');
+    return await fetch(`${API_END_POINT}${request.url}`,{
+        method:'POST',
+        headers:{
+            'Authorization': `Bearer ${token?.accessToken}`
+        },
+        body:request?.body
     }).then((res)=> res.json())
 }
 export const httpPost = (request) => {

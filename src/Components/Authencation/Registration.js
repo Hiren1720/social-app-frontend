@@ -11,7 +11,7 @@ const Registration = () => {
     const user = useSelector( state => state.userData.user);
     const userResult = useSelector( state => state.userData.userResult);
     const loading = useSelector(state => state.userData.loading);
-    const [image, setImage] = useState();
+    const [image, setImage] = useState('');
     const navigate = useNavigate();
     const pathName = window.location.pathname;
     let userToken = getLocalStorageData('user');
@@ -50,6 +50,7 @@ const Registration = () => {
         }
         else if(name === 'profile'){
             var url = URL.createObjectURL(files[0]);
+            console.log("url", url)
             setImage(url);
             if(user?.profile_url){
                 delete user.profile_url;
@@ -74,6 +75,7 @@ const Registration = () => {
         }
         else{
             dispatch(registerUser(formData));
+
         }
         setImage('')
     }
