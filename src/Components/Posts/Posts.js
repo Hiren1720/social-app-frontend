@@ -56,7 +56,12 @@ const BlogPage = ({socket}) => {
     useEffect(()=>{
         socket.on('message',(data)=>{
             toast(data?.text,{type:'success'});
-            new Notification(data?.text)
+            var options = {
+                body: data?.text,
+                icon: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Chrome_icon_%28September_2014%29.svg",
+                dir: "ltr"
+            };
+            new Notification('Demo Notification',options)
             setShowComment({show:false,data:{}});
             setComment('');
             dispatch(getAllPost());
@@ -70,9 +75,7 @@ const BlogPage = ({socket}) => {
     },[])
     useEffect(()=>{
         if(id){
-            let loginUserPost = posts?.filter((ele)=>{
-                return ele?.createdBy == id;
-            });
+            let loginUserPost = posts?.filter((ele)=> ele?.createdBy === id);
             setBlog([...loginUserPost])
         }
         else if(posts && posts.length){
@@ -81,10 +84,12 @@ const BlogPage = ({socket}) => {
         else {
             setBlog([]);
         }
+        // eslint-disable-next-line
     },[posts, id])
 
     useEffect(()=> {
         dispatch(getAllPost());
+        // eslint-disable-next-line
     },[]);
     const handleCreateLike = (id) => {
         dispatch(createLike({ "postId":id, "likeBy":userToken?._id}))
@@ -140,17 +145,15 @@ const BlogPage = ({socket}) => {
                                                 {ele?.author_info[0]?.userName}
                                             </div>
                                         </div>
-                                        <div class="flex items-center space-x-8" >
-                                            {/*<button class="rounded-2xl border bg-neutral-100 px-3 py-1 text-xs font-semibold">Category</button>*/}
-                                            <div class="text-xs text-neutral-500 flex items-center"><BsDot/> {handleDate(ele?.createdAt)}</div>
+                                        <div className="flex items-center space-x-8" >
+                                            <div className="text-xs text-neutral-500 flex items-center"><BsDot/> {handleDate(ele?.createdAt)}</div>
                                         </div>
                                     </div>
                                     <div className="mt-4 sm:px-6 ">
                                         <div className="mb-3 text-xl font-bold">{ele?.title}</div>
                                         <div
                                             className="text-sm text-neutral-600">{ele?.content}</div>
-                                        {ele?.imageUrl && <img src={`${url}${ele?.imageUrl}`} className="lg:h-[350px] w-full object-fill py-2"/>}
-                                        {/*<img src={} alt="image"/>*/}
+                                        {ele?.imageUrl && <img src={`${url}${ele?.imageUrl}`} alt='' className="lg:h-[350px] w-full object-fill py-2"/>}
 
                                     </div>
                                     <div>
@@ -210,7 +213,7 @@ const BlogPage = ({socket}) => {
                             </div>
                         </div>
                         <div className="flow-root h-[250px] overflow-y-scroll">
-                            <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
+                            <ul role="presentation" className="divide-y divide-gray-200 dark:divide-gray-700">
                                 {likeLoading ? <ButtonLoader/>:<div>
                                     {likes && likes?.length && likes?.map((ele,index)=> {
                                         return (<>
@@ -257,7 +260,7 @@ const BlogPage = ({socket}) => {
                                 </div>
                             </div>
                             <div className="flow-root h-[250px] overflow-y-scroll">
-                                <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
+                                <ul role="presentation" className="divide-y divide-gray-200 dark:divide-gray-700">
                                     {comments && comments?.length ? comments?.map((ele,index)=> {
                                             return (<>
                                                     <li className="py-3 sm:py-4">

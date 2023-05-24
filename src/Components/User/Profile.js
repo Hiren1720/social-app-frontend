@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
+import ReactStars from "react-rating-stars-component";
 import {getProfile, getProfileViewers} from "../../Actions/userActions";
-import {Link, useParams} from "react-router-dom";
+import {Link,useNavigate, useParams} from "react-router-dom";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import PersonalDetail from "./PersonalDetail";
 import Followers from "./Followers";
 import {BsFillPlusSquareFill, BsGoogle, BsFacebook, BsTwitter, BsPinterest} from "react-icons/bs";
-import {AiFillStar, AiOutlineStar} from 'react-icons/ai';
 import {FaUserCheck} from 'react-icons/fa';
 import {RiUserUnfollowFill} from 'react-icons/ri';
 import {
@@ -23,7 +23,7 @@ import ButtonLoader from "../ButtonLoader";
 import {url} from '../../Helper/constants';
 import Posts from '../Posts/Posts';
 import useWidthHeight from "../../Hooks/useWidthHeight";
-import {useNavigate} from "react-router";
+
 const Profile = ({socket}) => {
     const [user, setUser] = useState({});
     const {id} = useParams();
@@ -159,9 +159,9 @@ const Profile = ({socket}) => {
                                                         <div className="bg-white border-b">
                                                             <div className="p-4">
                                                                 <div className="grid space-y-4">
-                                                                    {socialLink.map((link)=>{
-                                                                        return(<>
-                                                                            <div
+                                                                    {socialLink.map((link,index)=>{
+                                                                        return(
+                                                                            <div key={index}
                                                                                 className="relative flex items-center space-x-4 pt-2  border-t justify-start  ">
                                                                                 <a href={link} className='flex items-center text-blue-400 gap-2 pt-2'>
                                                                                     <span>{link.icon}</span>
@@ -169,8 +169,7 @@ const Profile = ({socket}) => {
                                                                                         className="block w-max  tracking-wide  md:text-sm text-sm transition duration-300 group-hover:text-blue-600">
                                                                                         {(width < 1343 && width >1023 || width < 1744 && width >1530) && link.link.length > 30 ? link.link.slice(0, width < 1188 && width >1024 ?  15:28)+'...' :link.link}</span>
                                                                                 </a>
-                                                                            </div>
-                                                                        </>)
+                                                                            </div>)
                                                                     })}
                                                                 </div>
                                                                 <div
@@ -209,17 +208,19 @@ const Profile = ({socket}) => {
                                     <div className='text-xl font-bold py-4'>{user?.userName}</div>
                                     <div className="flex pt-[4px] w-full">
                                         <div className="flex gap-5 w-full mb-[10px] ">
-                                            <div>
-                                                <span className='text-lg text-[#686868] font-semibold '>Graphic Designer at Self Employed</span>
-                                            </div>
                                             <div className='flex'>
-                                                <ul className='flex pt-2'>
-                                                    <li><AiFillStar/></li>
-                                                    <li><AiFillStar/></li>
-                                                    <li><AiFillStar/></li>
-                                                    <li><AiFillStar/></li>
-                                                    <li><AiOutlineStar/></li>
-                                                </ul>
+                                                <ReactStars
+                                                    count={5}
+                                                    onChange={()=>{}}
+                                                    edit={false}
+                                                    size={24}
+                                                    value={user?.rating || 0}
+                                                    isHalf={true}
+                                                    emptyIcon={<i className="far fa-star"/>}
+                                                    halfIcon={<i className="fa fa-star-half-alt"/>}
+                                                    fullIcon={<i className="fa fa-star"/>}
+                                                    activeColor={user?.rating <= 2 ? "#ff0000":"#ffd700"}
+                                                />
                                                 <a href="#" title="" className='max-[600px]:hidden float-left text-[#51a5fb] text-base font-bold ml-[20px] underline'>{user?.status ? "Active": "Inactive"}</a>
                                             </div>
                                             <div className='flex h-[60px]  max-[610px]:justify-center max-[640px]:justify-end sm:justify-end md:justify-end '>

@@ -102,10 +102,9 @@ const CreatePost = () => {
             let user = users.find((item)=> item?.userName === ele)
             return {id:user?._id,name:user?.userName};
         });
-        const time = new Date().toISOString();
         let formData = new FormData();
         formData.append('postImage',post?.imageUrl);
-        let postData = {...post,mentions:mUsers, createdTime: time, updatedTime: time, createdBy: userToken?._id,device:device}
+        let postData = {...post,mentions:mUsers, createdBy: userToken?._id,device:device}
         formData.append('post',JSON.stringify(postData));
         dispatch(createPost(formData))
     };

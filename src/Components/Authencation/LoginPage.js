@@ -9,7 +9,9 @@ import {setLocalStorageData} from "../../Helper/TokenHandler";
 import {
     LoginSocialGoogle,
 } from 'reactjs-social-login';
+import {useTranslation} from "react-i18next";
 const Login = () => {
+    let { t } = useTranslation();
     let navigate = useNavigate();
     let dispatch = useDispatch();
     const userResult = useSelector(state => state.userData.userResult);
@@ -64,10 +66,10 @@ const Login = () => {
                             <div className="w-full md:w-1/2 px-10 mb-10 md:mb-0">
                                 <div className="relative">
                                     <div className="inline-block align-center flex justify-center mr-5">
-                                        <span className="font-bold text-5xl leading-none align-baseline">Welcome back</span>
+                                        <span className="font-bold text-5xl leading-none align-baseline">{t("Welcome back")}</span>
                                     </div>
                                     <div className="inline-block align-center p-4 flex justify-center mr-5">
-                                        <span className="text-md leading-none align-baseline">Join the world's largest community</span>
+                                        <span className="text-md leading-none align-baseline">{t("Join the world's largest community")}</span>
                                     </div>
                                 </div>
                             </div>
@@ -76,7 +78,6 @@ const Login = () => {
                     <div className='flex-col'>
                         <div className='flex'>
                             <div className='flex gap-5 grid md:grid-cols-5 mt-8 lg:grid-cols-7 sm:grid-cols-4 grid-cols-3 max-[400px]:grid-cols-1   '>
-                                {console.log('users',users)}
                                 { users ? users.map((ele,index) => (<div className="" key={index}>
                                     <div
                                         className="min-[488px]:w-[120px] max-[400px]:w-[200px]  p-2.5 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
@@ -103,7 +104,7 @@ const Login = () => {
                         <div>
                             {users.length > 0 && <div className="mt-4 flex items-center justify-between border-orange text-orange-dark p-4">
                                 <span className="border-b border-2 w-1/5 md:w-2/5"/>
-                                <div className="text-sm text-gray-900 font-bold uppercase">OR</div>
+                                <div className="text-sm text-gray-900 font-bold uppercase">{t("OR")}</div>
                                 <span className="border-b border-2 w-1/5 md:w-2/5"/>
                             </div>}
                         </div>
@@ -112,19 +113,19 @@ const Login = () => {
                                 <div className="w-full py-8 lg:px-40 ">
                                     <div className='flex justify-center w-full gap-10 flex-col md:flex-row'>
                                         <div className="mt-4 w-full">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                                            <label className="block text-gray-700 text-sm font-bold mb-2">{t("Email Address")}</label>
                                             <input
                                                    className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                                   id="email" type="text" placeholder="Email" name={"email"}
+                                                   id="email" type="text" placeholder={t("Email")} name={"email"}
                                                    value={email}
                                                    onChange={(e) => handleOnChange(e)}
                                             />
                                         </div>
                                         <div className="mt-4 w-full">
                                             <div className="flex justify-between">
-                                                <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                                                <label className="block text-gray-700 text-sm font-bold mb-2">{t("Password")}</label>
                                             </div>
-                                            <input id="password" type="password" placeholder="Password"
+                                            <input id="password" type="password" placeholder={t("Password")}
                                                    className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
                                                    name={"password"}
                                                    value={password}
@@ -136,8 +137,8 @@ const Login = () => {
                                     <div>
                                         <div className="mb-3 flex flex-wrap content-center mt-5">
                                             <input id="remember" type="checkbox" className="mr-1 checked:bg-purple-700 w-8"/>
-                                            <label htmlFor="remember" className="mr-auto text-md font-bold">Remember for 30 days</label>
-                                            <Link to='/forget-password' className="text-md font-bold text-purple-700 underline">Forgot password?</Link>
+                                            <label htmlFor="remember" className="mr-auto text-md font-bold">{t("Remember for 30 days")}</label>
+                                            <Link to='/forget-password' className="text-md font-bold text-purple-700 underline">{t("Forgot password?")}</Link>
                                         </div>
                                     </div>
                                     <div className="mt-8 md:px-32">
@@ -146,22 +147,21 @@ const Login = () => {
                                             className=" text-white font-bold py-2 px-4 w-full rounded hover:bg-green-900 bg-green-500"
                                             type="button" onClick={handleOnSubmit} disabled={loading}>
                                             {loading ?
-                                                <ButtonLoader/> : "Login"}
+                                                <ButtonLoader/> : t("Login")}
                                         </button>
                                         <button
                                             className=" text-white font-bold py-2 mt-5 px-4 w-full rounded hover:bg-red-900 bg-red-500 "
                                             type="button" onClick={()=>navigate('/sign-up')} >
-                                            Create new account
+                                            {t("Create new account")}
                                         </button>
 
                                         <div className="mt-4 flex items-center justify-between">
                                             <span className="border-b w-1/5 md:w-1/4"/>
-                                            <Link to="/sign-up" className="text-xs text-gray-500 uppercase">or sign up</Link>
+                                            <Link to="/sign-up" className="text-xs text-gray-500 uppercase">{t("or sign up")}</Link>
                                             <span className="border-b w-1/5 md:w-1/4"/>
                                         </div>
                                         <LoginSocialGoogle
                                             client_id={process.env.REACT_APP_GG_APP_ID || ''}
-                                            // onLoginStart={onLoginStart}
                                             redirect_uri={'http://localhost:3000'}
                                             scope="openid profile email"
                                             discoveryDocs="claims_supported"
@@ -191,7 +191,7 @@ const Login = () => {
                                                             fill="#1976D2"/>
                                                     </svg>
                                                 </div>
-                                                <h1 className="px-4 py-3 w-5/6 text-center text-gray-600 font-bold">Sign in with Google</h1>
+                                                <h1 className="px-4 py-3 w-5/6 text-center text-gray-600 font-bold">{t("Sign in with Google")}</h1>
                                             </button>
                                         </LoginSocialGoogle>
 

@@ -3,16 +3,22 @@ import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {loginUser, setUserData, verifyOTP} from "../../Actions/userActions";
 import {toast} from 'react-toastify';
+import ButtonLoader from "../ButtonLoader";
+import {useTranslation} from "react-i18next";
+import OTPInput from "react-otp-input";
 
 const VerifyOTP = () => {
+    let {t} = useTranslation();
     let navigate = useNavigate();
     let dispatch = useDispatch();
     const [message, setMessage] = useState('')
-    const [ableResendBtn, setAbleResendBtn] = useState(false);
+    const [resendDisable, setResendDisable] = useState(true);
+    const [timer, setTimer] = useState(15);
     const userResult = useSelector(state => state.userData.userResult);
     const verifyOTPResult = useSelector(state => state.userData.verifyOTPResult);
     const user = useSelector(state => state.userData.loginData);
     const loading = useSelector(state => state.userData.loading);
+    let timeInterval;
 
     useEffect(() => {
         if (userResult && userResult.success) {
@@ -22,10 +28,8 @@ const VerifyOTP = () => {
             for (let i = 0; i < middleEmail.length; i++) {
                 str += '*'
             }
-            console.log('user', user?.email.replace(middleEmail, str))
             setMessage(user?.email.replace(middleEmail, str))
         } else if (userResult?.error) {
-            setAbleResendBtn(!ableResendBtn)
             toast(userResult?.error, {type: 'error'});
         }
         // eslint-disable-next-line
@@ -36,21 +40,31 @@ const VerifyOTP = () => {
             dispatch(setUserData('userResult', null));
             dispatch(setUserData('loginData', {email: '', password: '', otp: ''}));
         } else if (verifyOTPResult?.error) {
-            setAbleResendBtn(true)
             toast(verifyOTPResult?.error, {type: 'error'});
             dispatch(setUserData('userResult', null));
         }
         // eslint-disable-next-line
-    }, [verifyOTPResult])
-    const handleOnChange = (event) => {
-        let {name, value} = event.target;
-        dispatch(setUserData('loginData', {...user, [name]: value}))
-        if (ableResendBtn) {
-            setAbleResendBtn(false)
+    }, [verifyOTPResult]);
+    useEffect(()=> {
+        timeInterval = setInterval(()=> {
+            setTimer(prev => prev - 1)
+        },1000)
+        return ()=> {
+            clearInterval(timeInterval)
         }
+    },[]);
+    useEffect(()=> {
+        if(timer === 0){
+            setResendDisable(false);
+            clearInterval(timeInterval);
+        }
+    },[timer])
+    const handleOnChange = (value) => {
+        dispatch(setUserData('loginData', {...user, ['otp']: value}))
     };
     const handleOnResend = async () => {
-
+        setResendDisable(true);
+        setTimer(15);
         dispatch(loginUser({...user, type: 'resend'}));
         dispatch(setUserData('loginData', {...user, otp: ''}));
     };
@@ -63,7 +77,6 @@ const VerifyOTP = () => {
         }
     };
     const handleKeyDown = async (event) => {
-
         let charCode = String.fromCharCode(event.which).toLowerCase();
         if ((event.ctrlKey || event.metaKey) && charCode === 'v') {
             await handleOnSubmit(event.target.value);
@@ -82,11 +95,11 @@ const VerifyOTP = () => {
                                     <div className="relative">
                                         <div className="inline-block align-center flex justify-center mr-5">
                                         <span
-                                            className="font-bold text-5xl leading-none align-baseline">Verify OTP</span>
+                                            className="font-bold text-5xl leading-none align-baseline">{t("Verify OTP")}</span>
                                         </div>
 
                                         <div className="inline-block align-center p-4 flex justify-center mr-5">
-                                            <span className="text-md leading-none align-baseline">Join the world's largest community</span>
+                                            <span className="text-md leading-none align-baseline">{t("Join the world's largest community")}</span>
                                         </div>
 
                                     </div>
@@ -98,21 +111,18 @@ const VerifyOTP = () => {
                                 <div className="flex bg-white rounded-3xl overflow-hidden mx-auto ">
                                     <div className="w-full py-8 lg:px-40 ">
                                         <div className="flex items-start mt-2 mb-3">
-                                            We have sent OTP on your <strong> {message}.</strong> Please enter OTP and
-                                            verify your account.
+                                            {t("We have sent OTP on your")} <strong> {message}.</strong> {t("Please enter OTP and verify your account.")}
                                         </div>
                                         <div className='flex justify-center w-full gap-10 '>
                                             <div className="mt-4 w-full">
-                                                <label className="block text-gray-700 text-sm font-bold mb-2">Enter
-                                                    OTP</label>
-                                                <input
-                                                    className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                                    id="otp" type="text" placeholder="Enter OTP"
-                                                    name={"otp"}
+                                                <label className="block text-gray-700 text-sm font-bold mb-2">{t("Enter OTP")}</label>
+                                                <OTPInput
+                                                    onChange={handleOnChange}
                                                     value={otp}
-                                                    onChange={(e) => handleOnChange(e)}
-                                                    onKeyPress={(e) => handleOnKeyPress(e)}
-                                                    onKeyUp={(e) => handleKeyDown(e)}
+                                                    numInputs={6}
+                                                    inputStyle='!w-[50%] h-[45px] rounded-[7px] border-[0px] ml-[8px] mr-[8px] bg-[#dddddd] text-[20px] '
+                                                    renderSeparator={<span>&nbsp;&nbsp;</span>}
+                                                    renderInput={(props) => <input {...props} />}
                                                 />
                                             </div>
 
@@ -120,16 +130,16 @@ const VerifyOTP = () => {
 
                                         <div className="mt-8 md:px-32">
                                             <button
-                                                className={`text-white font-bold py-2 px-4 w-full rounded  ${ableResendBtn ? 'bg-gray-200' : 'hover:bg-green-900 bg-green-500'}`}
+                                                className={`text-white font-bold py-2 px-4 w-full rounded  ${loading ? 'bg-gray-200' : 'hover:bg-green-900 bg-green-500'}`}
                                                 type="button" onClick={(e) => handleOnSubmit(e)}
-                                                disabled={loading || ableResendBtn}>
-                                                Verify
+                                                disabled={loading}>
+                                                {loading ? <ButtonLoader/> : t("Verify")}
                                             </button>
 
                                             <button
-                                                className={`text-white font-bold py-2 mt-5 px-4 w-full rounded  ${!ableResendBtn ? 'bg-gray-200' : 'hover:bg-red-900 bg-red-500'}`}
+                                                className={`text-white font-bold py-2 mt-5 px-4 w-full rounded  ${resendDisable ? 'bg-gray-200' : 'hover:bg-red-900 bg-red-500'}`}
                                                 onClick={() => handleOnResend()}
-                                                disabled={loading || !ableResendBtn}>Resend OTP
+                                                disabled={resendDisable}>{t("Resend OTP")}{" "}{timer > 0 ? `(${timer})`:''}
                                             </button>
 
                                         </div>

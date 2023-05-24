@@ -14,7 +14,6 @@ const Users = () => {
     const dispatch = useDispatch();
     const loading = useSelector(state => state.userData.loading);
     const users = useSelector(state => state.userData.users);
-console.log("Users", users)
     useEffect(() => {
         dispatch(getAllUsers({page,pageSize:100,searchValue}));
         dispatch(getRequests({type: 'allRequest'}));

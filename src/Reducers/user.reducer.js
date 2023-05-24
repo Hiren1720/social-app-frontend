@@ -59,7 +59,7 @@ const user = (state = initialState, action) => {
             return {...state, users: action.payload, loading: action.loading};
         case types.GET_PROFILE_SUCCESS:
         case types.GET_PROFILE_FAILURE:
-            return {...state, [action?.state]: action.payload, loading: action.loading};
+            return {...state, [action?.state]: action.payload,rating:action?.rating, loading: action.loading};
         case types.GET_PROFILE_VIEWERS_SUCCESS:
         case types.GET_PROFILE_VIEWERS_FAILURE:
             return {...state, profileViewers: action.payload};

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {useNavigate,Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {logout} from "../../Actions/userActions";
@@ -26,12 +26,27 @@ const Header = () => {
     const [open,setOpen] = useState(false);
     const [collapse,setCollapse] = useState(false);
     let userToken = getLocalStorageData('user');
+    const blockRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (blockRef.current && !blockRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+        // eslint-disable-next-line
+    }, []);
     useEffect(()=>{
         if(userToken){
             dispatch(getRequests({type:'user'}))
         }else {
             navigate('/login')
         }
+        // eslint-disable-next-line
     },[]);
     useEffect(()=> {
         if(pathName !== '/'){
@@ -43,6 +58,7 @@ const Header = () => {
         }
         setCollapse(false);
         setOpen(false);
+        // eslint-disable-next-line
     },[pathName,requests]);
     const handleProfile = () => {
         navigate(`/profile/${userToken?._id}`);
@@ -115,13 +131,12 @@ const Header = () => {
                                             className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                             id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                                         <span className="sr-only">Open user menu</span>
-                                        {/*<img className="h-8 w-8 rounded-full"*/}
                                         <img className="h-8 w-8 rounded-full object-cover"
                                              src={userToken?.profile_url.includes('https') ? userToken?.profile_url : `${url}/${userToken?.profile_url}`}
                                              alt=""/>
                                     </button>
                                 </div>
-                                <div
+                                <div ref={blockRef}
                                     className={`absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${!open ?'hidden':''}`}
                                     role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                                     tabIndex="-1">

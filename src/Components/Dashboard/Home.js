@@ -9,15 +9,33 @@ import {getLocalStorageData} from "../../Helper/TokenHandler";
 import '../User/User.css';
 import Requests from "../FollowFollowing/Requests";
 import Loader from "../Layouts/Loader";
+import {createPost, getAllPost, resetPostResult} from "../../Actions/postActions";
+import getDeviceName from "../../Helper/getDeviceName";
 const Home = ({socket}) =>{
+    const [thought,setThought] = useState('');
     const dispatch = useDispatch();
     const profile = useSelector(state => state.userData.profile);
     const posts = useSelector(state => state.postData.posts);
     const loading = useSelector(state => state.userData.loading);
     const userData = useSelector(state => state.userData.loggedInUser);
     const requests = useSelector(state => state.requestData.userRequests);
+    const requestResult = useSelector(state => state.requestData.requestResult);
+    const postResult = useSelector(state => state.postData.postResult);
     const [postLength , setPostLength] = useState(0);
     let userToken = getLocalStorageData('user');
+    useEffect(()=> {
+        if(postResult){
+            dispatch(resetPostResult())
+            dispatch(getAllPost(true))
+            setThought('');
+        }
+        // eslint-disable-next-line
+    },[postResult])
+    useEffect(()=> {
+        if(requestResult && requestResult.success){
+            dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
+        }
+    },[requestResult])
     useEffect(()=>{
         let loginUserPost = posts?.filter((ele)=>{
             return ele?.createdBy === userToken?._id;
@@ -32,6 +50,14 @@ const Home = ({socket}) =>{
             dispatch(setRequest());
         }
     }, [profile]);
+
+    const handleOnShare = () => {
+        let formData = new FormData();
+        const device = getDeviceName()
+        let postData = {content:thought,createdBy: userToken?._id,device:device}
+        formData.append('post',JSON.stringify(postData));
+        dispatch(createPost(formData))
+    }
     return(
         <>
             {loading ? <Loader/> :
@@ -48,12 +74,9 @@ const Home = ({socket}) =>{
                                                 className="relative flex flex-col items-center shadow-lg shadow-md shadow-gray-400 rounded-[5px] mx-auto p-5 bg-white bg-clip-border shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:!shadow-none">
                                                 <div
                                                     className="relative flex h-32 w-full justify-center rounded-xl bg-cover">
-                                                    {/*<img src='https://horizon-tailwind-react-git-tailwind-components-horizon-ui.vercel.app/static/media/banner.ef572d78f29b0fee0a09.png' className="absolute flex h-32 w-full justify-center rounded-xl bg-cover"/>*/}
-                                                    <div
-                                                        className="bg-pink-400 absolute flex h-32 w-full justify-center rounded-xl bg-cover"></div>
+                                                    <div className="bg-pink-400 absolute flex h-32 w-full justify-center rounded-xl bg-cover"/>
                                                     <div
                                                         className="absolute -bottom-12 flex h-[100px] w-[100px] items-center justify-center rounded-full border-[4px] border-white bg-pink-400 dark:!border-navy-700">
-                                                        {/*<img className="h-full w-full rounded-full" src='https://horizon-tailwind-react-git-tailwind-components-horizon-ui.vercel.app/static/media/avatar11.1060b63041fdffa5f8ef.png' alt="" />*/}
                                                         <img
                                                             className="h-full w-full rounded-full object-cover"
                                                             src={userData?.profile_url ? userData?.profile_url.includes('https')? userData?.profile_url: `${url}/${userData?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
@@ -209,8 +232,10 @@ const Home = ({socket}) =>{
                                                                 className="bg-gray-100 rounded-[40px] shadow-inner  shadow-gray-700 leading-normal resize-none w-full h-15 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white"
                                                                 id="comment" type="text" placeholder="Say Something"
                                                                 name={"comment"}
-                                                            ></input>
-                                                            <button
+                                                                onChange={(e)=> setThought(e.target.value)}
+                                                            />
+                                                            <button type='button' onClick={()=> handleOnShare()}
+                                                                    disabled={thought === ''}
                                                                 className="text-white absolute w-[20%] rounded-[40px] right-[0.4rem] p-[5px] m-0 bottom-[1.1rem] bg-pink-700 hover:bg-pink-800 focus:ring-4 focus:outline-none  font-medium  text-sm "
                                                             >Share
                                                             </button>

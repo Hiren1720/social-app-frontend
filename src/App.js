@@ -16,6 +16,7 @@ import VerifyOTP from "./Components/Authencation/VerifyOTP";
 import Home from "./Components/Dashboard/Home";
 import ForgetPassword from './Components/Authencation/ForgetPassword';
 import ResetPassword from './Components/Authencation/ResetPassword';
+import './App.css'
 
 function App() {
   const [socket] = React.useState(io('http://localhost:4040/', {
@@ -36,7 +37,7 @@ function App() {
   },[user])
 
   return (
-    <div className="App  w-full h-screen bg-[#eef0f3] ">
+    <div className="w-full h-screen bg-[#eef0f3] ">
       <BrowserRouter>
         <Routes>
           <Route path='/login' element={<Login socket={socket}/>}  />
