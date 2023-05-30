@@ -20,10 +20,9 @@ import {
 import './User.css';
 import Loader from "../Layouts/Loader";
 import ButtonLoader from "../ButtonLoader";
-import {url} from '../../Helper/constants';
 import Posts from '../Posts/Posts';
 import useWidthHeight from "../../Hooks/useWidthHeight";
-
+const url = process.env.REACT_APP_API_URL;
 const Profile = ({socket}) => {
     const [user, setUser] = useState({});
     const {id} = useParams();

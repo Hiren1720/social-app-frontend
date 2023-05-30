@@ -5,8 +5,8 @@ import {Link, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {registerUser, setUserData, updateUser} from "../../Actions/userActions";
-import {url} from "../../Helper/constants";
 import {useTranslation} from "react-i18next";
+const url = process.env.REACT_APP_API_URL;
 const Registration = () => {
     let {t} = useTranslation()
     const dispatch = useDispatch();
@@ -52,7 +52,6 @@ const Registration = () => {
         }
         else if(name === 'profile'){
             var url = URL.createObjectURL(files[0]);
-            console.log("url", url)
             setImage(url);
             if(user?.profile_url){
                 delete user.profile_url;
@@ -63,7 +62,6 @@ const Registration = () => {
             }
         }
         else{
-
             dispatch(setUserData('user',{...user,[name]: value}))
         }
     };

@@ -4,24 +4,24 @@ import {BsHandThumbsUp,BsHandThumbsUpFill, BsShare,BsDot} from 'react-icons/bs';
 import {TfiComment} from 'react-icons/tfi';
 import {useDispatch, useSelector} from "react-redux";
 import {toast} from 'react-toastify';
-import {createLike, getAllLikes, getAllPost} from "../../Actions/postActions";
+import {createLike, getAllLikes, getAllPost, getPost} from "../../Actions/postActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
 import Modal from 'react-modal';
 import {getCommentsById} from "../../Actions/commentAction";
 import ButtonLoader from "../ButtonLoader";
 import useWidthHeight from "../../Hooks/useWidthHeight";
-import {url} from '../../Helper/constants';
 import '../User/User.css';
-import {FaWindowClose} from 'react-icons/fa';
+import {FaWindowClose,FaWhatsappSquare,FaFacebookSquare,FaLinkedin} from 'react-icons/fa';
 Modal.setAppElement('#modal')
-
+const url = process.env.REACT_APP_API_URL;
+const appUrl = process.env.REACT_APP_URL;
 const BlogPage = ({socket}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let userToken = getLocalStorageData('user');
     const {width} = useWidthHeight();
-    const {id} = useParams();
+    const {id,postId} = useParams();
     const posts = useSelector(state => state.postData.posts);
     const likes = useSelector(state => state.postData.likes);
     const comments = useSelector(state => state.postData.comments);
@@ -30,10 +30,9 @@ const BlogPage = ({socket}) => {
     const commentLoading = useSelector(state => state.postData.commentLoading);
     const [blog, setBlog] = useState([]);
     const [showLike, setShowLike] = useState(false);
-    const [showComment, setShowComment] = useState({show:false,data:{}});
+    const [showComment, setShowComment] = useState({show:false,data:null});
     const [comment, setComment] = useState('');
     let subtitle;
-    const bgColor = ['blue-500', 'red-500', 'pink-400', 'gray-300' ];
     const customStyles = {
         content: {
             top: '50%',
@@ -64,12 +63,12 @@ const BlogPage = ({socket}) => {
             new Notification('Demo Notification',options)
             setShowComment({show:false,data:{}});
             setComment('');
-            dispatch(getAllPost());
+            postId ? dispatch(getPost({postId})):dispatch(getAllPost());
         })
         socket.on('messageFrom',(data)=>{
             setShowComment({show:false,data:{}});
             setComment('');
-            dispatch(getAllPost());
+            postId ? dispatch(getPost({postId})):dispatch(getAllPost());
         })
         // eslint-disable-next-line
     },[])
@@ -88,11 +87,15 @@ const BlogPage = ({socket}) => {
     },[posts, id])
 
     useEffect(()=> {
-        dispatch(getAllPost());
+        if(postId){
+            dispatch(getPost({postId}))
+        }else {
+            dispatch(getAllPost());
+        }
         // eslint-disable-next-line
-    },[]);
+    },[postId]);
     const handleCreateLike = (id) => {
-        dispatch(createLike({ "postId":id, "likeBy":userToken?._id}))
+        dispatch(createLike({ "postId":id, "likeBy":userToken?._id,isSinglePost: postId}))
     }
     const handleProfile = (e,userId) => {
         navigate(`/profile/${userId}`)
@@ -125,6 +128,9 @@ const BlogPage = ({socket}) => {
     const handleOnChange = (e) => {
         setComment(e.target.value)
     }
+    const handleOnShare = (item) => {
+
+    }
     return (
         <>
             {loading ? <Loader/>:
@@ -140,7 +146,6 @@ const BlogPage = ({socket}) => {
                                                      src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https')? ele?.author_info[0]?.profile_url :`${url}/${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                                      alt=""/>
                                             </div>
-                                            {/*<div className="h-8 w-8 rounded-full bg-slate-400 bg-[url('https://i.pravatar.cc/32')]"></div>*/}
                                             <div className='text-lg font-bold text-slate-700font-bold cursor-pointer' onClick={(e)=> handleProfile(e,ele?.createdBy)}>
                                                 {ele?.author_info[0]?.userName}
                                             </div>
@@ -160,7 +165,7 @@ const BlogPage = ({socket}) => {
                                         <div className="sm:px-6 pt-4 pb-2">
                                             {ele?.mentions?.length ? ele.mentions.map((mention, id) => (
                                                 <span key={id}
-                                                      className={`inline-block bg-${bgColor?.length > id ? bgColor[id]: bgColor.slice(-id+5)[0]} rounded-full px-3 py-1 text-sm font-semibold  mr-2 mb-2`}
+                                                      className={`inline-block bg-black text-gray-500 rounded-full px-3 py-1 text-sm font-semibold  mr-2 mb-2`}
                                                       onClick={(e) => handleProfile(e, mention?.id)}>{mention?.name}</span>)) : null}
                                         </div>
                                         <div
@@ -179,8 +184,8 @@ const BlogPage = ({socket}) => {
                                                         className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer"
                                                         onClick={() => handleAddComment(ele)}>
                                                         <TfiComment/>&nbsp;&nbsp;{ele?.comments.length} comments</div>
-                                                    <div
-                                                        className="flex mx-4 max-[550px]:mx-3 items-center font-bold">
+                                                    <div onClick={()=> handleOnShare(ele)}
+                                                        className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer">
                                                         <BsShare/>&nbsp;&nbsp;share</div>
                                                 </div>
                                             </div>
@@ -249,7 +254,6 @@ const BlogPage = ({socket}) => {
             >
                 <div>
                     <div className="max-w-2xl mx-auto ">
-
                         <div
                             className="p-4 max-w-md bg-white rounded-lg sm:p-8 dark:bg-gray-800 dark:border-gray-700 ">
                             <div className="flex justify-between items-center mb-4">
@@ -299,31 +303,18 @@ const BlogPage = ({socket}) => {
                                     onClick={handleSaveComment} disabled={commentLoading || comment === ''}
                                 >{commentLoading ? <ButtonLoader/> : "Send"}</button>
                             </div>
+                            <div className="w-full flex">
+                                Share this post via
+                                <a href={`whatsapp://send?text=${appUrl}/post/${showComment?.data ? showComment?.data?.author_info[0]?.userName:'postById'}/${showComment?.data?._id}`} data-action="share/whatsapp/share"
+                                   target="_blank"> <FaWhatsappSquare color={'#25D366'} size={32} /></a>
+                                <a href={`https://www.facebook.com/sharer.php?u=${appUrl}/post/${showComment?.data ? showComment?.data?.author_info[0]?.userName:'postById'}/${showComment?.data?._id}`} data-action="share/whatsapp/share"
+                                   target="_blank"> <FaFacebookSquare color={'#4267B2'} size={32} /></a>
+                                <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${appUrl}/post/${showComment?.data ? showComment?.data?.author_info[0]?.userName:'postById'}/${showComment?.data?._id}`} data-action="share/whatsapp/share"
+                                   target="_blank"> <FaLinkedin color={'#0077B5'} size={32} /></a>
+                            </div>
                         </div>
-
                     </div>
-
                 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             </Modal>
         </>
     )

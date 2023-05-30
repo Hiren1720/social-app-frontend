@@ -17,6 +17,7 @@ import Home from "./Components/Dashboard/Home";
 import ForgetPassword from './Components/Authencation/ForgetPassword';
 import ResetPassword from './Components/Authencation/ResetPassword';
 import './App.css'
+import SharedPost from "./Components/Posts/SharedPost";
 
 function App() {
   const [socket] = React.useState(io('http://localhost:4040/', {
@@ -53,6 +54,7 @@ function App() {
             <Route path='requests' element={<Requests/>}  />
             <Route path='followers' element={<Followers/>}  />
             <Route path='users' element={<Users/>}  />
+            <Route path='post/:userName/:postId' element={<SharedPost socket={socket}/>}  />
           </Route>
           <Route path='*' element={<h1>404 Page not found.</h1>}/>
         </Routes>

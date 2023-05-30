@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {
+    getFollowers,
     getRequests,
     removeFollower,
     sendRequest,
@@ -9,8 +10,8 @@ import {
 } from "../../Actions/requestActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {useNavigate} from "react-router-dom";
-import {url} from "../../Helper/constants";
-
+import {getProfile} from "../../Actions/userActions";
+const url = process.env.REACT_APP_API_URL;
 const Followers = ({type,setActive}) => {
     const [followers,setFollowers] = useState([]);
     const data = useSelector(state => state.requestData[type]);
@@ -18,8 +19,7 @@ const Followers = ({type,setActive}) => {
     const requestResult = useSelector(state => state.requestData.requestResult);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    let userToken = getLocalStorageData('user');
-    let userData = userToken;
+    let userData = getLocalStorageData('user');
     useEffect(()=>{
         if(data && data?.data && data?.data.length){
             setFollowers([...data?.data]);
@@ -31,19 +31,22 @@ const Followers = ({type,setActive}) => {
     useEffect(()=>{
         if(requestResult && requestResult?.success){
             dispatch(getRequests({type: 'allRequest'}));
+            dispatch(getProfile({id: userData?._id,isLoggedInUser:true}));
+            dispatch(getFollowers({type: 'user', state: 'followers', id: userData?._id}))
+            dispatch(getFollowers({state: 'followings', id: userData?._id}));
             dispatch(setRequest());
         }
     },[requestResult]);
     const handleSendRequest = async (e,item,status) => {
         e.stopPropagation();
         if(status === 'Follow'){
-            await dispatch(sendRequest({toUserId: item?._id, fromUserId: userToken?._id}));
+            await dispatch(sendRequest({toUserId: item?._id, fromUserId: userData?._id}));
         }
         else if(status === 'UnFollow'){
-            await dispatch(removeFollower({followerId:item?._id,followingId:userToken?._id,status:'UnFollow'}));
+            await dispatch(removeFollower({followerId:item?._id,followingId:userData?._id,status:'UnFollow'}));
         }
         else if(status === 'Remove'){
-            await dispatch(removeFollower({followerId:userToken?._id,followingId:item?._id,status: 'Remove'}));
+            await dispatch(removeFollower({followerId:userData?._id,followingId:item?._id,status: 'Remove'}));
         }
         else if(status === 'Requested'){
             await dispatch(updateRequest({id:item?._id,status:status}));
@@ -111,7 +114,7 @@ const Followers = ({type,setActive}) => {
                                 </div>
                                 <div className='flex gap-5 pt-4'>
                                     <button onClick={(e) => handleSendRequest(e, ele,getRequestStatus(ele))}
-                                            className={`block uppercase mx-auto shadow bg-[#234e70] hover:[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded ${ele?._id === userToken.user_id ? 'hidden':''} ${getRequestStatus(ele) === 'UnFollow' ? '' : 'bg-[#fa6a48]'}`}>{getRequestStatus(ele)}
+                                            className={`block uppercase mx-auto shadow bg-[#234e70] hover:[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded ${ele?._id === userData.user_id ? 'hidden':''} ${getRequestStatus(ele) === 'UnFollow' ? '' : 'bg-[#fa6a48]'}`}>{getRequestStatus(ele)}
                                     </button>
                                     <button
                                         className="block uppercase mx-auto shadow bg-[#fa6a48] hover:bg-[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded">Message

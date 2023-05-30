@@ -24,7 +24,6 @@ export function* updateUser({payload}) {
             let users = getLocalStorageData('users') || [];
             if(users?.map(ele=> ele?._id).includes(result?.data?._id)){
                 let updatedUsers =  users.findIndex(ele => ele?._id === result?.data?._id)
-                console.log("index", updatedUsers, result?.data)
                 users[updatedUsers] = result?.data;
                 setLocalStorageData('users', users)
             }

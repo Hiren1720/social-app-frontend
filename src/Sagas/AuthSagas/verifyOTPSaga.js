@@ -13,10 +13,10 @@ export function* verifyOTP({payload}) {
         yield put({ type: types.SET_LOADING,loading:true })
         let request = {url:'/user/verify-otp',body:payload}
         let result = yield call(httpAuth,request)
-        if(result && result.success){
+        let users = getLocalStorageData('users') || [];
+        if(result && result.success && result?.msg !== 'Deleted'){
             setLocalStorageData('accessToken',result.token);
             setLocalStorageData('user',result?.data);
-            let users = getLocalStorageData('users') || [];
             let user = users.findIndex(ele => ele?._id === result?.data?._id)
             if(user !== -1){
                 users[user] = {...result?.data,token:result.token};
@@ -27,9 +27,16 @@ export function* verifyOTP({payload}) {
             }
             window.location.href = '/';
         }
+        else if(result?.success && result?.msg === 'Deleted'){
+            let user = getLocalStorageData('user');
+            setLocalStorageData('users',users.filter(ele => ele?._id !== user?._id));
+            setLocalStorageData('user',null);
+            setLocalStorageData('accessToken',null);
+            window.location.href = '/login'
+        }
         yield put({
             type: types.VERIFY_OTP_SUCCESS,
-            payload: result,
+            payload: result?.msg === 'Deleted' ? {...result,isDelete:true}:result,
             loading:false
         });
     }

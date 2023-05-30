@@ -1,26 +1,26 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {useNavigate,Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {logout} from "../../Actions/userActions";
+import {deleteAccount, logout} from "../../Actions/userActions";
 import {getRequests} from "../../Actions/requestActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {AiFillHome} from 'react-icons/ai';
 import {HiUsers} from 'react-icons/hi';
 import {FaUserPlus,FaUsers} from 'react-icons/fa';
 import {MdAddComment} from 'react-icons/md';
-import {url} from '../../Helper/constants';
-
+const url = process.env.REACT_APP_API_URL;
 const Header = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const requests = useSelector(state => state.requestData.userRequests);
+    const deleteAccountResult = useSelector(state => state.userData.deleteAccountResult);
     const pathName = window.location.pathname;
     const navBars = [
-        {name:'Home',path:'/',icon:<AiFillHome class="ml-3" size={15}/>,},
-        {name:'Followers',path:'/followers',icon:<HiUsers class="ml-5"/>,},
-        {name:'Users',path:'/users',icon:<FaUsers class="ml-3"/>,},
-        {name:'Requests',path:'/requests',icon:<FaUserPlus class="ml-5"/>,},
-        {name:'Post',path:'/post',icon:<MdAddComment class="ml-2"/>},
+        {name:'Home',path:'/',icon:<AiFillHome className="ml-3" size={15}/>,},
+        {name:'Followers',path:'/followers',icon:<HiUsers className="ml-5"/>,},
+        {name:'Users',path:'/users',icon:<FaUsers className="ml-3"/>,},
+        {name:'Requests',path:'/requests',icon:<FaUserPlus className="ml-5"/>,},
+        {name:'Post',path:'/post',icon:<MdAddComment className="ml-2"/>},
     ]
     const [active,setActive] = useState('Dashboard');
     const [open,setOpen] = useState(false);
@@ -40,6 +40,11 @@ const Header = () => {
         };
         // eslint-disable-next-line
     }, []);
+    useEffect(()=> {
+        if(deleteAccountResult && deleteAccountResult?.success){
+            navigate('/verify-otp')
+        }
+    },[deleteAccountResult])
     useEffect(()=>{
         if(userToken){
             dispatch(getRequests({type:'user'}))
@@ -142,6 +147,8 @@ const Header = () => {
                                     tabIndex="-1">
                                     <span onClick={()=> handleProfile()} className={`block px-4 py-2 text-sm cursor-pointer hover:text-white hover:bg-gray-900 hover:rounded-[6px] text-gray-700 ${pathName.includes('/profile/') ? 'bg-gray-900 text-white rounded-[6px]':''}`} role="menuitem"
                                           tabIndex="-1" id="user-menu-item-0">Your Profile</span>
+                                    <span onClick={()=> {dispatch(deleteAccount()); setOpen(!open)}} className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:text-white hover:bg-gray-900 hover:rounded-[6px]" role="menuitem"
+                                          tabIndex="-1" id="user-menu-item-1">Delete Account</span>
                                     <span onClick={()=> dispatch(logout())} className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:text-white hover:bg-gray-900 hover:rounded-[6px]" role="menuitem"
                                           tabIndex="-1" id="user-menu-item-2">Sign out</span>
                                 </div>

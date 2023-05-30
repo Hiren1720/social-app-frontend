@@ -1,25 +1,37 @@
 import React, {useEffect,useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {getAllUsers} from "../../Actions/userActions";
+import {getAllUsers, getProfile} from "../../Actions/userActions";
 import Loader from "../Layouts/Loader";
 import UserSlider from "../Common/UserSlider";
 import { FaSearch,FaFilter} from "react-icons/fa";
 import { BsArrowLeft} from "react-icons/bs";
-import {getRequests} from "../../Actions/requestActions";
+import {getRequests, setRequest} from "../../Actions/requestActions";
+import {getLocalStorageData} from "../../Helper/TokenHandler";
 
 
 const Users = () => {
     const [searchValue,setSearchValue] = useState('');
     const [page,setPage] = useState(0);
     const dispatch = useDispatch();
+    const requestResult = useSelector(state => state.requestData.requestResult);
     const loading = useSelector(state => state.userData.loading);
     const users = useSelector(state => state.userData.users);
+    const userData = getLocalStorageData('user');
     useEffect(() => {
         dispatch(getAllUsers({page,pageSize:100,searchValue}));
         dispatch(getRequests({type: 'allRequest'}));
+        dispatch(getProfile({id: userData?._id,isLoggedInUser:true}));
         // eslint-disable-next-line
     }, []);
-
+    useEffect(() => {
+        if (requestResult && requestResult?.success) {
+            dispatch(getAllUsers({page: 0, pageSize: 100, searchValue: '',isLoading:true}));
+            dispatch(getProfile({id: userData?._id,isLoggedInUser:true}));
+            dispatch(getRequests({type: 'allRequest'}));
+            dispatch(setRequest());
+        }
+        // eslint-disable-next-line
+    }, [requestResult]);
     const handleClearSearch = () => {
         setSearchValue('');
         dispatch(getAllUsers({page,pageSize:100,searchValue:''}));

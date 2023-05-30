@@ -10,10 +10,7 @@ import {httpGet} from "../../Helper/api";
 export function* getProfile({payload}) {
     try{
         yield put({ type: payload?.isLoggedInUser ? types.SET_BUTTON_LOADING : types.SET_LOADING,loading: true })
-        let result = yield call(httpGet,`/user/profile/${payload?.id}`);
-        if(payload?.isLoggedInUser){
-            localStorage.setItem('user',JSON.stringify(result?.data));
-        }
+        let result = yield call(httpGet,`/user/${payload?.id}/profile`);
         yield put({
             type: types.GET_PROFILE_SUCCESS,
             payload: result?.data,

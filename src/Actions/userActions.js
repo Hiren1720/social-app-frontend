@@ -49,6 +49,13 @@ export const logout = (payload = {}) =>{
     }
 };
 
+export const deleteAccount = (payload = {}) =>{
+    return {
+        type: types.DELETE_ACCOUNT_STATE,
+        payload
+    }
+};
+
 export const getProfile = (payload) =>{
     return {
         type: types.GET_PROFILE_STATE,

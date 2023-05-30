@@ -1,66 +1,34 @@
-import React, {useEffect} from 'react';
+import React from 'react';
+import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {getRequests, removeFollower, sendRequest, setRequest, updateRequest} from "../../Actions/requestActions";
-import {getLocalStorageData} from "../../Helper/TokenHandler";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import {getAllUsers} from "../../Actions/userActions";
-import {useNavigate} from "react-router";
-import useWidthHeight from "../../Hooks/useWidthHeight";
-import {FaArrowLeft, FaArrowRight} from "react-icons/fa";
-import {url} from '../../Helper/constants';
-
+import {removeFollower, sendRequest, updateRequest} from "../../Actions/requestActions";
+const url = process.env.REACT_APP_API_URL;
 const UserSlider = ({data, title}) => {
     const dispatch = useDispatch();
-    const requestResult = useSelector(state => state.requestData.requestResult);
     const requests = useSelector(state => state.requestData.requests);
+    const userData = useSelector(state => state.userData.loggedInUser);
     const navigate = useNavigate();
-    const {width} = useWidthHeight();
-    let userToken = getLocalStorageData('user');
-
-    useEffect(() => {
-        if (requestResult && requestResult?.success) {
-            dispatch(getAllUsers({page: 0, pageSize: 100, searchValue: ''}));
-            dispatch(getRequests({type: 'allRequest'}));
-            dispatch(setRequest());
-        }
-        // eslint-disable-next-line
-    }, [requestResult]);
-    let isOne = width < 780;
-    let isTwo = width < 1080;
-    const settings = {
-        dots: false,
-        infinite: false,
-        autoplay: false,
-        speed: 1000,
-        slidesToShow: isOne ? 1 : isTwo ? 2 : 3,
-        slidesToScroll: 1,
-        arrows: true,
-        className: 'slides',
-        nextArrow: <FaArrowRight/>,
-        prevArrow: <FaArrowLeft/>
-    };
     const handleSendRequest = async (e, item, status) => {
-        let request = requests && requests.data && requests.data.find((ele) => ele?.fromUserId === userToken?._id && ele?.toUserId === item?._id);
+        let request = requests && requests.data && requests.data.find((ele) => ele?.fromUserId === userData?._id && ele?.toUserId === item?._id);
         e.stopPropagation();
         if (status === 'Follow') {
-            await dispatch(sendRequest({toUserId: item?._id, fromUserId: userToken?._id}));
+            await dispatch(sendRequest({toUserId: item?._id, fromUserId: userData?._id}));
         } else if (status === 'UnFollow') {
-            await dispatch(removeFollower({followerId: item?._id, followingId: userToken?._id, status: 'UnFollow'}));
+            await dispatch(removeFollower({followerId: userData?._id, followingId: item?._id, status: 'UnFollow'}));
         } else if (status === 'Remove') {
-            await dispatch(removeFollower({followerId: userToken?._id, followingId: item?._id, status: 'Remove'}));
+            await dispatch(removeFollower({followerId: item?._id, followingId: userData?._id, status: 'Remove'}));
         } else if (status === 'Requested') {
             await dispatch(updateRequest({id: request?._id, status: status}));
         }
     }
     const getRequestStatus = ({_id}) => {
-        let status = requests && requests.data && requests.data.find((ele) => ele?.fromUserId === userToken?._id && ele?.toUserId === _id)?.status;
+        let status = requests && requests.data && requests.data.find((ele) => ele?.fromUserId === userData?._id && ele?.toUserId === _id)?.status;
         let data = 'Follow';
         if (status === 'pending') {
             data = 'Requested';
-        } else if (title === 'Followers' && userToken?.followers.includes(_id)) {
+        } else if (title === 'Followers' && userData?.followers.includes(_id)) {
             data = 'Remove';
-        } else if ((title === 'Followings' || title === 'Users') && userToken?.following.includes(_id)) {
+        } else if ((title === 'Followings' || title === 'Users') && userData?.following.includes(_id)) {
             data = 'UnFollow';
         } else {
             data = 'Follow';
@@ -77,9 +45,9 @@ const UserSlider = ({data, title}) => {
                 <div
                     className="w-full py-4 justify-start rounded-b-lg flex-row flex  gap-5 grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
 
-                    {data && data?.length > 0 && data?.map((ele, index) => (
-                        <>
-
+                    {data && data?.length > 0 && data?.map((ele, index) => {
+                        let status = getRequestStatus(ele);
+                        return (
                             <div key={index}>
                                 <div
                                     className="relative   max-w-md mx-auto md:max-w-2xl min-w-0 break-words bg-white w-full shadow-lg rounded-xl  ">
@@ -118,11 +86,11 @@ const UserSlider = ({data, title}) => {
                                             </div>
                                         </div>
                                         <div className='flex gap-5 pt-4'>
-                                            <button onClick={(e) => handleSendRequest(e, ele, getRequestStatus(ele))}
+                                            <button onClick={(e) => handleSendRequest(e, ele, status)}
                                                     className={`uppercase mx-auto shadow bg-[#234e70] hover:[#fa6a48] 
                                                         focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 
-                                                        rounded ${ele?._id === userToken?._id ? 'hidden' : 'block'} 
-                                                        ${getRequestStatus(ele) === 'UnFollow' ? '' : 'bg-[#fa6a48]'}`}>{getRequestStatus(ele)}
+                                                        rounded ${ele?._id === userData?._id ? 'hidden' : 'block'} 
+                                                        ${status === 'UnFollow' ? '' : 'bg-[#fa6a48]'}`}>{status}
                                             </button>
                                             <button
                                                 className="block uppercase mx-auto shadow bg-[#fa6a48] hover:bg-[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded">Message
@@ -130,7 +98,7 @@ const UserSlider = ({data, title}) => {
                                         </div>
                                         <div className="mt-4 py-4 border-t border-slate-200 text-center">
                                             <div className="flex flex-wrap justify-center">
-                                                <div className="w-full px-4" onClick={(e) => handleProfile(e, ele)}>
+                                                <div className="w-full px-4 cursor-pointer" onClick={(e) => handleProfile(e, ele)}>
                                                     View Profile
                                                 </div>
                                             </div>
@@ -138,8 +106,7 @@ const UserSlider = ({data, title}) => {
                                     </div>
                                 </div>
                             </div>
-                        </>
-                    ))}
+                    )})}
 
                 </div>
             </div>

@@ -1,16 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {
-    getFollowers,
+    getFollowers, getRequests, setRequest,
 } from "../../Actions/requestActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
 import UserSlider from "../Common/UserSlider";
+import {getProfile} from "../../Actions/userActions";
 
 const Followers = () => {
     const dispatch = useDispatch();
     const followers = useSelector(state => state.requestData.followers);
     const followings = useSelector(state => state.requestData.followings);
+    const requestResult = useSelector(state => state.requestData.requestResult);
     const loading = useSelector(state => state.requestData.loading);
     let userToken = getLocalStorageData('user');
     const [openModal, setOpenModal] = useState('followers');
@@ -18,8 +20,18 @@ const Followers = () => {
     useEffect(() => {
         dispatch(getFollowers({type: 'user', state: 'followers', id: userToken?._id}))
         dispatch(getFollowers({state: 'followings', id: userToken?._id}));
+        dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
         // eslint-disable-next-line
     }, []);
+    useEffect(()=>{
+        if(requestResult && requestResult?.success){
+            dispatch(getRequests({type: 'allRequest'}));
+            dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
+            dispatch(getFollowers({type: 'user', state: 'followers', id: userToken?._id}))
+            dispatch(getFollowers({state: 'followings', id: userToken?._id}));
+            dispatch(setRequest());
+        }
+    },[requestResult]);
 
     return (
         <>

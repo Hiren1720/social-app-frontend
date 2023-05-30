@@ -33,6 +33,7 @@ const initialState = {
     userResult: null,
     verifyOTPResult:null,
     verifyForgetPasswordUser:null,
+    deleteAccountResult:null,
     users: []
 }
 
@@ -66,6 +67,9 @@ const user = (state = initialState, action) => {
         case types.FORGET_PASSWORD_SUCCESS:
         case types.FORGET_PASSWORD_FAILURE:
             return {...state, verifyForgetPasswordUser: action.payload, loading: action.loading}
+        case types.DELETE_ACCOUNT_SUCCESS:
+        case types.DELETE_ACCOUNT_FAILURE:
+            return {...state,deleteAccountResult: action.payload,loading: action.loading}
         default:
             return state;
     }

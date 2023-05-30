@@ -4,12 +4,13 @@ import {useDispatch, useSelector} from "react-redux";
 import {loginUser, setUserData} from "../../Actions/userActions";
 import {toast} from 'react-toastify';
 import ButtonLoader from "../ButtonLoader";
-import {url} from '../../Helper/constants';
 import {setLocalStorageData} from "../../Helper/TokenHandler";
 import {
     LoginSocialGoogle,
 } from 'reactjs-social-login';
 import {useTranslation} from "react-i18next";
+
+const url = process.env.REACT_APP_API_URL;
 const Login = () => {
     let { t } = useTranslation();
     let navigate = useNavigate();

@@ -12,7 +12,6 @@ const ResetPassword = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const id = useParams();
-    console.log("user", id);
     const handleOnChange = (e) => {
         setPasswordValue({...passwordValue, [e.target.name]: e.target.value})
         dispatch(setUserData('resetPassword', {id: id?.id, password: e.target.value}))

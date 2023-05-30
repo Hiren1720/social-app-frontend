@@ -6,6 +6,8 @@ import {toast} from 'react-toastify';
 import ButtonLoader from "../ButtonLoader";
 import {useTranslation} from "react-i18next";
 import OTPInput from "react-otp-input";
+import {getLocalStorageData} from "../../Helper/TokenHandler";
+import {getStarEmail} from "../../Helper";
 
 const VerifyOTP = () => {
     let {t} = useTranslation();
@@ -15,28 +17,35 @@ const VerifyOTP = () => {
     const [resendDisable, setResendDisable] = useState(true);
     const [timer, setTimer] = useState(15);
     const userResult = useSelector(state => state.userData.userResult);
+    const deleteAccountResult = useSelector(state => state.userData.deleteAccountResult);
     const verifyOTPResult = useSelector(state => state.userData.verifyOTPResult);
     const user = useSelector(state => state.userData.loginData);
     const loading = useSelector(state => state.userData.loading);
+    const userToken = getLocalStorageData('user');
     let timeInterval;
 
     useEffect(() => {
         if (userResult && userResult.success) {
-            let result = user?.email.indexOf("@") - 3;
-            let middleEmail = user?.email.split('@')[0].slice(3, result);
-            let str = '';
-            for (let i = 0; i < middleEmail.length; i++) {
-                str += '*'
-            }
-            setMessage(user?.email.replace(middleEmail, str))
+            setMessage(getStarEmail(user?.email))
         } else if (userResult?.error) {
             toast(userResult?.error, {type: 'error'});
         }
         // eslint-disable-next-line
     }, [userResult]);
+    useEffect(()=> {
+        if(deleteAccountResult?.success && deleteAccountResult?.isDelete){
+            setMessage(getStarEmail(userToken?.email))
+            dispatch(setUserData('loginData', {email: '', password: '', otp: '',isDelete:true,id:userToken?._id}));
+        }
+    },[deleteAccountResult])
     useEffect(() => {
         if (verifyOTPResult && verifyOTPResult.success) {
-            navigate("/");
+            if(verifyOTPResult.isDelete){
+                toast('Your account deleted successfully.', {type: 'success'});
+                navigate('/login');
+            }else {
+                navigate("/");
+            }
             dispatch(setUserData('userResult', null));
             dispatch(setUserData('loginData', {email: '', password: '', otp: ''}));
         } else if (verifyOTPResult?.error) {

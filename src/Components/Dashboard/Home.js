@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import Post from '../Posts/Posts'
-import {url} from "../../Helper/constants";
+import Post from '../Posts/Posts';
 import {useDispatch, useSelector} from "react-redux";
 import {BsFillPlusSquareFill} from "react-icons/bs";
-import {getFollowers, getRequests, setRequest} from "../../Actions/requestActions";
+import {getRequests, setRequest} from "../../Actions/requestActions";
 import {getProfile} from "../../Actions/userActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import '../User/User.css';
@@ -11,6 +10,7 @@ import Requests from "../FollowFollowing/Requests";
 import Loader from "../Layouts/Loader";
 import {createPost, getAllPost, resetPostResult} from "../../Actions/postActions";
 import getDeviceName from "../../Helper/getDeviceName";
+const url = process.env.REACT_APP_API_URL;
 const Home = ({socket}) =>{
     const [thought,setThought] = useState('');
     const dispatch = useDispatch();

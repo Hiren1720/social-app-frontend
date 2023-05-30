@@ -1,6 +1,5 @@
 import * as tokenUtil from '../Helper/TokenHandler';
-import {url} from './constants';
-const API_END_POINT = `${url}/api`;
+const API_END_POINT = `${process.env.REACT_APP_API_URL}/api`;
 
 export const httpAuth = async (request) => {
     return await fetch(`${API_END_POINT}${request.url}`,{
@@ -21,6 +20,16 @@ export const httpUserUpdateDataAuth = async (request) => {
     let token = tokenUtil.getLocalStorageData('accessToken');
     return await fetch(`${API_END_POINT}${request.url}`,{
         method:'POST',
+        headers:{
+            'Authorization': `Bearer ${token?.accessToken}`
+        },
+        body:request?.body
+    }).then((res)=> res.json())
+}
+export const httpDelete = async (request) => {
+    let token = tokenUtil.getLocalStorageData('accessToken');
+    return await fetch(`${API_END_POINT}${request.url}`,{
+        method:'DELETE',
         headers:{
             'Authorization': `Bearer ${token?.accessToken}`
         },

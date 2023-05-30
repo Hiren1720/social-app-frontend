@@ -2,8 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {updateRequest} from "../../Actions/requestActions";
 import Loader from "../Layouts/Loader";
-import {url} from "../../Helper/constants";
-
+const url = process.env.REACT_APP_API_URL;
 const Requests = () => {
     const dispatch = useDispatch();
 
