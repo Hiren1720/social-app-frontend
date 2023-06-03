@@ -41,3 +41,16 @@ export const createLike = (payload) => {
         payload
     }
 };
+
+export const deletePost = (payload) => {
+    return {
+        type: types.SET_DELETE_POST_STATE,
+        payload
+    }
+};
+export const updatePost = (payload) => {
+    return {
+        type: types.SET_UPDATE_POST_STATE,
+        payload
+    }
+};

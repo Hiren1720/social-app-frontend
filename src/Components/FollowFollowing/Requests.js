@@ -23,21 +23,20 @@ const Requests = () => {
     return (
         <>
             {loading ? <Loader/> :
-                <div className='flex justify-evenly items-center rounded-[5px] flex-col p-8'>
+                <div className='flex justify-evenly items-center rounded-[5px] flex-col p-6'>
                     <div className='overflow-x-auto relative"'>
                         {rowData?.length ? rowData.map((ele,index)=>
 
-                                (<div className="flex flex-col gap-4 items-center bg-white">
+                                (<div className="flex  flex-col gap-4 items-center bg-white w-full mb-4">
                                     <div  className=" border-2 border-b-4 border-gray-200 rounded-xl hover:bg-gray-50">
                                         <p
                                             className="bg-sky-500 w-fit px-4 py-1 text-sm font-bold text-white rounded-tl-lg rounded-br-xl"> STATUS </p>
-                                        <div className="flex p-5 gap-y-2">
+                                        <div className="flex p-5 gap-y-2 items-center">
                                             <div>
-                                                <img src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url: `${url}/${ele?.author_info[0]?.profile_url}` :"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} className="w-16 h-16 rounded-full"/>
+                                                <img src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url: `${url}/${ele?.author_info[0]?.profile_url}` :"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} className="max-w-16 max-h-16 rounded-full"/>
                                             </div>
-                                            <div className="col-span-3 md:col-span-4 ml-4">
+                                            <div className="col-span-5 md:col-span-4 ml-4 ">
                                                 <p className="font-bold">{ele?.author_info[0]?.userName}{" "}has requested to follow you</p>
-                                                <p className="text-gray-400"> Sat, Mar 12 . 7:00 - 8:30 AM </p>
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-end p-2">

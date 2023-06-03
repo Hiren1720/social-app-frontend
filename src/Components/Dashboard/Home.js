@@ -64,7 +64,7 @@ const Home = ({socket}) =>{
                 <>
                     {(userData) ? <>
                         <>
-                            <div className="bg-[#eef0f3]">
+                            <div className="bg-white">
                                 <div
                                     className="relative bg-blueGray-200 flex-col lg:grid  lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 2xl:row-span-2 ">
                                     <div>

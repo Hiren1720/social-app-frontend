@@ -96,12 +96,12 @@ const Profile = ({socket}) => {
     }
 
     const getRequestStatus = ({_id},isViewer) => {
-        let status = requests && requests.data && requests.data.find((ele) => ele?.toUserId === _id)?.status;
+        let status = requests && requests?.data && requests?.data?.find((ele) => ele?.toUserId === _id)?.status;
         let data = isViewer ? <BsFillPlusSquareFill/> : 'Follow';
         if (status === 'pending') {
             data = isViewer ? <FaUserCheck/>:'Requested';
         }
-        else if(userData && userData?.following.includes(_id)){
+        else if(userData && userData?.following?.includes(_id)){
             data = isViewer ? <RiUserUnfollowFill/>:'UnFollow'
         }
         return data;
@@ -110,7 +110,7 @@ const Profile = ({socket}) => {
         <>
             {loading ? <Loader/> :
                 <>
-                    {(user) ? <><main className="profile-page bg-[#eef0f3]">
+                    {(user) ? <><main className="profile-page bg-white">
                         <div>
                             <div className="absolute top-0 w-full h-80 bg-[url('https://hblimg.mmtcdn.com/content/hubble/img/destimg/mmt/activities/m_Munnar_destjulimg_2_l_770_1154.jpg')] bg-no-repeat object-contain bg-cover bg-center ">
                                 <span id="blackOverlay" className="w-full h-full absolute opacity-50 bg-black"></span>
@@ -122,8 +122,8 @@ const Profile = ({socket}) => {
                                 </svg>
                             </div>
                         </div>
-                        <div className="mx-[20px]  2xl:mx-[208px] flex  max-[380px]:mx-[0px] max-[380px]:px-[10px]">
-                            <div className="relative py-[8rem] bg-blueGray-200 flex-col w-full lg:grid lg:gap-4 2xl:gap-6 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 2xl:row-span-2 ">
+                        <div className="mx-[20px]  2xl:mx-[208px] flex  max-[380px]:mx-[0px] max-[380px]:px-[10px] ">
+                            <div className="relative py-[8rem] bg-blueGray-200 flex-col w-full lg:grid lg:gap-4 2xl:gap-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 2xl:row-span-2 ">
                                 <div className="container mx-auto pt-96">
                                     <div className="relative flex  min-w-0 break-words bg-white w-full mb-6 shadow-lg shadow-gray-400  rounded-lg -mt-64 ">
                                         <div className="px-1">
@@ -174,9 +174,9 @@ const Profile = ({socket}) => {
                                                                 <div
                                                                     className="mt-24 space-y-4 text-gray-600 text-center ">
                                                                     <p className="text-xs">By proceeding, you agree to
-                                                                        our <a href=""
+                                                                        our <a
                                                                                className="underline">Disclaimer</a> and
-                                                                        confirm you have read our <a href=""
+                                                                        confirm you have read our <a
                                                                                                      className="underline">Privacy
                                                                             and Cookie Statement</a>.</p>
                                                                 </div>
@@ -333,7 +333,7 @@ const Profile = ({socket}) => {
                                                                                         </div>
                                                                                     </div>
                                                                                     <div className="flex items-center hidden text-2xl">
-                                                                                        {getRequestStatus(ele?.author_info[0],true)}
+                                                                                        {getRequestStatus(ele,true)}
                                                                                     </div>
                                                                                 </div>
                                                                             </div>

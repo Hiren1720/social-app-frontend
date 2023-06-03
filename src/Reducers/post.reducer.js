@@ -20,6 +20,10 @@ const post = (state = initialState, action) => {
             return {...state, [action.state]: action.payload};
         case types.SET_POST_STATE_SUCCESS:
         case types.SET_POST_STATE_FAILURE:
+        case types.SET_DELETE_POST_STATE_SUCCESS:
+        case types.SET_DELETE_POST_STATE_FAILURE:
+        case types.SET_UPDATE_POST_STATE_SUCCESS:
+        case types.SET_UPDATE_POST_STATE_FAILURE:
             return {...state, postResult: action.payload, loading: action.loading};
         case types.GET_POST_STATE_SUCCESS:
         case types.GET_POST_STATE_FAILURE:

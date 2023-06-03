@@ -7,26 +7,26 @@ import {
 import * as types from '../../Actions/Types'
 
 import {httpPost} from "../../Helper/api";
-export function* sendRequest({payload}) {
+export function* blockUser({payload}) {
     try{
         yield put({ type: types.SET_BUTTON_LOADING,loading:true })
-        let request = {url:'/request/send',body:payload}
-        let result = yield call(httpPost,request)
+        let result = yield call(httpPost,{url:`/user/block-user`,body:payload});
 
         yield put({
-            type: types.SEND_REQUEST_STATE_SUCCESS,
+            type: types.BLOCK_USER_STATE_SUCCESS,
             payload: result,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.SEND_REQUEST_STATE_FAILURE,
+            type: types.BLOCK_USER_STATE_FAILURE,
             payload: null,
             loading:false
         });
     }
+
 }
-export function* sendRequestSaga() {
-    yield all([takeLatest(types.SEND_REQUEST_STATE, sendRequest)]);
+export function* blockUserSaga() {
+    yield all([takeLatest(types.BLOCK_USER_STATE, blockUser)]);
 }

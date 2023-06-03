@@ -38,7 +38,7 @@ function App() {
   },[user])
 
   return (
-    <div className="w-full h-screen bg-[#eef0f3] ">
+    <div className="w-full h-screen ">
       <BrowserRouter>
         <Routes>
           <Route path='/login' element={<Login socket={socket}/>}  />
@@ -49,6 +49,7 @@ function App() {
           <Route path='/' element={<Header/>} >
             <Route index element={<Home socket={socket}/>}/>
             <Route path='post' element={<CreatePost/>}  />
+            <Route path='edit-post' element={<CreatePost/>}  />
             <Route path='profile/:id' element={<Profile socket={socket}/>}  />
             <Route path='/edit-profile' element={<Registration/>}  />
             <Route path='requests' element={<Requests/>}  />

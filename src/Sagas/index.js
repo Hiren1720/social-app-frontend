@@ -22,6 +22,9 @@ import {getProfileViewersSaga} from "./UserSagas/getProfileViewersSaga";
 import {userForgetPasswordSaga} from "./AuthSagas/forgetPasswordSaga";
 import {userResetPasswordSaga} from "./AuthSagas/resetPasswordSaga";
 import {deleteAccountSaga} from "./UserSagas/deleteAccountSaga";
+import {blockUserSaga} from "./BlockUserSaga/blockUserSaga";
+import {deletePostSaga} from "./PostSagas/deletePostSaga";
+import {updatePostSaga} from "./PostSagas/updatePostSaga";
 export default function* root() {
     yield all([
         userRegisterSaga(),
@@ -45,6 +48,10 @@ export default function* root() {
         updateUserSaga(),
         getProfileViewersSaga(),
         userForgetPasswordSaga(),
+        userResetPasswordSaga(),
+        blockUserSaga(),
+        deletePostSaga(),
+        updatePostSaga(),
         userResetPasswordSaga(),
         deleteAccountSaga(),
     ]);
