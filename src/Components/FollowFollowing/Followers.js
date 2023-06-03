@@ -32,7 +32,6 @@ const Followers = () => {
             dispatch(setRequest());
         }
     },[requestResult]);
-
     return (
         <>
             {loading ? <Loader/> :
@@ -40,9 +39,9 @@ const Followers = () => {
                     <div className="relative flex gap-[8px]  shadow-3xl ">
                         <div className='flex flex-col'>
                             <div
-                                className="relative shadow-lg h-screen shadow-md shadow-gray-400 rounded-[5px]  p-5 bg-white bg-clip-border shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:!shadow-none">
+                                className="relative shadow-lg h-screen shadow-md shadow-gray-400 rounded-[5px] block max-[400px]:hidden  p-5 bg-white bg-clip-border shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:!shadow-none">
                                 <div
-                                    className="relative flex w-full h-full justify-center bg-purple-300 bg-cover  bg-no-repeat  bg-cover bg-center">
+                                    className="relative flex w-full h-full justify-center bg-purple-300 bg-cover  bg-no-repeat  bg-cover bg-center block max-[1250px]:hidden">
                                     <div
                                         className="flex h-full w-full items-center justify-center ">
                                         <div className=''>

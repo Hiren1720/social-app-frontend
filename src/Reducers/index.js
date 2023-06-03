@@ -5,10 +5,11 @@ import { combineReducers } from 'redux'
 import user from './user.reducer'
 import request from './request.reducer'
 import post from './post.reducer'
-
+import blockUser from "./blockUser.reducer";
 export default combineReducers({
     userData:user,
     requestData:request,
     postData:post,
+    blockData:blockUser
     // Here you can registering another reducers.
 })
