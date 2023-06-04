@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import Post from '../Posts/Posts';
 import {useDispatch, useSelector} from "react-redux";
-import {BsFillPlusSquareFill} from "react-icons/bs";
-import {getRequests, setRequest} from "../../Actions/requestActions";
-import {getProfile} from "../../Actions/userActions";
+import {getRequests, sendRequest, setRequest, updateRequest} from "../../Actions/requestActions";
+import {getProfile, getProfileViewers} from "../../Actions/userActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import '../User/User.css';
 import Requests from "../FollowFollowing/Requests";
 import Loader from "../Layouts/Loader";
 import {createPost, getAllPost, resetPostResult} from "../../Actions/postActions";
 import getDeviceName from "../../Helper/getDeviceName";
+import {getIcon, getStatus} from "../../Helper";
 const url = process.env.REACT_APP_API_URL;
 const Home = ({socket}) =>{
     const [thought,setThought] = useState('');
@@ -18,7 +18,9 @@ const Home = ({socket}) =>{
     const posts = useSelector(state => state.postData.posts);
     const loading = useSelector(state => state.userData.loading);
     const userData = useSelector(state => state.userData.loggedInUser);
+    const profileViewers = useSelector(state => state.userData.profileViewers);
     const requests = useSelector(state => state.requestData.userRequests);
+    const requestAll = useSelector(state => state.requestData.requests);
     const requestResult = useSelector(state => state.requestData.requestResult);
     const postResult = useSelector(state => state.postData.postResult);
     const [postLength , setPostLength] = useState(0);
@@ -33,24 +35,30 @@ const Home = ({socket}) =>{
     },[postResult])
     useEffect(()=> {
         if(requestResult && requestResult.success){
-            dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
+            callApis();
         }
+        // eslint-disable-next-line
     },[requestResult])
     useEffect(()=>{
         let loginUserPost = posts?.filter((ele)=>{
             return ele?.createdBy === userToken?._id;
         });
         setPostLength(loginUserPost.length)
+        // eslint-disable-next-line
     },[postLength, posts])
     useEffect(()=>{
         if(userToken){
-            dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
-            dispatch(getRequests({type:'user'}));
-            dispatch(getRequests({type:'allRequest'}));
-            dispatch(setRequest());
+            callApis();
         }
+        // eslint-disable-next-line
     }, [profile]);
-
+    const callApis = () => {
+        dispatch(getProfile({id: userToken?._id,isLoggedInUser:true}));
+        dispatch(getProfileViewers());
+        dispatch(getRequests({type:'user'}));
+        dispatch(getRequests({type:'allRequest'}));
+        dispatch(setRequest());
+    }
     const handleOnShare = () => {
         let formData = new FormData();
         const device = getDeviceName()
@@ -58,6 +66,16 @@ const Home = ({socket}) =>{
         formData.append('post',JSON.stringify(postData));
         dispatch(createPost(formData))
     }
+    const handleRequest = (e, item, status) => {
+        if (status === 'Follow') {
+            dispatch(sendRequest({toUserId: item?._id, fromUserId: userData?._id}));
+        }else if (status === 'Requested') {
+            let req = requestAll?.data && requestAll.data.filter(ele => ele?.fromUserId === userData?._id).find((ele) => ele?.toUserId === item?._id);
+            if (req) {
+                dispatch(updateRequest({id: req?._id, status: status}));
+            }
+        }
+    };
     return(
         <>
             {loading ? <Loader/> :
@@ -121,89 +139,33 @@ const Home = ({socket}) =>{
                                                             <div
                                                                 className="relative m-auto text-black-500 grid-cols-3 ">
                                                                 <div className="m-auto ">
-                                                                    <div className="rounded-xl bg-white ">
+                                                                    <div className="mt-[1px] mb-[1px] bg-white ">
                                                                         <div className="p-4 border-b font-bold">
                                                                             <h3>Suggestion </h3>
                                                                         </div>
                                                                         <div>
-                                                                            <div className="m-auto text-gray-600 ">
-                                                                                <div
-                                                                                    className="bg-white justify-between">
+                                                                            {profileViewers && profileViewers?.length ? profileViewers.filter(ele => !userData.following.includes(ele?.author_info[0]?._id)).map((ele,index)=>{
+                                                                                let status = getStatus(ele?.author_info[0],requestAll,userData,'Followings',true);
+                                                                                return(
+                                                                                <div className="m-auto text-gray-600 " key={index}>
                                                                                     <div
-                                                                                        className="flex items-center justify-between px-4 py-6  gap-2 lg:gap-1">
-                                                                                        <div className='flex'>
-                                                                                            <img
-                                                                                                className="w-12 h-12 rounded-full object-cover mr-4 "
-                                                                                                src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-                                                                                                alt="avatar"/>
-                                                                                            <div
-                                                                                                className="flex items-center justify-between">
-                                                                                                <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">Brad
-                                                                                                    Adams </h2>
+                                                                                        className="bg-white justify-between">
+                                                                                        <div className="flex items-center justify-between px-4 py-3  gap-2 lg:gap-1">
+                                                                                            <div className='flex'>
+                                                                                                <img className="w-12 h-12 rounded-full object-cover mr-4 "
+                                                                                                     src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url :`${url}${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"}
+                                                                                                     alt="avatar"/>
+                                                                                                <div className="flex items-center justify-between">
+                                                                                                    <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">{ele?.author_info[0]?.name}</h2>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div className="flex items-center text-2xl cursor-pointer" onClick={(e)=>{handleRequest(e,ele?.author_info[0],status)}}>
+                                                                                                {getIcon(status)}
                                                                                             </div>
                                                                                         </div>
-                                                                                        {/*<div className='flex'>*/}
-
-                                                                                        <div
-                                                                                            className="flex items-center  text-2xl">
-                                                                                            <BsFillPlusSquareFill/>
-                                                                                        </div>
-                                                                                        {/*</div>*/}
                                                                                     </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div className="m-auto text-gray-600 ">
-                                                                                <div
-                                                                                    className="bg-white justify-between">
-                                                                                    <div
-                                                                                        className="flex items-center justify-between px-4 py-6  gap-2 lg:gap-1">
-                                                                                        <div className='flex'>
-                                                                                            <img
-                                                                                                className="w-12 h-12 rounded-full object-cover mr-4 "
-                                                                                                src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-                                                                                                alt="avatar"/>
-                                                                                            <div
-                                                                                                className="flex items-center justify-between">
-                                                                                                <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">Brad
-                                                                                                    Adams </h2>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        {/*<div className='flex'>*/}
-
-                                                                                        <div
-                                                                                            className="flex items-center  text-2xl">
-                                                                                            <BsFillPlusSquareFill/>
-                                                                                        </div>
-                                                                                        {/*</div>*/}
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="m-auto text-gray-600 ">
-                                                                                <div
-                                                                                    className="bg-white justify-between">
-                                                                                    <div
-                                                                                        className="flex items-center justify-between px-4 py-6  gap-2 lg:gap-1">
-                                                                                        <div className='flex'>
-                                                                                            <img
-                                                                                                className="w-12 h-12 rounded-full object-cover mr-4 "
-                                                                                                src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-                                                                                                alt="avatar"/>
-                                                                                            <div
-                                                                                                className="flex items-center justify-between">
-                                                                                                <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">Brad
-                                                                                                    Adams </h2>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        {/*<div className='flex'>*/}
-
-                                                                                        <div
-                                                                                            className="flex items-center  text-2xl">
-                                                                                            <BsFillPlusSquareFill/>
-                                                                                        </div>
-                                                                                        {/*</div>*/}
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
+                                                                            )}) :''}
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -218,7 +180,7 @@ const Home = ({socket}) =>{
                                         className="col-span-1 lg:col-span-2 sm:col-span-5 max-[490px]:col-span-5 h-96 ">
                                         <div className="flex items-center  bg-white justify-center shadow-lg mb-4 ">
                                             <form className="w-full bg-white rounded-lg px-4 pt-2">
-                                                <div className='border-2 border-pink-400'></div>
+                                                <div className='border-2 border-pink-400'/>
                                                 <div className="flex flex-wrap -mx-3 mb-6">
                                                     <div className="w-full  flex md:w-full px-3 mb-2 mt-2">
                                                         <div
@@ -269,17 +231,13 @@ const Home = ({socket}) =>{
 
                                             <div
                                                 className="bg-white shadow-md rounded-lg dark:bg-gray-800 dark:border-gray-700">
-                                                <a href="#">
                                                     <img className="rounded-t-lg p-8"
                                                          src="https://image.coolblue.nl/840x473/content/49a851e5fe9a5c48bdfa94364b35f0ab"
-                                                         alt="product image"/>
-                                                </a>
+                                                         alt="product"/>
                                                 <div className="px-5 pb-5">
-                                                    <a href="#">
                                                         <h3 className="text-gray-900 font-semibold text-xl tracking-tight dark:text-white">Apple
                                                             Watch Series 7
                                                             GPS, Aluminium Case, Starlight Sport</h3>
-                                                    </a>
                                                     <div className="flex items-center mt-2.5 mb-5">
                                                         <svg className="w-5 h-5 text-yellow-300" fill="currentColor"
                                                              viewBox="0 0 20 20"
@@ -322,9 +280,9 @@ const Home = ({socket}) =>{
                                                     <div className="flex items-center justify-between">
                                             <span
                                                 className="text-3xl font-bold text-gray-900 dark:text-white">$599</span>
-                                                        <a href="#"
+                                                        <span
                                                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add
-                                                            to cart</a>
+                                                            to cart</span>
                                                     </div>
                                                 </div>
                                             </div>

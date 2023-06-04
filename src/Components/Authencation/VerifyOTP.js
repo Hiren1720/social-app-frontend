@@ -44,6 +44,7 @@ const VerifyOTP = () => {
                 toast('Your account deleted successfully.', {type: 'success'});
                 navigate('/login');
             }else {
+                toast('Login successfully.', {type: 'success'});
                 navigate("/");
             }
             dispatch(setUserData('userResult', null));

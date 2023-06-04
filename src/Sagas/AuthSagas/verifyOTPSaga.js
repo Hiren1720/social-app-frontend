@@ -25,14 +25,12 @@ export function* verifyOTP({payload}) {
                 users.push({...result?.data,token:result.token});
                 setLocalStorageData('users',users);
             }
-            window.location.href = '/';
         }
         else if(result?.success && result?.msg === 'Deleted'){
             let user = getLocalStorageData('user');
             setLocalStorageData('users',users.filter(ele => ele?._id !== user?._id));
             setLocalStorageData('user',null);
             setLocalStorageData('accessToken',null);
-            window.location.href = '/login'
         }
         yield put({
             type: types.VERIFY_OTP_SUCCESS,

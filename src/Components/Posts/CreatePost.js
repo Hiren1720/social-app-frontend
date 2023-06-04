@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate} from "react-router-dom";
+import {useNavigate,useLocation} from "react-router-dom";
 import {Mention, MentionsInput} from 'react-mentions'
 import {getAllUsers} from "../../Actions/userActions";
 import {useDispatch, useSelector} from "react-redux";
@@ -7,9 +7,7 @@ import {createPost, resetPostResult, updatePost} from "../../Actions/postActions
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {GrFormClose} from 'react-icons/gr';
 import getDeviceName from "../../Helper/getDeviceName";
-import {url} from "../../Helper/constants";
-import {useLocation} from "react-router";
-
+const url = process.env.REACT_APP_API_URL;
 const CreatePost = () => {
     const dispatch = useDispatch();
     let userToken = getLocalStorageData('user');
@@ -23,7 +21,6 @@ const CreatePost = () => {
     const [file, setFile] = useState(null);
     const [importError, setImportError] = useState(null);
     const {state} = useLocation();
-    console.log("state", state)
     const [post, setPost] = useState({
         content: '',
         title: '',
@@ -37,12 +34,10 @@ const CreatePost = () => {
         if (pathName === '/edit-post') {
             if (state.imageUrl !== "") {
                 setFile(`${url}/${state.imageUrl}`)
-                // state?.mentions?.map((ele)=>{
-                //      setMentions([...mentions, ele?.name])
-                //  })
             }
-            // dispatch(setUserData('user',{...userToken}))
-            setPost({...state})
+            let mUsers = state.mentions.length ? state.mentions.map((ele) => `@[display](@${ele.name})`):[]
+            setMentions(mUsers.join(' '));
+            setPost({...state,mentions:[...state.mentions.map(ele => ele.name)]})
         }
     }, [pathName]);
     const navigate = useNavigate()
@@ -52,10 +47,18 @@ const CreatePost = () => {
     }, []);
     useEffect(() => {
         if (users && users.length) {
-            let item = users.map((ele) => {
-                return {id: '@' + ele?.userName, display: '@' + ele?.userName};
-            });
-            setMentionUsers([...item]);
+            if(pathName === '/edit-post'){
+                let mUsers = state.mentions.length ? state.mentions.map((ele) => `@[display](@${ele.name})`):[]
+                let item = users.map((ele) => {
+                    return {id: '@' + ele?.userName, display: '@' + ele?.userName};
+                }).filter(ele => !mUsers.includes(`@[display](${ele.id})`));
+                setMentionUsers([...item]);
+            }else {
+                let item = users.map((ele) => {
+                    return {id: '@' + ele?.userName, display: '@' + ele?.userName};
+                });
+                setMentionUsers([...item]);
+            }
         }
         // eslint-disable-next-line
     }, [users]);
@@ -86,6 +89,15 @@ const CreatePost = () => {
         }
     };
     const handleMentions = (e, data, value) => {
+        let val = value.charAt(value.length - 1);
+        if(val && val !== '@'){
+            let data = users.filter(ele => !value.split('@').includes(ele.userName)).map(ele => {return {id:`@${ele.userName}`,display:`@${ele.userName}`}});
+            setMentionUsers([...data])
+        }else if(!value){
+            let data = users.map(ele => {return {id:`@${ele.userName}`,display:`@${ele.userName}`}});
+            setMentionUsers([...data])
+        }
+        setPost({...post,mentions:value.split('@').filter(ele => ele)});
         if (value !== "@") {
             setMentions(e.target.value);
         } else {
@@ -115,10 +127,9 @@ const CreatePost = () => {
     }
     const handleCreate = async (e) => {
         let mUsers = post?.mentions?.map((ele) => {
-            let user = users.find((item) => item?.userName === ele)
+            let user = users.find((item) => ele.trim() === item?.userName)
             return {id: user?._id, name: user?.userName};
         });
-
         let formData = new FormData();
         formData.append('postImage', post?.imageUrl);
         let postData = {...post, mentions: mUsers, createdBy: userToken?._id, device: device}
@@ -263,8 +274,6 @@ const CreatePost = () => {
                                     }}
                                     onAdd={(id) => {
                                         setMentionUsers([...mentionUsers.filter(ele => ele.id !== id)]);
-                                        let value = id.slice(1);
-                                        setPost({...post, mentions: [...post.mentions, value]});
                                     }}
                                 />
                                 <Mention

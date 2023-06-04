@@ -11,10 +11,11 @@ import {
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {useNavigate} from "react-router-dom";
 import {getProfile} from "../../Actions/userActions";
+import {getStatus} from "../../Helper";
 const url = process.env.REACT_APP_API_URL;
 const Followers = ({type,setActive}) => {
     const [followers,setFollowers] = useState([]);
-    const data = useSelector(state => state.requestData[type]);
+    const data = useSelector(state => state.requestData[type.toLowerCase()]);
     const requests = useSelector(state => state.requestData.requests);
     const requestResult = useSelector(state => state.requestData.requestResult);
     const dispatch = useDispatch();
@@ -52,20 +53,6 @@ const Followers = ({type,setActive}) => {
             await dispatch(updateRequest({id:item?._id,status:status}));
         }
     }
-    const getRequestStatus = ({_id}) => {
-        let status = requests && requests.data && requests.data.find((ele) => ele?.toUserId === _id)?.status;
-        let data = 'Follow';
-        if (status === 'pending') {
-            data = 'Requested';
-        } else if (type === 'followers' && userData?.followers.includes(_id)) {
-            data = 'Remove';
-        }else if (type === 'followings' && userData?.following.includes(_id)) {
-            data = 'UnFollow';
-        } else {
-            data = 'Follow';
-        }
-        return data;
-    }
     const handleProfile = (e,user) => {
         e.stopPropagation();
         navigate(`/profile/${user?._id}`);
@@ -74,7 +61,9 @@ const Followers = ({type,setActive}) => {
     return (
         <>
             <div className="w-full px-3 py-3 justify-center grid min-[1300px]:grid-cols-2 max-[1000px]:grid-cols-2 max-[600px]:grid-cols-1 gap-y-1 gap-x-10 rounded-b-lg  ">
-                {followers && followers.length && followers.map((ele,index)=> (
+                {(followers && followers.length) ? followers.map((ele,index)=> {
+                    let status = getStatus(ele,requests,userData,type,false,true);
+                    return (
                     <div key={index}>
                         <div
                             className="relative shadow-lg shadow-gray-700 max-w-md mx-auto md:max-w-2xl mt-6 min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-xl mt-16 ">
@@ -113,8 +102,8 @@ const Followers = ({type,setActive}) => {
                                     </div>
                                 </div>
                                 <div className='flex gap-5 pt-4'>
-                                    <button onClick={(e) => handleSendRequest(e, ele,getRequestStatus(ele))}
-                                            className={`block uppercase mx-auto shadow bg-[#234e70] hover:[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded ${ele?._id === userData.user_id ? 'hidden':''} ${getRequestStatus(ele) === 'UnFollow' ? '' : 'bg-[#fa6a48]'}`}>{getRequestStatus(ele)}
+                                    <button onClick={(e) => handleSendRequest(e, ele,status)}
+                                            className={`block uppercase mx-auto shadow bg-[#234e70] hover:[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded ${ele?._id === userData._id ? 'hidden':''} ${status === 'UnFollow' ? '' : 'bg-[#fa6a48]'}`}>{status}
                                     </button>
                                     <button
                                         className="block uppercase mx-auto shadow bg-[#fa6a48] hover:bg-[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded">Message
@@ -130,7 +119,7 @@ const Followers = ({type,setActive}) => {
                             </div>
                         </div>
                     </div>
-                ))}
+                    )}):<div>No {type} found!</div>}
             </div>
         </>
     )

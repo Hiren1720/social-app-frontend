@@ -7,6 +7,7 @@ import {getProfile} from "../../Actions/userActions";
 import {BsThreeDotsVertical} from 'react-icons/bs';
 import {BiBlock} from 'react-icons/bi';
 
+import {getStatus} from "../../Helper";
 const url = process.env.REACT_APP_API_URL;
 const UserSlider = ({data, title}) => {
     const dispatch = useDispatch();
@@ -23,6 +24,18 @@ const UserSlider = ({data, title}) => {
         }
     }, [blocked]);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (blockRef.current && !blockRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+        // eslint-disable-next-line
+    }, []);
     const handleSendRequest = async (e, item, status) => {
         let request = requests && requests.data && requests.data.find((ele) => ele?.fromUserId === userData?._id && ele?.toUserId === item?._id);
         e.stopPropagation();
@@ -35,20 +48,6 @@ const UserSlider = ({data, title}) => {
         } else if (status === 'Requested') {
             await dispatch(updateRequest({id: request?._id, status: status}));
         }
-    }
-    const getRequestStatus = ({_id}) => {
-        let status = requests && requests.data && requests.data.find((ele) => ele?.fromUserId === userData?._id && ele?.toUserId === _id)?.status;
-        let data = 'Follow';
-        if (status === 'pending') {
-            data = 'Requested';
-        } else if (title === 'Followers' && userData?.followers.includes(_id)) {
-            data = 'Remove';
-        } else if ((title === 'Followings' || title === 'Users') && userData?.following.includes(_id)) {
-            data = 'UnFollow';
-        } else {
-            data = 'Follow';
-        }
-        return data;
     }
     const getBlockUser = ({_id}) => {
         let data = 'block';
@@ -64,7 +63,6 @@ const UserSlider = ({data, title}) => {
         navigate(`/profile/${user?._id}`);
     }
     const handleBlockAccount = async (e, item, status) => {
-        console.log("user", e, item)
         e.stopPropagation();
         dispatch(blockUser({userId: userData?._id, blockUserId: item?._id, status: status}));
         setOpen({show: false, blockId: null})
@@ -76,8 +74,8 @@ const UserSlider = ({data, title}) => {
                     className="w-full py-4 min-[750px]:justify-start  rounded-b-lg flex-row flex  gap-5 grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ">
 
                     {data && data?.length > 0 && data?.map((ele, index) => {
-                        let status = getRequestStatus(ele);
-                        let blockUser = getBlockUser(ele)
+                        let blockUser = getBlockUser(ele);
+                        let status = getStatus(ele,requests,userData,title,false);
                         return (
                             <div key={index}>
                                 <div
@@ -89,7 +87,7 @@ const UserSlider = ({data, title}) => {
                                          aria-labelledby="user-menu-button"
                                          tabIndex="-1">
                                         <ul className="space-y-2">
-                                            <li>
+                                            <li className='cursor-pointer'>
                                                 <div onClick={(e) => handleBlockAccount(e, ele, blockUser)}
                                                      className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                                                     <BiBlock/>

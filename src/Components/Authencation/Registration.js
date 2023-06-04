@@ -6,7 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {registerUser, setUserData, updateUser} from "../../Actions/userActions";
 import {useTranslation} from "react-i18next";
-
+import {toast} from "react-toastify";
 const url = process.env.REACT_APP_API_URL;
 const Registration = () => {
     let {t} = useTranslation()
@@ -33,9 +33,11 @@ const Registration = () => {
             } else {
                 navigate('/login');
             }
-            dispatch(setUserData('userResult', null))
+        }else if(userResult && !userResult.success){
+            toast(userResult?.msg,{type:'error'});
         }
-    }, [userResult]);
+        dispatch(setUserData('userResult',null))
+    },[userResult]);
 
     const handleChange = (e) => {
         let {name, value, checked, files} = e.target;
@@ -69,7 +71,6 @@ const Registration = () => {
             dispatch(updateUser(formData));
         } else {
             dispatch(registerUser(formData));
-
         }
         setImage('')
     }

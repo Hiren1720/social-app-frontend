@@ -6,14 +6,14 @@ import {
 } from 'redux-saga/effects';
 import * as types from '../../Actions/Types'
 
-import {httpUserUpdateDataAuth, httpPost} from "../../Helper/api";
+import {httpPost} from "../../Helper/api";
 import {getLocalStorageData, setLocalStorageData} from "../../Helper/TokenHandler";
 export function* updateUser({payload}) {
     try{
         yield put({ type: types.SET_LOADING,loading:true });
         let UPDATE_USER_URL = `/user/update`;
-        let request = {url:UPDATE_USER_URL,body:payload};
-        let result = yield call(httpUserUpdateDataAuth,request);
+        let request = {url:UPDATE_USER_URL,body:payload,isFormData:true};
+        let result = yield call(httpPost,request);
         yield put({
             type: types.UPDATE_USER_STATE_SUCCESS,
             payload: result,

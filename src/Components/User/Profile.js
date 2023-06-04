@@ -1,14 +1,12 @@
 import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import ReactStars from "react-rating-stars-component";
+import {BsGoogle, BsFacebook, BsTwitter, BsPinterest} from "react-icons/bs";
 import {getProfile, getProfileViewers} from "../../Actions/userActions";
-import {Link,useNavigate, useParams} from "react-router-dom";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import PersonalDetail from "./PersonalDetail";
 import Followers from "./Followers";
-import {BsFillPlusSquareFill, BsGoogle, BsFacebook, BsTwitter, BsPinterest} from "react-icons/bs";
-import {FaUserCheck} from 'react-icons/fa';
-import {RiUserUnfollowFill} from 'react-icons/ri';
 import {
     getFollowers,
     getRequests,
@@ -22,6 +20,7 @@ import Loader from "../Layouts/Loader";
 import ButtonLoader from "../ButtonLoader";
 import Posts from '../Posts/Posts';
 import useWidthHeight from "../../Hooks/useWidthHeight";
+import {getIcon, getStatus} from '../../Helper';
 const url = process.env.REACT_APP_API_URL;
 const Profile = ({socket}) => {
     const [user, setUser] = useState({});
@@ -68,9 +67,9 @@ const Profile = ({socket}) => {
     const renderUserDetails = () => {
         switch (active) {
             case 'Followings':
-                return <Followers user={user} type={'followings'} setActive={setActive}/>;
+                return <Followers user={user} type={'Followings'} setActive={setActive}/>;
             case 'Followers':
-                return <Followers user={user} type={'followers'} setActive={setActive}/>;
+                return <Followers user={user} type={'Followers'} setActive={setActive}/>;
             case 'Posts':
                 return <Posts socket={socket} />;
             case 'Profile':
@@ -93,19 +92,7 @@ const Profile = ({socket}) => {
                 dispatch(updateRequest({id: req?._id, status: status}));
             }
         }
-    }
-
-    const getRequestStatus = ({_id},isViewer) => {
-        let status = requests && requests?.data && requests?.data?.find((ele) => ele?.toUserId === _id)?.status;
-        let data = isViewer ? <BsFillPlusSquareFill/> : 'Follow';
-        if (status === 'pending') {
-            data = isViewer ? <FaUserCheck/>:'Requested';
-        }
-        else if(userData && userData?.following?.includes(_id)){
-            data = isViewer ? <RiUserUnfollowFill/>:'UnFollow'
-        }
-        return data;
-    }
+    };
     return (
         <>
             {loading ? <Loader/> :
@@ -166,7 +153,7 @@ const Profile = ({socket}) => {
                                                                                     <span>{link.icon}</span>
                                                                                     <span
                                                                                         className="block w-max  tracking-wide  md:text-sm text-sm transition duration-300 group-hover:text-blue-600">
-                                                                                        {(width < 1343 && width >1023 || width < 1744 && width >1530) && link.link.length > 30 ? link.link.slice(0, width < 1188 && width >1024 ?  15:28)+'...' :link.link}</span>
+                                                                                        {((width < 1343 && width >1023) || (width < 1744 && width >1530)) && link.link.length > 30 ? link.link.slice(0, width < 1188 && width >1024 ?  15:28)+'...' :link.link}</span>
                                                                                 </a>
                                                                             </div>)
                                                                     })}
@@ -224,8 +211,8 @@ const Profile = ({socket}) => {
                                             </div>
                                             <div className='flex h-[60px]  max-[610px]:justify-center max-[640px]:justify-end sm:justify-end md:justify-end '>
                                                 <div className='mx-4 max-[400px]:mx-2'>
-                                                    <button onClick={(e) => handleButton(e, user, getRequestStatus(user,false))}
-                                                            className='bg-white border-[3px] border-grey rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>{buttonLoading ? <ButtonLoader/> : userData?._id === id ? "Edit Profile" : getRequestStatus(user)}
+                                                    <button onClick={(e) => handleButton(e, user, getStatus(user,requests,userData,'',false,true))}
+                                                            className='bg-white border-[3px] border-grey rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>{buttonLoading ? <ButtonLoader/> : userData?._id === id ? "Edit Profile" : getStatus(user,requests,userData,'Followings',false,true)}
                                                     </button>
                                                 </div>
                                                 <div className='mx-4 max-[400px]:mx-2 hidden'>
@@ -319,11 +306,13 @@ const Profile = ({socket}) => {
                                                                     <h3>People Viewed Profile</h3>
                                                                 </div>
                                                                 <div>
-                                                                    {profileViewers && profileViewers?.length ? profileViewers.map((ele,index)=>(
+                                                                    {profileViewers && profileViewers?.length ? profileViewers.map((ele,index)=>{
+                                                                        let status = getStatus(ele?.author_info[0],requests,userData,'Followings',true);
+                                                                        return (
                                                                         <div className="m-auto text-gray-600 " key={index}>
                                                                             <div
                                                                                 className="bg-white justify-between">
-                                                                                <div className="flex items-center justify-between px-4 py-6  gap-2 lg:gap-1">
+                                                                                <div className={`flex items-center justify-between px-4 py-2  gap-2 lg:gap-1 ${index !== profileViewers.length - 1? 'border-b-[1px]':''}`}>
                                                                                     <div className='flex'>
                                                                                         <img className="w-12 h-12 rounded-full object-cover mr-4 "
                                                                                              src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url :`${url}${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"}
@@ -332,13 +321,13 @@ const Profile = ({socket}) => {
                                                                                             <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">{ele?.author_info[0]?.name}</h2>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div className="flex items-center hidden text-2xl">
-                                                                                        {getRequestStatus(ele,true)}
+                                                                                    <div className="flex items-center text-2xl" onClick={(e)=> handleButton(e,ele?.author_info[0],status)}>
+                                                                                        {getIcon(status)}
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                    )) :''}
+                                                                    )}) :''}
                                                                 </div>
                                                             </div>
                                                         </div>

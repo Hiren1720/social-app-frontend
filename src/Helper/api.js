@@ -16,16 +16,7 @@ export const httpFormDataAuth = async (request) => {
         body:request.body
     }).then((res)=> res.json())
 }
-export const httpUserUpdateDataAuth = async (request) => {
-    let token = tokenUtil.getLocalStorageData('accessToken');
-    return await fetch(`${API_END_POINT}${request.url}`,{
-        method:'POST',
-        headers:{
-            'Authorization': `Bearer ${token?.accessToken}`
-        },
-        body:request?.body
-    }).then((res)=> res.json())
-}
+
 export const httpDelete = async (request) => {
     let token = tokenUtil.getLocalStorageData('accessToken');
     return await fetch(`${API_END_POINT}${request.url}`,{
@@ -34,7 +25,13 @@ export const httpDelete = async (request) => {
             'Authorization': `Bearer ${token?.accessToken}`
         },
         body:request?.body
-    }).then((res)=> res.json())
+    }).then(async (response)=> {
+        if (response?.status === 401) {
+            let data = await checkAndRegenerateToken(token?.refreshToken);
+            return data ? await httpDelete(request):null;
+        }
+        return response.json();
+    }).then((json) => json);
 }
 export const httpPost = (request) => {
     let token = tokenUtil.getLocalStorageData('accessToken');
@@ -53,15 +50,10 @@ export const httpPost = (request) => {
     return fetch(url, requestOptions)
         .then(async (response) => {
             if (response?.status === 401) {
-                await checkAndRegenerateToken(token?.refreshToken);
-                return httpGet(request);
+                let data = await checkAndRegenerateToken(token?.refreshToken);
+                return data ? await httpPost(request):null;
             }
-            return response
-                .json()
-                .then((resp) => resp)
-                .catch(() => {
-                    return response.status;
-                });
+            return response.json();
         })
         .then((json) => json);
 };
@@ -77,8 +69,8 @@ export const httpGet = (REQUEST) => {
     return fetch(`${API_END_POINT}${REQUEST}`, requestOptions)
         .then(async (response) => {
             if (response?.status === 401) {
-                await checkAndRegenerateToken(token?.refreshToken);
-                return httpGet(REQUEST);
+                let data = await checkAndRegenerateToken(token?.refreshToken);
+                return data ? await httpGet(REQUEST):null;
             }
             return response.json()
         })
@@ -96,12 +88,20 @@ const checkAndRegenerateToken = async (refresh_token) => {
             return true;
         }
         else {
-            window.location.href="/login";
-            return false;
+            return updateLocalStorage();
         }
     }
     else{
-        window.location.href="/login";
-        return false;
+        return updateLocalStorage();
     }
+}
+
+export const updateLocalStorage = () => {
+    tokenUtil.removeLocalStorageData('accessToken');
+    let user = tokenUtil.getLocalStorageData('user');
+    let users = tokenUtil.getLocalStorageData('users');
+    tokenUtil.setLocalStorageData('users',users.filter(ele => ele?._id !== user._id));
+    tokenUtil.removeLocalStorageData('user');
+    window.location.href="/login";
+    return false;
 }
