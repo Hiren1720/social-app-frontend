@@ -7,7 +7,6 @@ import {createPost, resetPostResult, updatePost} from "../../Actions/postActions
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {GrFormClose} from 'react-icons/gr';
 import getDeviceName from "../../Helper/getDeviceName";
-const url = process.env.REACT_APP_API_URL;
 const CreatePost = () => {
     const dispatch = useDispatch();
     let userToken = getLocalStorageData('user');
@@ -18,7 +17,7 @@ const CreatePost = () => {
     const postResult = useSelector(state => state.postData.postResult);
     const [mentionUsers, setMentionUsers] = useState([]);
     const [mentions, setMentions] = useState('');
-    const [file, setFile] = useState(null);
+    const [files, setFiles] = useState([]);
     const [importError, setImportError] = useState(null);
     const {state} = useLocation();
     const [post, setPost] = useState({
@@ -33,12 +32,13 @@ const CreatePost = () => {
     useEffect(() => {
         if (pathName === '/edit-post') {
             if (state.imageUrl !== "") {
-                setFile(`${url}/${state.imageUrl}`)
+                // setFiles(`${url}/${state.imageUrl}`)
             }
             let mUsers = state.mentions.length ? state.mentions.map((ele) => `@[display](@${ele.name})`):[]
             setMentions(mUsers.join(' '));
             setPost({...state,mentions:[...state.mentions.map(ele => ele.name)]})
         }
+        // eslint-disable-next-line
     }, [pathName]);
     const navigate = useNavigate()
     useEffect(() => {
@@ -104,26 +104,39 @@ const CreatePost = () => {
             setMentions(e.target.value);
         }
     };
-    const handleOnImportFile = (fileData) => {
-        let extension = fileData[0].name.split('.').pop().replace(' ', '');
-        if (fileData.length > 1) {
-            setImportError('Post Only One Image');
-        } else if (extension !== 'jpg' && extension !== 'jpeg' && extension !== 'png') {
-            setImportError('Post Only JPEG,JPG & PNG File');
-        } else {
-            setImportError(null);
-            const selectedfile = fileData;
-            if (selectedfile.length > 0) {
-                const [imageFile] = selectedfile;
-                const fileReader = new FileReader();
-                fileReader.onload = () => {
-                    const srcData = fileReader.result;
-                    setFile(srcData);
-                };
-                fileReader.readAsDataURL(imageFile);
-            }
-            setPost({...post, imageUrl: fileData[0]});
+    const handleOnImportFile = async (fileData) => {
+        if(fileData.length <= 10) {
+            Array.from(fileData).forEach((ele, id) => {
+                let extension = ele.name.split('.').pop().replace(' ', '');
+                if (extension !== 'jpg' && extension !== 'jpeg' && extension !== 'png' && extension !== 'mp4') {
+                    setImportError('Post Only JPEG,JPG & PNG File');
+                } else {
+                    setImportError(null);
+                }
+                setPost({...post, imageUrl: [...post.imageUrl,...fileData]});
+            })
+            let file = await tobase64Handler(Array.from(fileData));
+            setFiles([...files,...file]);
+        }else{
+            setImportError('You can post maximum 10 files!');
         }
+
+    }
+    const toBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    };
+    const tobase64Handler = async (files) => {
+        const filePathsPromises = [];
+        files.forEach(file => {
+            filePathsPromises.push(toBase64(file));
+        });
+        const filePaths = await Promise.all(filePathsPromises);
+        return filePaths.map((base64File) => ({ selectedFile: base64File }));
     }
     const handleCreate = async (e) => {
         let mUsers = post?.mentions?.map((ele) => {
@@ -131,7 +144,9 @@ const CreatePost = () => {
             return {id: user?._id, name: user?.userName};
         });
         let formData = new FormData();
-        formData.append('postImage', post?.imageUrl);
+        Array.from(post?.imageUrl).forEach(file => {
+            formData.append('postImage', file);
+        });
         let postData = {...post, mentions: mUsers, createdBy: userToken?._id, device: device}
         formData.append('post', JSON.stringify(postData));
         if (pathName === '/edit-post') {
@@ -174,7 +189,6 @@ const CreatePost = () => {
                                    htmlFor="grid-password">
                                 Image
                             </label>
-                            {file === null ? <>
                                     <div
                                         className='bg-gray-300 border-gray-800 border-dashed border-[1px] h-[136px] box-border w-full'
                                         onDrop={(e) => {
@@ -199,7 +213,8 @@ const CreatePost = () => {
                                                                handleOnImportFile(e.target.files);
                                                                e.preventDefault();
                                                            }}
-                                                           accept={"image/png, image/jpeg, image/jpg"}
+                                                           multiple={true}
+                                                           accept={"image/png, image/jpeg, image/jpg, video/mp4, video/mp3"}
                                                     />
                                                     <label
                                                         className='flex cursor-pointer items-center bg-gray-800 h-[32px] justify-center rounded-[4px] text-[#FCFCFC] text-[14px] w-[100px]'> Browse
@@ -211,13 +226,12 @@ const CreatePost = () => {
                                     {(importError !== null) ? <div className='mt-2'>
                                         <span style={{color: 'red'}}>{importError}</span>
                                     </div> : ''}
-                                </> :
                                 <div className='flex row mt-2 w-full'>
-                                    <div><img src={file} height='150' width='150' alt='PostImage'/></div>
+                                    <div>{files?.length ? files.map((file,id)=> <img src={file?.selectedFile} height='150' width='150' alt='PostImage'/>):''}</div>
                                     <div className='ml-1 cursor-pointer'><GrFormClose size={28}
-                                                                                      onClick={() => setFile(null)}/>
+                                                                                      onClick={() => setFiles([])}/>
                                     </div>
-                                </div>}
+                                </div>
                         </div>
                     </div>
                     <div className="flex flex-wrap -mx-3 mb-6">

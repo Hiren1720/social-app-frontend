@@ -195,18 +195,18 @@ const Profile = ({socket}) => {
                                     <div className="flex pt-[4px] w-full">
                                         <div className="flex gap-5 w-full mb-[10px] ">
                                             <div className='flex'>
-                                                <ReactStars
+                                                {user?.rating ? <ReactStars
                                                     count={5}
                                                     onChange={()=>{}}
                                                     edit={false}
                                                     size={24}
-                                                    value={user?.rating || 0}
+                                                    value={user?.rating}
                                                     isHalf={true}
                                                     emptyIcon={<i className="far fa-star"/>}
                                                     halfIcon={<i className="fa fa-star-half-alt"/>}
                                                     fullIcon={<i className="fa fa-star"/>}
                                                     activeColor={user?.rating <= 2 ? "#ff0000":"#ffd700"}
-                                                />
+                                                />:''}
                                                 <a href="#" title="" className='max-[600px]:hidden float-left text-[#51a5fb] text-base font-bold ml-[20px] underline'>{user?.status ? "Active": "Inactive"}</a>
                                             </div>
                                             <div className='flex h-[60px]  max-[610px]:justify-center max-[640px]:justify-end sm:justify-end md:justify-end '>

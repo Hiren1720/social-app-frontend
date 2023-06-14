@@ -2,8 +2,12 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {BsDot, BsHandThumbsUp, BsHandThumbsUpFill, BsShare, BsThreeDotsVertical,BsLink45Deg} from 'react-icons/bs';
 import {FaFacebookSquare, FaLinkedin, FaWhatsappSquare, FaWindowClose} from "react-icons/fa"
+import {BiLeftArrow, BiRightArrow} from "react-icons/bi"
 import {TfiComment} from 'react-icons/tfi';
 import {useDispatch, useSelector} from "react-redux";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import {toast} from 'react-toastify';
 import {createLike, deletePost, getAllLikes, getAllPost, getPost} from "../../Actions/postActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
@@ -108,6 +112,7 @@ const BlogPage = ({socket}) => {
         } else {
             dispatch(getAllPost());
         }
+        // eslint-disable-next-line
     }, [postId, postResult]);
 
     const handleCreateLike = (id) => {
@@ -239,13 +244,13 @@ const BlogPage = ({socket}) => {
             <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                 <div className="w-full flex justify-around">
                     <a href={`whatsapp://send?text=${appUrl}/post/${modal?.data ? modal?.data?.author_info[0]?.userName : 'postById'}/${modal?.data?._id}`}
-                       data-action="share/whatsapp/share"
+                       data-action="share/whatsapp/share" rel="noreferrer"
                        target="_blank"> <FaWhatsappSquare color={'#25D366'} size={60}/></a>
                     <a href={`https://www.facebook.com/sharer.php?u=${appUrl}/post/${modal?.data ? modal?.data?.author_info[0]?.userName : 'postById'}/${modal?.data?._id}`}
-                       data-action="share/whatsapp/share"
+                       data-action="share/facebook/share" rel="noreferrer"
                        target="_blank"> <FaFacebookSquare color={'#4267B2'} size={60}/></a>
                     <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${appUrl}/post/${modal?.data ? modal?.data?.author_info[0]?.userName : 'postById'}/${modal?.data?._id}`}
-                       data-action="share/whatsapp/share"
+                       data-action="share/linkedin/share" rel="noreferrer"
                        target="_blank"> <FaLinkedin color={'#0077B5'} size={60}/></a>
                 </div>
             </div>
@@ -266,6 +271,15 @@ const BlogPage = ({socket}) => {
             </div>
         </>
     )
+    const settings = {
+        dots: true,
+        infinite: false,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        nextArrow: <BiRightArrow />,
+        prevArrow: <BiLeftArrow />
+    };
     return (
         <>
             {loading ? <Loader/> :
@@ -325,9 +339,19 @@ const BlogPage = ({socket}) => {
                                         <div className="mb-3 text-xl font-bold">{ele?.title}</div>
                                         <div
                                             className="text-sm text-neutral-600">{ele?.content}</div>
-                                        {ele?.imageUrl && <img src={`${url}${ele?.imageUrl}`} alt=''
-                                                               className="lg:h-[350px] w-full object-fill py-2"/>}
-
+                                        <Slider {...settings}>
+                                            {Array.isArray(ele?.imageUrl) ? ele?.imageUrl.map((file,index)=> {
+                                                if(file.type === 'video'){
+                                                    return <video src={`${url}${file.url}`} autoPlay/>
+                                                }
+                                                else {
+                                                    return <img src={`${url}${file.url}`} alt=''
+                                                                className="lg:h-[350px] w-full object-fill py-2"/>
+                                                }
+                                                }):
+                                                <img src={`${url}${ele?.imageUrl}`} alt=''
+                                                     className="lg:h-[350px] w-full object-fill py-2"/>}
+                                        </Slider>
                                     </div>
                                     <div>
                                         <div className="sm:px-6 pt-4 pb-2">
