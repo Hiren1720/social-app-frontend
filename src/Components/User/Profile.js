@@ -321,7 +321,7 @@ const Profile = ({socket}) => {
                                                                                             <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">{ele?.author_info[0]?.name}</h2>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div className="flex items-center text-2xl" onClick={(e)=> handleButton(e,ele?.author_info[0],status)}>
+                                                                                    <div className="flex items-center text-2xl cursor-pointer" onClick={(e)=> handleButton(e,ele?.author_info[0],status)}>
                                                                                         {getIcon(status)}
                                                                                     </div>
                                                                                 </div>

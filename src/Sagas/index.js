@@ -25,6 +25,9 @@ import {deleteAccountSaga} from "./UserSagas/deleteAccountSaga";
 import {blockUserSaga} from "./BlockUserSaga/blockUserSaga";
 import {deletePostSaga} from "./PostSagas/deletePostSaga";
 import {updatePostSaga} from "./PostSagas/updatePostSaga";
+import {setSettingSaga} from "./UserSagas/setSettingSaga";
+import {setVisitorTimeSaga} from "./UserSagas/setVisitorTimeSaga";
+import {getDailyUsagesSaga} from "./UserSagas/getDailyUsagesSaga";
 export default function* root() {
     yield all([
         userRegisterSaga(),
@@ -54,5 +57,8 @@ export default function* root() {
         updatePostSaga(),
         userResetPasswordSaga(),
         deleteAccountSaga(),
+        setSettingSaga(),
+        setVisitorTimeSaga(),
+        getDailyUsagesSaga()
     ]);
 }

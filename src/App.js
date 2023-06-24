@@ -18,8 +18,12 @@ import ForgetPassword from './Components/Authencation/ForgetPassword';
 import ResetPassword from './Components/Authencation/ResetPassword';
 import './App.css'
 import SharedPost from "./Components/Posts/SharedPost";
+import Settings from "./Components/User/Settings";
+import {useDispatch} from "react-redux";
+import {createVisitorTime} from "./Actions/userActions";
 
 function App() {
+  const dispatch = useDispatch();
   const [socket] = React.useState(io('http://localhost:4040/', {
     transports: ["websocket"]
   }));
@@ -35,7 +39,21 @@ function App() {
       Notification.requestPermission();
     }
     // eslint-disable-next-line
-  },[user])
+  },[user]);
+
+  let totalTime = 0;
+  setInterval(function() {
+    totalTime += 1;
+  }, 1000);
+  useEffect(() => {
+    const user = getLocalStorageData('user');
+    if(user) {
+      window.addEventListener('pagehide', async () => {
+        window.clearInterval();
+        dispatch(createVisitorTime({totalTime, user: user}));
+      });
+    }
+  }, []);
 
   return (
     <div className="w-full h-screen ">
@@ -56,6 +74,7 @@ function App() {
             <Route path='followers' element={<Followers/>}  />
             <Route path='users' element={<Users/>}  />
             <Route path='post/:userName/:postId' element={<SharedPost socket={socket}/>}  />
+            <Route path='settings' element={<Settings />}  />
           </Route>
           <Route path='*' element={<h1>404 Page not found.</h1>}/>
         </Routes>
