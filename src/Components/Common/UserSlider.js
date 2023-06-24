@@ -8,16 +8,18 @@ import {BsThreeDotsVertical} from 'react-icons/bs';
 import {BiBlock} from 'react-icons/bi';
 
 import {getStatus} from "../../Helper";
+import {getAllPost} from "../../Actions/postActions";
+
 const url = process.env.REACT_APP_API_URL;
 const UserSlider = ({data, title}) => {
     const dispatch = useDispatch();
+    const posts = useSelector(state => state.postData.posts);
     const requests = useSelector(state => state.requestData.requests);
     const userData = useSelector(state => state.userData.loggedInUser);
     const blocked = useSelector(state => state.blockData.blockResult);
     const [open, setOpen] = useState({show: false, blockId: ''});
     const blockRef = useRef();
     const navigate = useNavigate();
-
     useEffect(() => {
         if (blocked?.success) {
             dispatch(getProfile({id: userData?._id, isLoggedInUser: true}));
@@ -25,6 +27,7 @@ const UserSlider = ({data, title}) => {
     }, [blocked]);
 
     useEffect(() => {
+        dispatch(getAllPost());
         const handleClickOutside = (event) => {
             if (blockRef.current && !blockRef.current.contains(event.target)) {
                 setOpen(false);
@@ -34,6 +37,7 @@ const UserSlider = ({data, title}) => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
+
         // eslint-disable-next-line
     }, []);
     const handleSendRequest = async (e, item, status) => {
@@ -60,6 +64,7 @@ const UserSlider = ({data, title}) => {
     }
     const handleProfile = (e, user) => {
         e.stopPropagation();
+
         navigate(`/profile/${user?._id}`);
     }
     const handleBlockAccount = async (e, item, status) => {
@@ -67,25 +72,30 @@ const UserSlider = ({data, title}) => {
         dispatch(blockUser({userId: userData?._id, blockUserId: item?._id, status: status}));
         setOpen({show: false, blockId: null})
     }
+
+
     return (
         <>
             <div className='mx-4 w-full overflow-y-scroll h-screen scroll-smooth '>
                 <div
-                    className="w-full py-4 min-[750px]:justify-start  rounded-b-lg flex-row flex  gap-5 grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ">
+                    className="w-full py-4 min-[750px]:justify-start  rounded-b-lg flex-row flex  gap-5 grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ">
 
                     {data && data?.length > 0 && data?.map((ele, index) => {
+                        let UserPost = posts?.filter((post)=>{
+                            return post?.createdBy === ele?._id;
+                        });
                         let blockUser = getBlockUser(ele);
-                        let status = getStatus(ele,requests,userData,title,false);
+                        let status = getStatus(ele, requests, userData, title, false);
                         return (
-                            <div key={index}>
+                            <div key={index} className="px-2">
                                 <div
-                                    className="relative max-w-md mx-auto md:max-w-2xl min-w-0 break-words bg-white w-full shadow-lg rounded-xl  ">
-                                    <div ref={blockRef}
-                                         className={`absolute  z-10 mt-8 w-36 left-32 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${open.show && open.blockId === ele?._id ? '' : 'hidden'}`}
-                                         role="menu"
-                                         aria-orientation="vertical"
-                                         aria-labelledby="user-menu-button"
-                                         tabIndex="-1">
+                                    className="relative max-w-md mx-auto md:max-w-2xl min-w-0 break-words bg-white w-full shadow-lg shadow-gray-300 rounded-xl  ">
+                                    <div
+                                        className={`absolute  z-10 mt-8 w-36 left-32 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${open.show && open.blockId === ele?._id ? '' : 'hidden'}`}
+                                        role="menu"
+                                        aria-orientation="vertical"
+                                        aria-labelledby="user-menu-button"
+                                        tabIndex="-1">
                                         <ul className="space-y-2">
                                             <li className='cursor-pointer'>
                                                 <div onClick={(e) => handleBlockAccount(e, ele, blockUser)}
@@ -111,11 +121,13 @@ const UserSlider = ({data, title}) => {
                                                     src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}${ele?.profile_url}` : "https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
                                                     className="rounded-full align-middle object-cover border-none absolute mt-2 w-[100px] h-[100px]"/>
                                             </div>
-                                            <div className="w-full text-center mt-20">
-                                                <div className="flex justify-center lg:pt-4 pt-8 pb-0">
-                                                    <div className="lg:p-3 p-2 text-center">
+                                            <div className="w-full text-center mt-20 ">
+                                                <div
+                                                    className={`flex justify-between lg:pt-4 pt-8 pb-0 ${(title === "Followers" || title === "Followings") ? 'max-[750px]:flex-col max-[640px]:!flex-row' : ''}`}>
+                                                    <div
+                                                        className="lg:p-3 p-2 text-center max-[750px]:!pr-0 max-[640px]:!pr-8 !pr-8 ">
                             <span
-                                className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.followers?.length}</span>
+                                className="text-xl font-bold block uppercase tracking-wide text-slate-700">{UserPost.length}</span>
                                                         <span className="text-sm text-slate-400">Post</span>
                                                     </div>
                                                     <div className="lg:p-3 p-2 text-center">

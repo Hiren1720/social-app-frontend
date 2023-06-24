@@ -63,6 +63,19 @@ export const getProfile = (payload) =>{
     }
 };
 
+export const getSavedPost = (payload) =>{
+    return {
+        type: types.SET_SAVED_POST_STATE,
+        payload
+    }
+};
+
+export const getAllSavedPost = (payload) =>{
+    return {
+        type: types.GET_SAVED_POST_STATE,
+        payload
+    }
+};
 
 export const updateUser = (payload) =>{
     return {

@@ -12,12 +12,14 @@ import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {useNavigate} from "react-router-dom";
 import {getProfile} from "../../Actions/userActions";
 import {getStatus} from "../../Helper";
+import {getAllPost} from "../../Actions/postActions";
 const url = process.env.REACT_APP_API_URL;
 const Followers = ({type,setActive}) => {
     const [followers,setFollowers] = useState([]);
     const data = useSelector(state => state.requestData[type.toLowerCase()]);
     const requests = useSelector(state => state.requestData.requests);
     const requestResult = useSelector(state => state.requestData.requestResult);
+    const posts = useSelector(state => state.postData.posts);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let userData = getLocalStorageData('user');
@@ -36,6 +38,7 @@ const Followers = ({type,setActive}) => {
             dispatch(getFollowers({type: 'user', state: 'followers', id: userData?._id}))
             dispatch(getFollowers({state: 'followings', id: userData?._id}));
             dispatch(setRequest());
+            dispatch(getAllPost())
         }
     },[requestResult]);
     const handleSendRequest = async (e,item,status) => {
@@ -60,13 +63,16 @@ const Followers = ({type,setActive}) => {
     }
     return (
         <>
-            <div className="w-full px-3 py-3 justify-center grid min-[1300px]:grid-cols-2 max-[1000px]:grid-cols-2 max-[600px]:grid-cols-1 gap-y-1 gap-x-10 rounded-b-lg  ">
+            <div className="w-full px-3 py-3 justify-center grid min-[1300px]:grid-cols-2 max-[1000px]:grid-cols-2 max-[600px]:grid-cols-1 gap-y-1 gap-x-10 rounded-b-lg h-[93vh] overflow-y-scroll ">
                 {(followers && followers.length) ? followers.map((ele,index)=> {
                     let status = getStatus(ele,requests,userData,type,false,true);
+                    let UserPost = posts?.filter((post)=>{
+                        return post?.createdBy === ele?._id;
+                    });
                     return (
                     <div key={index}>
                         <div
-                            className="relative shadow-lg shadow-gray-700 max-w-md mx-auto md:max-w-2xl mt-6 min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-xl mt-16 ">
+                            className="relative shadow-lg shadow-gray-700 max-w-md mx-auto md:max-w-2xl mt-6 min-w-0 break-words bg-white w-full mb-6 rounded-xl mt-16 ">
                             <div className="px-6 pt-8">
                                 <div className="flex flex-wrap justify-center">
                                     <div className="w-full flex justify-center">
@@ -76,9 +82,9 @@ const Followers = ({type,setActive}) => {
                                     </div>
                                     <div className="w-full text-center mt-20">
                                         <div className="flex justify-center lg:pt-4 pt-8 pb-0">
-                                            <div className="lg:p-3 p-2 text-center">
+                                            <div className="lg:p-3 p-2 text-center !px-8">
                                                     <span
-                                                        className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.followers?.length}</span>
+                                                        className="text-xl font-bold block uppercase tracking-wide text-slate-700">{UserPost.length}</span>
                                                 <span className="text-sm text-slate-400">Post</span>
                                             </div>
                                             <div className="lg:p-3 p-2 text-center">

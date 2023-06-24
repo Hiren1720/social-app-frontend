@@ -36,34 +36,35 @@ const Followers = () => {
     return (
         <>
             {loading ? <Loader/> :
-                <div className="relative flex gap-[8px]  shadow-3xl ">
-                    <div className='flex flex-col'>
+                <div className="relative flex gap-[8px] h-[93vh] ">
+                    {/*<div className='flex flex-col block max-[1250px]:hidden'>*/}
+                        {/*<div className='  '>*/}
+                        {/*<div*/}
+                        {/*    className="relative block max-[1250px]:hidden shadow-lg h-full shadow-md shadow-gray-400 rounded-[5px]  p-5 bg-white bg-clip-border shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:!shadow-none">*/}
+                        {/*    <div*/}
+                        {/*        className="relative flex w-full h-full justify-center bg-purple-300 bg-cover  bg-no-repeat  bg-cover bg-center">*/}
+                                {/*<div*/}
+                                {/*    className="flex h-full w-full items-center justify-center ">*/}
+                                {/*    <div className=''>*/}
+                                {/*        <h1*/}
+                                {/*            className="text-white flex justify-center font-bold text-8xl font-sans animate-bounce">{openModal === 'followers' ? followers?.data?.length : followings?.data?.length}</h1>*/}
+                                {/*        <button type="submit"*/}
+                                {/*                className="block text-indigo-800 mt-4 py-2 text-7xl rounded-2xl font-bold mb-2 font-[Lobster] italic font-bold*/}
+                                {/*">{openModal === 'followers' ? 'Followers' : 'Followings'}*/}
+                                {/*        </button>*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
+                            {/*</div>*/}
+                    {/*</div>*/}
+
+                    <div className="flex  flex-col items-center w-full ml-28 max-[1500px]:ml-[0px] ">
                         <div
-                            className="relative shadow-lg h-screen shadow-md shadow-gray-400 rounded-[5px]  p-5 bg-white bg-clip-border shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:!shadow-none">
-                            <div
-                                className="relative flex w-full h-full justify-center bg-purple-300 bg-cover  bg-no-repeat  bg-cover bg-center">
-                                <div
-                                    className="flex h-full w-full items-center justify-center ">
-                                    <div className=''>
-                                        <h1
-                                            className="text-white flex justify-center font-bold text-8xl font-sans animate-bounce">{openModal === 'followers' ? followers?.data?.length : followings?.data?.length}</h1>
-                                        <button type="submit"
-                                                className="block text-indigo-800 mt-4 py-2 text-8xl rounded-2xl font-bold mb-2 font-[Lobster] italic font-bold
-                                ">{openModal === 'followers' ? 'Followers' : 'Followings'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex  flex-col items-center w-full ">
-                        <div
-                            className="relative shadow-lg  w-full h-screen shadow-md shadow-gray-400 rounded-[5px]  p-5 bg-white bg-clip-border shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:!shadow-none">
+                            className="relative w-full h-[93vh] overflow-y-scroll rounded-[5px]  p-5   dark:!bg-navy-800 dark:text-white dark:!shadow-none">
                             {openModal === 'followers' ? <UserSlider data={followers?.data} title={'Followers'}/> :
                                 <UserSlider data={followings?.data} title={'Followings'}/>}
                         </div>
                     </div>
-                    <div className="relative shadow-lg h-screen top-0 flex bg-white flex-col justify-around items-center shadow-md shadow-gray-400 gap-5 overflow-hidden bg-clip-border shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:!shadow-none">
+                    <div className="relative shadow-lg h-[93vh] top-0 flex bg-white flex-col justify-around items-center shadow-md shadow-gray-400 gap-5 overflow-hidden bg-clip-border shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:!shadow-none">
                         <div>
                             <button onClick={() => {
                                 setOpenModal('followers')

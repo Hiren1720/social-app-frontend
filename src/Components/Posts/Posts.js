@@ -1,8 +1,16 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {BsDot, BsHandThumbsUp, BsHandThumbsUpFill, BsShare, BsThreeDotsVertical,BsLink45Deg} from 'react-icons/bs';
+import {
+    BsBookmark,
+    BsBookmarkFill,
+    BsDot,
+    BsHandThumbsUp,
+    BsHandThumbsUpFill,
+    BsLink45Deg,
+    BsShare,
+    BsThreeDotsVertical
+} from 'react-icons/bs';
 import {FaFacebookSquare, FaLinkedin, FaWhatsappSquare, FaWindowClose} from "react-icons/fa"
-import {BiLeftArrow, BiRightArrow} from "react-icons/bi"
 import {TfiComment} from 'react-icons/tfi';
 import {useDispatch, useSelector} from "react-redux";
 import Slider from "react-slick";
@@ -10,6 +18,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {toast} from 'react-toastify';
 import {createLike, deletePost, getAllLikes, getAllPost, getPost} from "../../Actions/postActions";
+import {getAllSavedPost, getSavedPost} from "../../Actions/userActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
 import Modal from 'react-modal';
@@ -18,18 +27,22 @@ import ButtonLoader from "../ButtonLoader";
 import useWidthHeight from "../../Hooks/useWidthHeight";
 import '../User/User.css';
 
-import {MdDelete, MdModeEditOutline} from "react-icons/md";
+import {MdArrowBackIosNew, MdArrowForwardIos, MdDelete, MdModeEditOutline} from "react-icons/md";
+// import {getAllSavedPost} from "../../Sagas/UserSagas/getAllSavedPost";
 
 Modal.setAppElement('#modal')
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
-const BlogPage = ({socket}) => {
+const BlogPage = ({socket, type}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let userToken = getLocalStorageData('user');
     const {width} = useWidthHeight();
     const {id, postId} = useParams();
     const posts = useSelector(state => state.postData.posts);
+    const savedPost = useSelector(state => state.postData.savedPost);
+    const savedPostResult = useSelector(state => state.postData.savedPostResult);
+
     const postResult = useSelector(state => state.postData.postResult);
     const likes = useSelector(state => state.postData.likes);
     const comments = useSelector(state => state.postData.comments);
@@ -65,6 +78,9 @@ const BlogPage = ({socket}) => {
         };
         // eslint-disable-next-line
     }, []);
+    useEffect(() => {
+        dispatch(getAllSavedPost())
+    }, [savedPostResult])
 
     function afterOpenModal() {
         subtitle.style.color = '#f00';
@@ -74,6 +90,7 @@ const BlogPage = ({socket}) => {
         setModal({open: false, data: null, title: null});
     }
 
+    // console.log("savedPost", savedPost)
     useEffect(() => {
         socket.on('message', (data) => {
             toast(data?.text, {type: 'success'});
@@ -92,13 +109,19 @@ const BlogPage = ({socket}) => {
             setComment('');
             postId ? dispatch(getPost({postId})) : dispatch(getAllPost());
         })
+        dispatch(getAllSavedPost());
         // eslint-disable-next-line
     }, [])
     useEffect(() => {
-        if (id) {
+        if (id && type === "Post") {
             let loginUserPost = posts?.filter((ele) => ele?.createdBy === id);
             setBlog([...loginUserPost])
-        } else if (posts && posts.length) {
+        }
+        else if (id && type === "SavedPost") {
+            // let SavedPost = posts?.filter((ele) => savedPost[0]?.postId?.includes(ele?._id));
+            setBlog([...savedPost])
+        }
+        else if (posts && posts.length) {
             setBlog([...posts]);
         } else {
             setBlog([]);
@@ -112,11 +135,14 @@ const BlogPage = ({socket}) => {
         } else {
             dispatch(getAllPost());
         }
-        // eslint-disable-next-line
     }, [postId, postResult]);
 
     const handleCreateLike = (id) => {
         dispatch(createLike({"postId": id, "likeBy": userToken?._id, isSinglePost: postId}))
+    }
+
+    const handleSavedPost = (id) => {
+        dispatch(getSavedPost({"userId": userToken?._id, "postId": id, id: userToken?._id}))
     }
     const handleProfile = (e, userId) => {
         navigate(`/profile/${userId}`)
@@ -157,8 +183,9 @@ const BlogPage = ({socket}) => {
     const handleOnShare = (item) => {
         setModal({open: true, data: item, title: 'Share'})
     }
-    const handleDeletePost = (data) => {
-        dispatch(deletePost({_id: data?._id}))
+    const handleDeletePost = () => {
+        setModal({open: false, data: null, title: null})
+        dispatch(deletePost({_id: modal?.data?._id}))
         setOpen({show: false, postId: ''})
     }
     const handleUpdatePost = (data) => {
@@ -198,28 +225,29 @@ const BlogPage = ({socket}) => {
             <div className="flow-root h-[250px] overflow-y-scroll">
                 <ul role="presentation" className="divide-y divide-gray-200 dark:divide-gray-700">
                     {comments?.length ? comments?.map((ele, index) => {
-                        return (<>
-                                <li className="py-3 sm:py-4">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="flex-shrink-0">
-                                            <img className="h-8 w-8 rounded-full object-cover"
-                                                 src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url : `${url}/${ele?.author_info[0]?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
-                                                 alt=""/>
+                            return (<>
+                                    <li className="py-3 sm:py-4">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="flex-shrink-0">
+                                                <img className="h-8 w-8 rounded-full object-cover"
+                                                     src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url : `${url}/${ele?.author_info[0]?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                                     alt=""/>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-gray-900 truncate dark:text-white"
+                                                   onClick={(e) => handleProfile(e, ele?.createdBy)}>
+                                                    {ele?.author_info[0]?.userName}
+                                                </p>
+                                            </div>
+                                            <div
+                                                className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                                {ele?.content}
+                                            </div>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white"
-                                               onClick={(e) => handleProfile(e, ele?.createdBy)}>
-                                                {ele?.author_info[0]?.userName}
-                                            </p>
-                                        </div>
-                                        <div
-                                            className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                            {ele?.content}
-                                        </div>
-                                    </div>
-                                </li>
-                            </>
-                        )}) :
+                                    </li>
+                                </>
+                            )
+                        }) :
                         <div>No Comments</div>
                     }
                 </ul>
@@ -263,7 +291,7 @@ const BlogPage = ({socket}) => {
 
                 <button onClick={() => {
                     navigator.clipboard.writeText(`${appUrl}/post/${modal?.data ? modal?.data?.author_info[0]?.userName : 'postById'}/${modal?.data?._id}`);
-                    toast('Link Copied',{type:'success'})
+                    toast('Link Copied', {type: 'success'})
                 }}
                         className="bg-indigo-500 text-white rounded text-sm py-2 px-5 mr-2 hover:bg-indigo-600">
                     Copy
@@ -277,9 +305,50 @@ const BlogPage = ({socket}) => {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        nextArrow: <BiRightArrow />,
-        prevArrow: <BiLeftArrow />
+        nextArrow: <MdArrowForwardIos size={15}/>,
+        prevArrow: <MdArrowBackIosNew size={15}/>
     };
+    const renderDeleteModal = () => {
+        return (
+            <>
+                <div className="text-left ">
+                    <p className=" text-gray-500 font-medium text-center my-6 mx-6 dark:text-gray-200">
+                        Are you sure you want to delete this post ?
+                    </p>
+                    <div
+                        className="px-4 flex flex-row py-4 min-w-min border-l-4 border-red-400 dark:border-gray-200 bg-red-100 dark:bg-gray-700 rounded mx-auto">
+                          <span className="w-6 h-6 mr-4 mt-1 text-red-500 dark:text-gray-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20"
+                                 fill="currentColor">
+                              <path fill-rule="evenodd"
+                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd"/>
+                            </svg>
+                          </span>
+                        <div>
+                            <h2 className="text-lg font-bold text-red-700 dark:text-gray-100">Warning</h2>
+                            <p className="text-sm my-2 text-red-500 dark:text-gray-200 font-medium">You can't undo this
+                                action.</p>
+                        </div>
+                    </div>
+                    <div
+                        className="flex-row md:flex items-center md:justify-end py-4 text-center mx-auto">
+                        <div className="space-y-2 sm:space-x-2 my-4">
+                            <button onClick={() => setModal({open: false, data: null, title: null})}
+                                    className="modal-close px-5 py-2 text-[14px] bg-gray-500 rounded-lg text-gray-200 font-semibold hover:bg-gray-800 dark:hover:bg-gray-600 hover:text-gray-100 focus:outline-none">No,
+                                Keep it.
+                            </button>
+                            <button onClick={() => handleDeletePost()}
+                                    className="modal-close px-5 py-2 bg-red-500 text-[14px] dark:bg-gray-100 rounded-lg text-gray-200 dark:text-gray-700 font-semibold hover:bg-red-600 dark:hover:bg-white hover:text-gray-100 dark:hover:text-gray-800 focus:outline-none">
+                                Yes, Delete Post!
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </>
+        )
+    }
     return (
         <>
             {loading ? <Loader/> :
@@ -302,7 +371,10 @@ const BlogPage = ({socket}) => {
                                         </div>
                                     </li>
                                     <li className='cursor-pointer'>
-                                        <div onClick={() => handleDeletePost(ele)}
+                                        <div onClick={() => {
+                                            setModal({open: true, data: ele, title: 'Delete'});
+                                            setOpen({show: false, postId: ''})
+                                        }}
                                              className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                                             <MdDelete/>
                                             <span className="ml-3">Delete</span>
@@ -310,8 +382,9 @@ const BlogPage = ({socket}) => {
                                     </li>
                                 </ul>
                             </div>}
+
                             <div className='flex items-center justify-center w-full p-2 '>
-                                <div className="border p-5 bg-white w-full shadow-lg shadow-gray-400  shadow">
+                                <div className=" p-5 bg-white w-full shadow-lg shadow-gray-400  shadow">
                                     <div className="flex w-full items-center  justify-between border-b pb-3">
                                         <div className="flex items-center space-x-3">
                                             <div className="">
@@ -340,17 +413,16 @@ const BlogPage = ({socket}) => {
                                         <div
                                             className="text-sm text-neutral-600">{ele?.content}</div>
                                         <Slider {...settings}>
-                                            {Array.isArray(ele?.imageUrl) ? ele?.imageUrl.map((file,index)=> {
-                                                if(file.type === 'video'){
-                                                    return <video src={`${url}${file.url}`} autoPlay/>
-                                                }
-                                                else {
-                                                    return <img src={`${url}${file.url}`} alt=''
-                                                                className="lg:h-[350px] w-full object-fill py-2"/>
-                                                }
-                                                }):
+                                            {Array.isArray(ele?.imageUrl) ? ele?.imageUrl.map((file, index) => {
+                                                    if (file.type === 'video') {
+                                                        return <video src={`${url}${file.url}`} autoPlay/>
+                                                    } else {
+                                                        return <img src={`${url}${file.url}`} alt=''
+                                                                    className="md:h-[400px] h-[300px] w-full py-2 object-contain"/>
+                                                    }
+                                                }) :
                                                 <img src={`${url}${ele?.imageUrl}`} alt=''
-                                                     className="lg:h-[350px] w-full object-fill py-2"/>}
+                                                     className="md:h-[400px] h-[300px] w-full object-contain py-2"/>}
                                         </Slider>
                                     </div>
                                     <div>
@@ -383,6 +455,12 @@ const BlogPage = ({socket}) => {
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div onClick={() => handleSavedPost(ele?._id)}
+                                                 className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer">
+                                                {/*{savedPost?._id === ele?._id ?.includes(ele?._id) ? <BsBookmarkFill size={20}/> :*/}
+                                                    <BsBookmark size={20}/>
+                                                    {/*}*/}
+                                            </div>
                                         </div>
                                         <div className='ml-3 mb-2'>
                                             # post from <span className='ml-1 text-[#79CCF4]'>{ele?.device}</span>
@@ -391,13 +469,14 @@ const BlogPage = ({socket}) => {
                                 </div>
                             </div>
                         </div>)) : <>
-                        <div className="h-[500px] pl-2">
+                        <div className="max-h-[400px] pl-2 items-center">
                             <div
                                 className="bg-white h-full rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-                                <div className="flex justify-end px-4 pt-4">
-                                    <div className="border-t border-gray-200 text-center pt-14">
-                                        <h1 className="text-9xl font-bold text-pink-400">No Posts</h1>
-                                        <p className="text-2xl pb-8 px-12 font-medium">Oops! The post you are looking
+                                <div className="flex justify-end px-4">
+                                    <div className="border-gray-200 text-center py-14">
+                                        <h1 className="md:text-9xl text-7xl font-bold text-pink-400 pb-4 ">No Posts</h1>
+                                        <p className="text-2xl md:text-md pb-8 px-12 font-medium">Oops! The post you are
+                                            looking
                                             for does not exist. Press the button and create the post.</p>
                                         <button onClick={() => navigate('/post')}
                                                 className="bg-gradient-to-r from-purple-400 to-blue-500 hover:from-pink-500 hover:to-orange-500 text-white font-semibold px-6 py-3 rounded-md mr-6">
@@ -432,7 +511,8 @@ const BlogPage = ({socket}) => {
                             {
                                 Likes: renderLikeModal(),
                                 Comments: renderCommentModal(),
-                                Share: renderShareModal()
+                                Share: renderShareModal(),
+                                Delete: renderDeleteModal()
                             }[modal.title]
                         }
                     </div>
