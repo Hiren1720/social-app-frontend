@@ -18,7 +18,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {toast} from 'react-toastify';
 import {createLike, deletePost, getAllLikes, getAllPost, getPost} from "../../Actions/postActions";
-import {getAllSavedPost, getSavedPost} from "../../Actions/userActions";
+import {getAllSavedPost, savePost} from "../../Actions/userActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
 import Modal from 'react-modal';
@@ -78,9 +78,6 @@ const BlogPage = ({socket, type}) => {
         };
         // eslint-disable-next-line
     }, []);
-    useEffect(() => {
-        dispatch(getAllSavedPost())
-    }, [savedPostResult])
 
     function afterOpenModal() {
         subtitle.style.color = '#f00';
@@ -109,7 +106,6 @@ const BlogPage = ({socket, type}) => {
             setComment('');
             postId ? dispatch(getPost({postId})) : dispatch(getAllPost());
         })
-        dispatch(getAllSavedPost());
         // eslint-disable-next-line
     }, [])
     useEffect(() => {
@@ -132,17 +128,19 @@ const BlogPage = ({socket, type}) => {
     useEffect(() => {
         if (postId) {
             dispatch(getPost({postId}))
+        } else if(type === 'SavedPost' ){
+            dispatch(getAllSavedPost());
         } else {
-            dispatch(getAllPost());
+            dispatch(getAllPost())
         }
-    }, [postId, postResult]);
+    }, [postId, postResult,savedPostResult,type]);
 
     const handleCreateLike = (id) => {
         dispatch(createLike({"postId": id, "likeBy": userToken?._id, isSinglePost: postId}))
     }
 
-    const handleSavedPost = (id) => {
-        dispatch(getSavedPost({"userId": userToken?._id, "postId": id, id: userToken?._id}))
+    const handleSavePost = (id) => {
+        dispatch(savePost({id: id}))
     }
     const handleProfile = (e, userId) => {
         navigate(`/profile/${userId}`)
@@ -455,11 +453,11 @@ const BlogPage = ({socket, type}) => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div onClick={() => handleSavedPost(ele?._id)}
+                                            <div onClick={() => handleSavePost(ele?._id)}
                                                  className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer">
-                                                {/*{savedPost?._id === ele?._id ?.includes(ele?._id) ? <BsBookmarkFill size={20}/> :*/}
+                                                {ele.savedBy.includes(userToken?._id) ? <BsBookmarkFill size={20}/> :
                                                     <BsBookmark size={20}/>
-                                                    {/*}*/}
+                                                    }
                                             </div>
                                         </div>
                                         <div className='ml-3 mb-2'>

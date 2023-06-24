@@ -25,7 +25,7 @@ import {deleteAccountSaga} from "./UserSagas/deleteAccountSaga";
 import {blockUserSaga} from "./BlockUserSaga/blockUserSaga";
 import {deletePostSaga} from "./PostSagas/deletePostSaga";
 import {updatePostSaga} from "./PostSagas/updatePostSaga";
-import {getSavedPostSaga} from "./PostSagas/createSavedPost";
+import {savePostSaga} from "./PostSagas/savePostSaga";
 import {getAllSavedPostsSaga} from "./PostSagas/getAllSavedPost";
 export default function* root() {
     yield all([
@@ -56,7 +56,7 @@ export default function* root() {
         updatePostSaga(),
         userResetPasswordSaga(),
         deleteAccountSaga(),
-        getSavedPostSaga(),
+        savePostSaga(),
         getAllSavedPostsSaga()
     ]);
 }

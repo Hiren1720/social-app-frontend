@@ -9,7 +9,7 @@ import {httpGet} from "../../Helper/api";
 
 export function* getAllSavedPost({payload}) {
     try{
-        let result = yield call(httpGet,`/user/savedPosts`);
+        let result = yield call(httpGet,`/post/savedPosts`);
         console.log('result?.data',result?.data)
         yield put({
             type: types.GET_SAVED_POST_SUCCESS,

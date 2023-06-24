@@ -30,8 +30,8 @@ const post = (state = initialState, action) => {
         case types.GET_POST_STATE_SUCCESS:
         case types.GET_POST_STATE_FAILURE:
             return {...state, posts: action.payload, loading: action.loading};
-        case types.SET_SAVED_POST_SUCCESS:
-        case types.SET_SAVED_POST_FAILURE:
+        case types.SET_SAVE_POST_SUCCESS:
+        case types.SET_SAVE_POST_FAILURE:
             return {...state, savedPostResult: action.payload,loading: action.loading};
         case types.GET_SAVED_POST_SUCCESS:
         case types.GET_SAVED_POST_FAILURE:
