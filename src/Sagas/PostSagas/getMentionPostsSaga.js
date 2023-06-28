@@ -11,14 +11,14 @@ export function* getMentionPosts({payload}) {
         yield put({ type: types.SET_POST_LOADING,loading: payload ? !payload : true })
         let result = yield call(httpGet,`/post/getMentionPosts/${payload?.id}`);
         yield put({
-            type: types.GET_MENTION_POST_SUCCESS,
+            type: types.GET_MENTION_POST_RESPONSE,
             payload: (result?.data && result?.data.length) ? result?.data: [],
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.GET_MENTION_POST_FAILURE,
+            type: types.GET_MENTION_POST_RESPONSE,
             payload: null,
             loading:false
         });

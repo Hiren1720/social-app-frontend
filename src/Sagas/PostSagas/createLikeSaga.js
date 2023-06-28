@@ -12,7 +12,7 @@ export function* createLike({payload}) {
         let request = {url:'/post/postLike',body:payload}
         let result = yield call(httpPost,request)
         yield put({
-            type: types.SET_POST_LIKE_STATE_SUCCESS,
+            type: types.SET_POST_LIKE_RESPONSE,
             payload: result,
             loading:false
         });
@@ -23,7 +23,7 @@ export function* createLike({payload}) {
     }
     catch (e) {
         yield put({
-            type: types.SET_POST_LIKE_STATE_FAILURE,
+            type: types.SET_POST_LIKE_RESPONSE,
             payload: null,
             loading:false
         });

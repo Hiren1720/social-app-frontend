@@ -33,14 +33,14 @@ export function* verifyOTP({payload}) {
             setLocalStorageData('accessToken',null);
         }
         yield put({
-            type: types.VERIFY_OTP_SUCCESS,
+            type: types.VERIFY_OTP_RESPONSE,
             payload: result?.msg === 'Deleted' ? {...result,isDelete:true}:result,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.VERIFY_OTP_FAILURE,
+            type: types.VERIFY_OTP_RESPONSE,
             payload: null,
             loading:false
         });

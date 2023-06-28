@@ -12,8 +12,7 @@ const blockUser = (state = initialState, action) => {
             return {...state, loading: action.loading};
         case types.BLOCK_USER_STATE:
             return {...state,[action.state]: action.payload};
-        case types.BLOCK_USER_STATE_SUCCESS:
-        case types.BLOCK_USER_STATE_FAILURE:
+        case types.BLOCK_USER_RESPONSE:
             return {...state, blockResult: action.payload, loading: action.loading};
         default:
             return state;

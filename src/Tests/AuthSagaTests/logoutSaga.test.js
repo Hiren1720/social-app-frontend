@@ -26,7 +26,7 @@ describe('user log out saga', () => {
 
         const result = 'result';
         expect(logOut.next(result).value).toEqual(put({
-            type: 'USER_LOGOUT_SUCCESS',
+            type: 'USER_LOGOUT_RESPONSE',
             payload: "result",
             loading:false
         }));
@@ -46,7 +46,7 @@ describe('user log out saga', () => {
             .toEqual(call(httpPost, request));
 
         expect(logOut.throw(new Error("Some error occured")).value).toEqual(put({
-            type: "USER_LOGOUT_FAILURE",
+            type: "USER_LOGOUT_RESPONSE",
             payload: null,
             loading: false
         }));

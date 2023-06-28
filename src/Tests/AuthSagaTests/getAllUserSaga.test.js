@@ -27,7 +27,7 @@ describe('get all user saga', () => {
 
         const result = {data:[]};
         expect(getUser.next(result).value).toEqual(put({
-            type: 'GET_USER_STATE_SUCCESS',
+            type: 'GET_USER_STATE_RESPONSE',
             payload: result?.data,
             loading:false
         }));
@@ -48,7 +48,7 @@ describe('get all user saga', () => {
             .toEqual(call(httpGet, request));
 
         expect(getUser.throw(new Error("Some error occured")).value).toEqual(put({
-            type: "GET_USER_STATE_FAILURE",
+            type: "GET_USER_STATE_RESPONSE",
             payload: null,
             loading: false
         }));

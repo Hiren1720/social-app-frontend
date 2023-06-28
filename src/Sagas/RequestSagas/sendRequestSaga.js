@@ -14,14 +14,14 @@ export function* sendRequest({payload}) {
         let result = yield call(httpPost,request)
 
         yield put({
-            type: types.SEND_REQUEST_STATE_SUCCESS,
+            type: types.SEND_REQUEST_STATE_RESPONSE,
             payload: result,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.SEND_REQUEST_STATE_FAILURE,
+            type: types.SEND_REQUEST_STATE_RESPONSE,
             payload: null,
             loading:false
         });

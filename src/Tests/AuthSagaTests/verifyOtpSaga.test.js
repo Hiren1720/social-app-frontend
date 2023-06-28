@@ -26,7 +26,7 @@ describe('verify otp saga', () => {
 
         const result = 'result';
         expect(verify.next(result).value).toEqual(put({
-            type: 'VERIFY_OTP_SUCCESS',
+            type: 'VERIFY_OTP_RESPONSE',
             payload: "result",
             loading:false
         }));
@@ -46,7 +46,7 @@ describe('verify otp saga', () => {
             .toEqual(call(httpAuth, request));
 
         expect(verify.throw(new Error("Some error occured")).value).toEqual(put({
-            type: "VERIFY_OTP_FAILURE",
+            type: "VERIFY_OTP_RESPONSE",
             payload: null,
             loading: false
         }));

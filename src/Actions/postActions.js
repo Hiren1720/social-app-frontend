@@ -8,7 +8,7 @@ export const createPost = (payload) => {
 
 export const resetPostResult = (payload) => {
     return {
-        type: types.SET_POST_STATE_FAILURE,
+        type: types.SET_POST_RESPONSE,
         payload: null,
         loading:false
     }
@@ -44,13 +44,13 @@ export const createLike = (payload) => {
 
 export const deletePost = (payload) => {
     return {
-        type: types.SET_DELETE_POST_STATE,
+        type: types.DELETE_POST_STATE,
         payload
     }
 };
 export const updatePost = (payload) => {
     return {
-        type: types.SET_UPDATE_POST_STATE,
+        type: types.UPDATE_POST_STATE,
         payload
     }
 };

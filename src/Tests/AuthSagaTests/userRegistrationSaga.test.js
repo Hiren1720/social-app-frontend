@@ -26,7 +26,7 @@ describe('user register saga', () => {
 
         const result = 'result';
         expect(register.next(result).value).toEqual(put({
-            type: 'SAVE_USER_STATE_SUCCESS',
+            type: 'SAVE_USER_STATE_RESPONSE',
             payload: "result",
             loading:false
         }));
@@ -46,7 +46,7 @@ describe('user register saga', () => {
             .toEqual(call(httpAuth, request));
 
         expect(register.throw(new Error("Some error occured")).value).toEqual(put({
-            type: "SAVE_USER_STATE_FAILURE",
+            type: "SAVE_USER_STATE_RESPONSE",
             payload: null,
             loading: false
         }));

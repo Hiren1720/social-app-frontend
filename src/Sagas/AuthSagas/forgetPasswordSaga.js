@@ -13,14 +13,14 @@ export function* userForgetPassword({payload}) {
         let request = {url:'/user/forgot-password',body:payload}
         let result = yield call(httpAuth,request)
         yield put({
-            type: types.FORGET_PASSWORD_SUCCESS,
+            type: types.FORGET_PASSWORD_RESPONSE,
             payload: result,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.FORGET_PASSWORD_FAILURE,
+            type: types.FORGET_PASSWORD_RESPONSE,
             payload: null,
             loading:false
         });

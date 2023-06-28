@@ -13,7 +13,7 @@ export function* createComment({payload}) {
         let request = {url:'/comment/create',body:payload}
         let result = yield call(httpPost,request)
         yield put({
-            type: types.SET_COMMENT_STATE_SUCCESS,
+            type: types.SET_COMMENT_RESPONSE,
             payload: result,
             loading:false
         });
@@ -24,7 +24,7 @@ export function* createComment({payload}) {
     }
     catch (e) {
         yield put({
-            type: types.SET_COMMENT_STATE_FAILURE,
+            type: types.SET_COMMENT_RESPONSE,
             payload: null,
             loading:false
         });

@@ -413,7 +413,7 @@ const BlogPage = ({socket, type}) => {
                                         <Slider {...settings}>
                                             {Array.isArray(ele?.imageUrl) ? ele?.imageUrl.map((file, index) => {
                                                     if (file.type === 'video') {
-                                                        return <video src={`${url}${file.url}`} autoPlay/>
+                                                        return <video src={`${url}${file.url}`} autoPlay controls={true}/>
                                                     } else {
                                                         return <img src={`${url}${file.url}`} alt=''
                                                                     className="md:h-[400px] h-[300px] w-full py-2 object-contain"/>

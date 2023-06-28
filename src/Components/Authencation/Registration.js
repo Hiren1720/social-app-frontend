@@ -4,7 +4,7 @@ import ButtonLoader from "../ButtonLoader";
 import {Link, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
-import {registerUser, setUserData, updateUser} from "../../Actions/userActions";
+import {registerUser, setUserData} from "../../Actions/userActions";
 import {useTranslation} from "react-i18next";
 import {toast} from "react-toastify";
 const url = process.env.REACT_APP_API_URL;
@@ -65,12 +65,12 @@ const Registration = () => {
     };
     const handleCreate = (e) => {
         let formData = new FormData();
-        formData.append('profile', user?.profile);
+        formData.append('profile', user?.profile || {});
         formData.append('user', JSON.stringify(user));
         if (pathName === '/edit-profile') {
-            dispatch(updateUser(formData));
+            dispatch(registerUser({formData:formData, type:'update'}));
         } else {
-            dispatch(registerUser(formData));
+            dispatch(registerUser({formData:formData, type:'register'}));
         }
         setImage('')
     }

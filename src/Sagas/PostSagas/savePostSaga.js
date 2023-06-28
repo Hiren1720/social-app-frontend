@@ -12,14 +12,14 @@ export function* savePost({payload}) {
         let request = {url:`/post/savePost`,body:payload}
         let result = yield call(httpPost,request);
         yield put({
-            type: types.SET_SAVE_POST_SUCCESS,
+            type: types.SAVE_POST_RESPONSE,
             payload: result,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.SET_SAVE_POST_FAILURE,
+            type: types.SAVE_POST_RESPONSE,
             payload: null,
             loading:false
         });
@@ -27,5 +27,5 @@ export function* savePost({payload}) {
 
 }
 export function* savePostSaga() {
-    yield all([takeEvery(types.SET_SAVE_POST_STATE, savePost)]);
+    yield all([takeEvery(types.SAVE_POST_STATE, savePost)]);
 }

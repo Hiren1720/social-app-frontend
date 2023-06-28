@@ -27,14 +27,14 @@ export function* userLogin({payload}) {
             }
         }
         yield put({
-            type: types.USER_LOGIN_SUCCESS,
+            type: types.USER_LOGIN_RESPONSE,
             payload: result,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.USER_LOGIN_FAILURE,
+            type: types.USER_LOGIN_RESPONSE,
             payload: null,
             loading:false
         });

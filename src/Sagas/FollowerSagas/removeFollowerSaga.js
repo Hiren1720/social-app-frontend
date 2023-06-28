@@ -13,14 +13,14 @@ export function* removeFollower({payload}) {
         let result = yield call(httpPost,{url:`/follower/removeFollower`,body:payload});
 
         yield put({
-            type: types.REMOVE_FOLLOWER_STATE_SUCCESS,
+            type: types.REMOVE_FOLLOWER_RESPONSE,
             payload: result,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.REMOVE_FOLLOWER_STATE_FAILURE,
+            type: types.REMOVE_FOLLOWER_RESPONSE,
             payload: null,
             loading:false
         });

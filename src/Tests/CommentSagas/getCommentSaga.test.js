@@ -26,7 +26,7 @@ describe('get comments saga', () => {
 
         const result = {data:[]};
         expect(comment.next(result).value).toEqual(put({
-            type: 'GET_COMMENT_STATE_SUCCESS',
+            type: 'GET_COMMENT_RESPONSE',
             payload: result?.data,
             loading:false
         }));
@@ -47,7 +47,7 @@ describe('get comments saga', () => {
             .toEqual(call(httpGet, request));
 
         expect(comment.throw(new Error("Some error occured")).value).toEqual(put({
-            type: "GET_COMMENT_STATE_FAILURE",
+            type: "GET_COMMENT_RESPONSE",
             payload: null,
             loading: false
         }));
