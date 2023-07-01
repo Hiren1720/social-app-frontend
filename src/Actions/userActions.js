@@ -65,7 +65,7 @@ export const getProfile = (payload) =>{
 
 export const savePost = (payload) =>{
     return {
-        type: types.SET_SAVE_POST_STATE,
+        type: types.SAVE_POST_STATE,
         payload
     }
 };
@@ -73,13 +73,6 @@ export const savePost = (payload) =>{
 export const getAllSavedPost = (payload) =>{
     return {
         type: types.GET_SAVED_POST_STATE,
-        payload
-    }
-};
-
-export const updateUser = (payload) =>{
-    return {
-        type: types.UPDATE_USER_STATE,
         payload
     }
 };

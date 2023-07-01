@@ -15,14 +15,14 @@ export function* gerAllUsers({payload}) {
         let result = yield call(httpGet,REQUEST)
 
         yield put({
-            type: types.GET_USER_STATE_SUCCESS,
+            type: types.GET_USER_STATE_RESPONSE,
             payload: result.data,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.GET_USER_STATE_FAILURE,
+            type: types.GET_USER_STATE_RESPONSE,
             payload: null,
             loading:false
         });

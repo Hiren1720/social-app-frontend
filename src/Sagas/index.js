@@ -17,7 +17,6 @@ import {getAllLikesSaga} from "./PostSagas/getAllLikesSaga";
 import {createCommentSaga} from "./CommentSagas/createCommentSaga";
 import {getCommentsSaga} from "./CommentSagas/getCommentsSaga";
 import {getMentionPostsSaga} from "./PostSagas/getMentionPostsSaga";
-import {updateUserSaga} from "./AuthSagas/updateUserDataSaga";
 import {getProfileViewersSaga} from "./UserSagas/getProfileViewersSaga";
 import {userForgetPasswordSaga} from "./AuthSagas/forgetPasswordSaga";
 import {userResetPasswordSaga} from "./AuthSagas/resetPasswordSaga";
@@ -47,7 +46,6 @@ export default function* root() {
         createCommentSaga(),
         getCommentsSaga(),
         getMentionPostsSaga(),
-        updateUserSaga(),
         getProfileViewersSaga(),
         userForgetPasswordSaga(),
         userResetPasswordSaga(),

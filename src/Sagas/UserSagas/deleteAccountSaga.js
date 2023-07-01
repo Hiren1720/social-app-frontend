@@ -12,14 +12,14 @@ export function* deleteAccount() {
         yield put({ type: types.SET_LOADING,loading: true })
         let result = yield call(httpDelete,{url:`/user/delete-account`,body: JSON.stringify({})});
         yield put({
-            type: types.DELETE_ACCOUNT_SUCCESS,
+            type: types.DELETE_ACCOUNT_RESPONSE,
             payload: {...result,isDelete:true},
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.DELETE_ACCOUNT_FAILURE,
+            type: types.DELETE_ACCOUNT_RESPONSE,
             payload: null,
             loading:false
         });

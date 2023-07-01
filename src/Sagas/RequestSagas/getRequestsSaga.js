@@ -13,7 +13,7 @@ export function* getRequests({payload}) {
         let result = yield call(httpGet,`/request/${payload?.type}/requestGetByType`)
 
         yield put({
-            type: types.GET_REQUEST_STATE_SUCCESS,
+            type: types.GET_REQUEST_STATE_RESPONSE,
             payload: result,
             state: payload?.type === 'user' ? 'userRequests':'requests',
             loading:false
@@ -21,7 +21,7 @@ export function* getRequests({payload}) {
     }
     catch (e) {
         yield put({
-            type: types.GET_REQUEST_STATE_FAILURE,
+            type: types.GET_REQUEST_STATE_RESPONSE,
             payload: null,
             state: payload?.type === 'user' ? 'userRequests':'requests',
             loading:false

@@ -12,7 +12,7 @@ export function* getFollowers({payload}) {
         let result = yield call(httpGet,payload?.state === 'followers' ? `/follower/${payload?.id}/getFollowers`:`/follower/${payload?.id}/getFollowings`);
 
         yield put({
-            type: types.GET_FOLLOWERS_STATE_SUCCESS,
+            type: types.GET_FOLLOWERS_STATE_RESPONSE,
             payload: result,
             state: payload?.state,
             loading:false
@@ -20,7 +20,7 @@ export function* getFollowers({payload}) {
     }
     catch (e) {
         yield put({
-            type: types.GET_FOLLOWERS_STATE_FAILURE,
+            type: types.GET_FOLLOWERS_STATE_RESPONSE,
             payload: null,
             state: payload?.state,
             loading:false

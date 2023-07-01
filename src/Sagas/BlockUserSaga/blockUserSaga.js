@@ -13,14 +13,14 @@ export function* blockUser({payload}) {
         let result = yield call(httpPost,{url:`/user/block-user`,body:payload});
 
         yield put({
-            type: types.BLOCK_USER_STATE_SUCCESS,
+            type: types.BLOCK_USER_RESPONSE,
             payload: result,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.BLOCK_USER_STATE_FAILURE,
+            type: types.BLOCK_USER_RESPONSE,
             payload: null,
             loading:false
         });

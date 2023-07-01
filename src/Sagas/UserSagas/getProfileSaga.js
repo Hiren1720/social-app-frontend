@@ -12,7 +12,7 @@ export function* getProfile({payload}) {
         yield put({ type: payload?.isLoggedInUser ? types.SET_BUTTON_LOADING : types.SET_LOADING,loading: true })
         let result = yield call(httpGet,`/user/${payload?.id}/profile`);
         yield put({
-            type: types.GET_PROFILE_SUCCESS,
+            type: types.GET_PROFILE_STATE_RESPONSE,
             payload: result?.data,
             state: payload?.isLoggedInUser ? 'loggedInUser':'profile',
             loading:false
@@ -20,7 +20,7 @@ export function* getProfile({payload}) {
     }
     catch (e) {
         yield put({
-            type: types.GET_PROFILE_FAILURE,
+            type: types.GET_PROFILE_STATE_RESPONSE,
             payload: null,
             state: payload?.isLoggedInUser ? 'loggedInUser':'profile',
             loading:false

@@ -19,14 +19,14 @@ export function* userLogOut({payload}) {
             window.location.href = '/login';
         }
         yield put({
-            type: types.USER_LOGOUT_SUCCESS,
+            type: types.USER_LOGOUT_RESPONSE,
             payload: result,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.USER_LOGOUT_FAILURE,
+            type: types.USER_LOGOUT_RESPONSE,
             payload: null,
             loading:false
         });

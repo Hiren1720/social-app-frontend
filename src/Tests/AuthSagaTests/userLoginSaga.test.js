@@ -26,7 +26,7 @@ describe('user login saga', () => {
 
         const result = 'result';
         expect(login.next(result).value).toEqual(put({
-            type: 'USER_LOGIN_SUCCESS',
+            type: 'USER_LOGIN_RESPONSE',
             payload: "result",
             loading:false
         }));
@@ -46,7 +46,7 @@ describe('user login saga', () => {
             .toEqual(call(httpAuth, request));
 
         expect(login.throw(new Error("Some error occured")).value).toEqual(put({
-            type: "USER_LOGIN_FAILURE",
+            type: "USER_LOGIN_RESPONSE",
             payload: null,
             loading: false
         }));

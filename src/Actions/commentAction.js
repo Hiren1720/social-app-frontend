@@ -15,7 +15,7 @@ export const getCommentsById = (payload) => {
 
 export const resetCommentResult = () => {
     return {
-        type: types.SET_COMMENT_STATE_FAILURE,
+        type: types.SET_COMMENT_RESPONSE,
         payload: null,
         loading: false
     }

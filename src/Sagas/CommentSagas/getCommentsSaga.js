@@ -13,14 +13,14 @@ export function* getComments({payload}) {
         let request = `/comment/getById/${payload}`
         let result = yield call(httpGet,request)
         yield put({
-            type: types.GET_COMMENT_STATE_SUCCESS,
+            type: types.GET_COMMENT_RESPONSE,
             payload: result?.data,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.GET_COMMENT_STATE_FAILURE,
+            type: types.GET_COMMENT_RESPONSE,
             payload: null,
             loading:false
         });

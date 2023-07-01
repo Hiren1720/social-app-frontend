@@ -266,11 +266,13 @@ const CreatePost = () => {
                                         </div>
                                     </div></>}
 
-                                <div className='ml-1 cursor-pointer mt-2 flex justify-end'><label onClick={() => {
-                                    setFiles([]);
-                                    setPost({...post, imageUrl: []})
-                                }} className='flex cursor-pointer items-center bg-gray-800 h-[32px] justify-center rounded-[4px] text-[#FCFCFC] text-[14px] w-[100px]'> Cancel</label>
-                                </div>
+                                {files?.length > 0 && <div className='ml-1 cursor-pointer mt-2 flex justify-end'>
+                                    <label onClick={() => {
+                                            setFiles([]);
+                                            setPost({...post, imageUrl: []})
+                                        }}
+                                       className='flex cursor-pointer items-center bg-gray-800 h-[32px] justify-center rounded-[4px] text-[#FCFCFC] text-[14px] w-[100px]'> Cancel</label>
+                                </div>}
                             </div>
                         </div>
                     </div>
@@ -280,42 +282,41 @@ const CreatePost = () => {
                                    htmlFor="grid-password">
                                 Mentions
                             </label>
-
                             <MentionsInput value={mentions} onChange={(e, data, value) => {
                                 handleMentions(e, data, value)
                             }}
-                                           id="grid-first-name" type="text" name='mention'
-                                           className="w-full bg-gray-200 text-gray-700 rounded py-3 px-4 mb-3 leading-tight"
-                                           style={{
-                                               control: {
-                                                   fontSize: 14,
-                                                   fontWeight: 'normal',
-                                               },
-                                               highlighter: {
-                                                   padding: 2,
-                                                   marginLeft: -4,
-                                                   border: '2px inset transparent',
-                                               },
-                                               '&multiLine': {
-                                                   input: {
-                                                       padding: 14,
-                                                   },
-                                               },
-                                               suggestions: {
-                                                   list: {
-                                                       backgroundColor: 'white',
-                                                       border: '1px solid rgba(0,0,0,0.15)',
-                                                       fontSize: 14,
-                                                   },
-                                                   item: {
-                                                       padding: '5px 15px',
-                                                       borderBottom: '1px solid rgba(0,0,0,0.15)',
-                                                       '&focused': {
-                                                           backgroundColor: '#cee4e5',
-                                                       },
-                                                   },
-                                               },
-                                           }}
+                               id="grid-first-name" type="text" name='mention'
+                               className="w-full bg-gray-200 text-gray-700 rounded py-3 px-4 mb-3 leading-tight"
+                               style={{
+                                   control: {
+                                       fontSize: 14,
+                                       fontWeight: 'normal',
+                                   },
+                                   highlighter: {
+                                       padding: 2,
+                                       marginLeft: -4,
+                                       border: '2px inset transparent',
+                                   },
+                                   '&multiLine': {
+                                       input: {
+                                           padding: 14,
+                                       },
+                                   },
+                                   suggestions: {
+                                       list: {
+                                           backgroundColor: 'white',
+                                           border: '1px solid rgba(0,0,0,0.15)',
+                                           fontSize: 14,
+                                       },
+                                       item: {
+                                           padding: '5px 15px',
+                                           borderBottom: '1px solid rgba(0,0,0,0.15)',
+                                           '&focused': {
+                                               backgroundColor: '#cee4e5',
+                                           },
+                                       },
+                                   },
+                               }}
                             >
                                 <Mention
                                     trigger="@"
@@ -344,8 +345,7 @@ const CreatePost = () => {
                                     disabled={loading}>
                                 {loading ?
                                     <div className="flex items-center justify-center text-[black]">
-                                        <div
-                                            className="w-5 h-5 border-b-2 border-gray-900 rounded-full animate-spin mr-2"></div>
+                                        <div className="w-5 h-5 border-b-2 border-gray-900 rounded-full animate-spin mr-2"/>
                                         Creating...
                                     </div> : "Create"}
                             </button>
