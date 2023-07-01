@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {useNavigate} from "react-router-dom";
 import Post from '../Posts/Posts';
 import {useDispatch, useSelector} from "react-redux";
 import {getRequests, sendRequest, setRequest, updateRequest} from "../../Actions/requestActions";
@@ -14,6 +15,7 @@ const url = process.env.REACT_APP_API_URL;
 const Home = ({socket}) =>{
     const [thought,setThought] = useState('');
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const profile = useSelector(state => state.userData.profile);
     const posts = useSelector(state => state.postData.posts);
     const loading = useSelector(state => state.userData.loading);
@@ -76,6 +78,9 @@ const Home = ({socket}) =>{
             }
         }
     };
+    const handleProfile = (data) => {
+        navigate(`/profile/${data?._id}`);
+    }
     return(
         <>
             {loading ? <Loader/> :
@@ -151,7 +156,7 @@ const Home = ({socket}) =>{
                                                                                     <div
                                                                                         className="bg-white justify-between">
                                                                                         <div className="flex items-center justify-between px-4 py-3  gap-2 lg:gap-1">
-                                                                                            <div className='flex'>
+                                                                                            <div className='flex cursor-pointer' onClick={()=> handleProfile(ele?.author_info[0])}>
                                                                                                 <img className="w-12 h-12 rounded-full object-cover mr-4 "
                                                                                                      src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url :`${url}${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"}
                                                                                                      alt="avatar"/>
@@ -198,7 +203,7 @@ const Home = ({socket}) =>{
                                                             />
                                                             <button type='button' onClick={()=> handleOnShare()}
                                                                     disabled={thought === ''}
-                                                                className="text-white absolute w-[20%] rounded-[40px] right-0 p-[10px] m-0 bg-pink-700 hover:bg-pink-800 focus:ring-4 focus:outline-none  font-medium  text-sm "
+                                                                className="cursor-pointer text-white absolute w-[20%] rounded-[40px] right-0 p-[10px] m-0 bg-pink-700 hover:bg-pink-800 focus:ring-4 focus:outline-none  font-medium  text-sm "
                                                             >Share
                                                             </button>
                                                         </div>

@@ -22,7 +22,6 @@ const post = (state = initialState, action) => {
             return {...state, [action.state]: action.payload};
         case types.SET_POST_RESPONSE:
         case types.DELETE_POST_RESPONSE:
-        case types.UPDATE_POST_RESPONSE:
             return {...state, postResult: action.payload, loading: action.loading};
         case types.GET_POST_RESPONSE:
             return {...state, posts: action.payload, loading: action.loading};
@@ -30,14 +29,12 @@ const post = (state = initialState, action) => {
             return {...state, savedPostResult: action.payload,loading: action.loading};
         case types.GET_SAVED_POST_RESPONSE:
             return {...state, savedPost: action.payload,loading: action.loading};
-        case types.GET_LIKE_RESPONSE:
-            return {...state, likes: action.payload, likeLoading: action.loading};
+        case types.GET_LIKES_COMMENTS_RESPONSE:
+            return {...state, [action?.state]: action.payload, likeLoading: action.loading};
         case types.SET_POST_LIKE_RESPONSE:
             return {...state, postLikeResult: action.payload, loading: action.loading};
         case types.SET_COMMENT_RESPONSE:
             return {...state, commentResult: action.payload, commentLoading: action.loading};
-        case types.GET_COMMENT_RESPONSE:
-            return {...state, comments: action.payload, likeLoading: action.loading};
         default:
             return state;
     }

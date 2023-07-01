@@ -26,6 +26,7 @@ import PortFolio from "../Addvertisement/Portfolio";
 import ProfileViwedPeople from "../Common/ProfileViewedPeople";
 import PrivateAccount from '../Common/PrivateAccount'
 
+import ProfileViewedPeople from "../Common/ProfileViewedPeople";
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
 const Profile = ({socket}) => {
@@ -54,9 +55,13 @@ const Profile = ({socket}) => {
     useEffect(() => {
         if (requestResult && requestResult?.success) {
             dispatch(getRequests({type: 'allRequest'}));
+            dispatch(getProfile({id: id}));
             dispatch(getProfile({id: userData?._id, isLoggedInUser: true}));
             dispatch(setRequest());
             dispatch(getAllPost());
+            if (id === userData?._id) {
+                dispatch(getProfileViewers());
+            }
         }
         // eslint-disable-next-line
     }, [requestResult]);
@@ -92,9 +97,8 @@ const Profile = ({socket}) => {
     const renderUserDetails = () => {
         switch (active) {
             case 'Followings':
-                return <Followers user={user} type={'Followings'} setActive={setActive}/>;
             case 'Followers':
-                return <Followers user={user} type={'Followers'} setActive={setActive}/>;
+                return <Followers user={user} type={active} setActive={setActive}/>;
             case 'Posts':
                 return <Posts socket={socket} type={"Post"}/>;
             case 'SavedPost':
@@ -153,7 +157,7 @@ const Profile = ({socket}) => {
                                 <div
                                     className="relative top-0 w-full h-40 md:h-80 bg-[url('https://hblimg.mmtcdn.com/content/hubble/img/destimg/mmt/activities/m_Munnar_destjulimg_2_l_770_1154.jpg')] bg-no-repeat object-contain bg-cover bg-center ">
                                     <span id="blackOverlay"
-                                          className="w-full h-full absolute opacity-50 bg-black"></span>
+                                          className="w-full h-full absolute opacity-50 bg-black"/>
                                 </div>
                                 <div
                                     className="top-auto bottom-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden h-70-px">
@@ -161,15 +165,16 @@ const Profile = ({socket}) => {
                                          xmlns="http://www.w3.org/2000/svg"
                                          preserveAspectRatio="none" version="1.1" viewBox="0 0 2560 100" x="0" y="0">
                                         <polygon className="text-blueGray-200 fill-current"
-                                                 points="2560 0 2560 100 0 100"></polygon>
+                                                 points="2560 0 2560 100 0 100"/>
                                     </svg>
                                 </div>
                             </div>
+
                             <div
                                 className="font-sans mt-0 flex lg:order-1 flex-row text-center sm:flex-row sm:text-left  shadow-lg px-6 bg-white shadow  w-full ">
                                 <div
                                     className="flex w-full  md:justify-between hidden md:flex sm:items-center ">
-                                    <div className="w-40 hidden lg:flex"></div>
+                                    <div className="w-40 hidden lg:flex"/>
                                     <div className="grid grid-cols-4 lg:gap-10 md:gap-2">
                                         {tabs.map((tab, index) => (
                                             <div key={index}
@@ -204,9 +209,9 @@ const Profile = ({socket}) => {
                                         </div>
                                         <div className='mx-4 max-[400px]:mx-2'>
                                             <button
-                                                onClick={(e) => handleButton(e, user, getStatus(user, requests, userData, '', false, true))}
+                                                onClick={(e) => handleButton(e, user, getStatus(user, requests, userData, 'Followings', false))}
                                                 className='bg-white border-[3px] font-bold border-sky-700 rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400'>{buttonLoading ?
-                                                <ButtonLoader/> : userData?._id === id ? "Edit Profile" : getStatus(user, requests, userData, 'Followings', false, true)}
+                                                <ButtonLoader/> : userData?._id === id ? "Edit Profile" : getStatus(user, requests, userData, 'Followings', false)}
                                             </button>
                                         </div>
                                         <div className='mx-4 max-[400px]:mx-2 hidden'>
@@ -261,9 +266,9 @@ const Profile = ({socket}) => {
                                                         </div>
                                                         <div className='mx-4 max-[400px]:mx-2'>
                                                             <button
-                                                                onClick={(e) => handleButton(e, user, getStatus(user, requests, userData, '', false, true))}
+                                                                onClick={(e) => handleButton(e, user, getStatus(user, requests, userData, 'Followings', false))}
                                                                 className='bg-white border-[3px] border-sky-700 rounded-[6px] h-[40px] max-[400px]:w-[120px] max-[340px]:w-[100px] max-[340px]:text-[14px] w-[150px] text-black-400 font-bold'>{buttonLoading ?
-                                                                <ButtonLoader/> : userData?._id === id ? "Edit Profile" : getStatus(user, requests, userData, 'Followings', false, true)}
+                                                                <ButtonLoader/> : userData?._id === id ? "Edit Profile" : getStatus(user, requests, userData, 'Followings', false)}
                                                             </button>
                                                         </div>
                                                         <div className='mx-4 max-[400px]:mx-2 hidden'>
@@ -301,7 +306,7 @@ const Profile = ({socket}) => {
                                                                     >
                                                                         <path
                                                                             d={social.path}
-                                                                        ></path>
+                                                                        />
                                                                     </svg>
                                                                 </a>)}
                                                             </div>
@@ -330,7 +335,7 @@ const Profile = ({socket}) => {
                                         </div>
                                         <div
                                             className={`${id === userData?._id ? '' : 'hidden'} mx-0 lg:visible max-[1024px]:hidden w-full`}>
-                                            <ProfileViwedPeople id={id}/>
+                                            <ProfileViewedPeople/>
                                         </div>
                                     </div>
                                     <div
