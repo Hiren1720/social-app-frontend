@@ -75,7 +75,7 @@ const Registration = () => {
         setImage('')
     }
 
-    let {name, email, contact, gender, hobby, password, userName, birthDate, state} = user;
+    let {name, email, contact, gender, hobby, password, userName, birthDate, state,bio} = user;
     return (
         <>
             <div className="bg-white">
@@ -132,7 +132,8 @@ const Registration = () => {
                             </div>
                             <div>
                                 <div>
-                                    <form className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2 mb-8">
+                                    <div>
+                                    <form className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2 ">
                                         <div>
                                             <label
                                                 className="block mb-2 text-sm   text-gray-600 font-bold dark:text-gray-200">{t("Name")}</label>
@@ -273,7 +274,20 @@ const Registration = () => {
                                                 </div>
                                             </div>
                                         </div>
+
                                     </form>
+                                        <div>
+                                            <label
+                                                className="block mb-2 text-sm text-gray-600  font-bold dark:text-gray-200">{t("Bio")}</label>
+                                            <textarea id="grid-bio" name='bio' type="text"
+                                                      value={bio} onChange={(e) => handleChange(e)}
+                                                      placeholder={t("Bio")}
+                                                      className="block w-full px-5 mb-4 py-3 mt-2 font-bold placeholder-gray-400 bg-white border border-gray-200  shadow-inner  shadow-gray-400 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"/>
+
+                                        </div>
+                                    </div>
+
+
                                     <button onClick={(e) => {
                                         handleCreate(e)
                                     }}

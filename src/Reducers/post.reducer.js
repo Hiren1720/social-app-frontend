@@ -10,7 +10,7 @@ const initialState = {
     likeLoading: false,
     commentLoading:false,
     commentResult:null,
-    savedPost:{},
+    savedPost:[],
     savedPostResult:null
 }
 

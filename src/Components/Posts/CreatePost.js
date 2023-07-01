@@ -248,23 +248,23 @@ const CreatePost = () => {
                                 <span style={{color: 'red'}}>{importError}</span>
                             </div> : ''}
 
-                            <div className=' mt-2 w-full justify-between relative'>
-                                {files?.length > 0 ?<ul id="gallery" className="flex -m-1 relative">
-                                <div>{files?.length ? files.map((file, id) =>
+                            <div className=' mt-2 w-full justify-between  relative'>
+                                {files?.length > 0 ?<div id="gallery" className="flex -m-1 relative">
+                                <div className='grid grid-cols-3 gap-2 mt-2'>{files?.length ? files.map((file, id) =>
                                         <div className="flex justify-between relative mb-2 border border-black border-2 rounded-t-lg"> <img className="rounded-t-lg w-40 h-40" src={file?.selectedFile}
                                             height='150' width='150' alt='PostImage'/><GrFormClose size={28} className="absolute top-[8px] right-[16px] bg-white rounded-full cursor-pointer hover:bg-gray-200"
                                     onClick={() => handleDeleteImages(file, id)}/></div>) :
                                     ''}</div>
-                                </ul>:<>
-                                    <ul id="gallery" className="flex flex-1 flex-wrap -m-1 mt-2">
-                                        <li id="empty"
+                                </div>:<>
+                                    <div id="gallery" className="flex flex-1 flex-wrap -m-1 mt-2">
+                                        <div id="empty"
                                             className="h-full w-full text-center flex flex-col items-center justify-center items-center">
                                             <img className="mx-auto w-32"
                                                  src="https://user-images.githubusercontent.com/507615/54591670-ac0a0180-4a65-11e9-846c-e55ffce0fe7b.png"
                                                  alt="no data"/>
                                             <span className="text-small text-gray-500">No files selected</span>
-                                        </li>
-                                    </ul></>}
+                                        </div>
+                                    </div></>}
 
                                 <div className='ml-1 cursor-pointer mt-2 flex justify-end'><label onClick={() => {
                                     setFiles([]);

@@ -3,6 +3,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {
     BsBookmark,
     BsBookmarkFill,
+    BsCamera,
     BsDot,
     BsHandThumbsUp,
     BsHandThumbsUpFill,
@@ -42,7 +43,6 @@ const BlogPage = ({socket, type}) => {
     const posts = useSelector(state => state.postData.posts);
     const savedPost = useSelector(state => state.postData.savedPost);
     const savedPostResult = useSelector(state => state.postData.savedPostResult);
-
     const postResult = useSelector(state => state.postData.postResult);
     const likes = useSelector(state => state.postData.likes);
     const comments = useSelector(state => state.postData.comments);
@@ -87,7 +87,6 @@ const BlogPage = ({socket, type}) => {
         setModal({open: false, data: null, title: null});
     }
 
-    // console.log("savedPost", savedPost)
     useEffect(() => {
         socket.on('message', (data) => {
             toast(data?.text, {type: 'success'});
@@ -112,28 +111,25 @@ const BlogPage = ({socket, type}) => {
         if (id && type === "Post") {
             let loginUserPost = posts?.filter((ele) => ele?.createdBy === id);
             setBlog([...loginUserPost])
-        }
-        else if (id && type === "SavedPost") {
-            // let SavedPost = posts?.filter((ele) => savedPost[0]?.postId?.includes(ele?._id));
+        } else if (id && type === "SavedPost") {
             setBlog([...savedPost])
-        }
-        else if (posts && posts.length) {
+        } else if (posts && posts.length) {
             setBlog([...posts]);
         } else {
             setBlog([]);
         }
         // eslint-disable-next-line
-    }, [posts, id, postResult, postId])
+    }, [posts, id, postResult, postId, type, savedPostResult, savedPost])
 
     useEffect(() => {
         if (postId) {
             dispatch(getPost({postId}))
-        } else if(type === 'SavedPost' ){
+        } else if (type === 'SavedPost') {
             dispatch(getAllSavedPost());
         } else {
             dispatch(getAllPost())
         }
-    }, [postId, postResult,savedPostResult,type]);
+    }, [postId, postResult, savedPostResult, type]);
 
     const handleCreateLike = (id) => {
         dispatch(createLike({"postId": id, "likeBy": userToken?._id, isSinglePost: postId}))
@@ -351,7 +347,7 @@ const BlogPage = ({socket, type}) => {
         <>
             {loading ? <Loader/> :
                 <div className='relative lg:overflow-y-scroll lg:h-[80vh]   '>
-                    {blog.length > 0 ? blog?.map((ele, index) => (
+                    {blog?.length > 0 ? blog?.map((ele, index) => (
                         <div className="" key={index}>
                             {id && userToken._id === id && ele?._id === open?.postId &&
                             <div ref={blockRef}
@@ -398,7 +394,7 @@ const BlogPage = ({socket, type}) => {
                                         <div className="flex items-center space-x-8">
                                             <div className="text-xs text-neutral-500 flex items-center">
                                                 <BsDot/> {handleDate(ele?.createdAt)}</div>
-                                            {id && userToken._id === id &&
+                                            {id && userToken._id === id && type === 'Post' &&
                                             <BsThreeDotsVertical className="pointer cursor-pointer"
                                                                  onClick={() => setOpen({
                                                                      show: !open?.show,
@@ -455,9 +451,9 @@ const BlogPage = ({socket, type}) => {
                                             </div>
                                             <div onClick={() => handleSavePost(ele?._id)}
                                                  className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer">
-                                                {ele.savedBy.includes(userToken?._id) ? <BsBookmarkFill size={20}/> :
+                                                {ele?.savedBy?.includes(userToken?._id) ? <BsBookmarkFill size={20}/> :
                                                     <BsBookmark size={20}/>
-                                                    }
+                                                }
                                             </div>
                                         </div>
                                         <div className='ml-3 mb-2'>
@@ -467,21 +463,41 @@ const BlogPage = ({socket, type}) => {
                                 </div>
                             </div>
                         </div>)) : <>
+
                         <div className="max-h-[400px] pl-2 items-center">
                             <div
-                                className="bg-white h-full rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-                                <div className="flex justify-end px-4">
-                                    <div className="border-gray-200 text-center py-14">
-                                        <h1 className="md:text-9xl text-7xl font-bold text-pink-400 pb-4 ">No Posts</h1>
-                                        <p className="text-2xl md:text-md pb-8 px-12 font-medium">Oops! The post you are
-                                            looking
-                                            for does not exist. Press the button and create the post.</p>
-                                        <button onClick={() => navigate('/post')}
-                                                className="bg-gradient-to-r from-purple-400 to-blue-500 hover:from-pink-500 hover:to-orange-500 text-white font-semibold px-6 py-3 rounded-md mr-6">
-                                            Post Create
-                                        </button>
-                                    </div>
-                                </div>
+                                className="bg-white h-full rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 py-10">
+                                {type === 'SavedPost' ? <>
+                                        <div className="flex justify-center px-4 py-8">
+                                            <div className="border-black text-center border-[4px]  rounded-full p-8">
+                                                <BsBookmark size={80} className="p-2"/>
+                                            </div>
+                                        </div>
+                                        <div className='text-center'>
+                                            <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">Start Saving</h1>
+                                            <div className='text-gray-600 text-semibold mb-2'>Save photos and videos to your
+                                                All Posts collection.
+                                            </div>
+                                        </div>
+                                    </> :
+                                    <>
+                                        <div className="flex justify-center px-4 py-8">
+                                            <div className="border-black text-center border-[4px]  rounded-full p-8">
+                                                <BsCamera size={80} className="p-2"/>
+                                            </div>
+                                        </div>
+                                        <div className='text-center'>
+                                            <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">Share Posts</h1>
+                                            <div className='text-gray-600 text-semibold mb-2'>When you share photos,
+                                                they will appear on your profile.
+                                            </div>
+                                            <div onClick={() => navigate('/post')}
+                                                 className='text-sky-600 text-bold cursor-pointer'>Share your first
+                                                posts
+                                            </div>
+                                        </div>
+                                    </>
+                                }
                             </div>
 
                         </div>

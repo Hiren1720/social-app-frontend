@@ -46,8 +46,8 @@ console.log("userss",user, date, month, year)
                         <div className=' mx-7 max-[460px]:mx-1 max-[420px]:mx-0 grid md:grid-cols-1 text-base gap-2'>
                             <div className='mx-4 mb-10 grid grid-cols-1'>
                                 <label htmlFor="first-name" className="block  font-medium text-gray-700  mb-[10px]">About</label>
-                                <textarea type="text" name="first-name" disabled placeholder="Lorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem" id="first-name"autoComplete="given-name"
-                                          value='Lorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem EnspumLorem'
+                                <textarea type="text" name="first-name" disabled placeholder="bio" id="first-name"autoComplete="given-name"
+                                          value={user?.bio}
                                           className="focus:ring-indigo-500 focus:border-indigo-500 block w-full py-3 border border-slate-200 font-bold rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow shadow-sm sm:text-sm border-gray-300 rounded-md">
                             </textarea>
                             </div>
