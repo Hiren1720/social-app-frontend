@@ -3,13 +3,12 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {Mention, MentionsInput} from 'react-mentions'
 import {getAllUsers} from "../../Actions/userActions";
 import {useDispatch, useSelector} from "react-redux";
-import {createPost, resetPostResult, updatePost} from "../../Actions/postActions";
+import {createPost, resetPostResult} from "../../Actions/postActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {GrFormClose} from 'react-icons/gr';
 import getDeviceName from "../../Helper/getDeviceName";
 
 const url = process.env.REACT_APP_API_URL;
-const appUrl = process.env.REACT_APP_URL;
 const CreatePost = () => {
     const dispatch = useDispatch();
     let userToken = getLocalStorageData('user');
@@ -36,7 +35,7 @@ const CreatePost = () => {
         if (pathName === '/edit-post') {
             if (state.imageUrl !== "") {
                 let file = [];
-                state?.imageUrl?.map((img) => {
+                state?.imageUrl?.forEach((img) => {
                     file.push({selectedFile: `${url}/${img.url}`})
                 });
                 setFiles([...file])
@@ -118,7 +117,7 @@ const CreatePost = () => {
         }
     };
     const handleOnImportFile = async (fileData) => {
-        if (fileData.length <= 10) {
+        if (fileData.length <= 10 || post.imageUrl.length < 10) {
             Array.from(fileData).forEach((ele, id) => {
                 let extension = ele.name.split('.').pop().replace(' ', '');
                 if (extension !== 'jpg' && extension !== 'jpeg' && extension !== 'png' && extension !== 'mp4') {
@@ -134,7 +133,6 @@ const CreatePost = () => {
             setImportError('You can post maximum 10 files!');
         }
     }
-    console.log("files------------>", post, files)
     const toBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -162,17 +160,12 @@ const CreatePost = () => {
         });
         let postData = {...post, mentions: mUsers, createdBy: userToken?._id, device: device}
         formData.append('post', JSON.stringify(postData));
-        if (pathName === '/edit-post') {
-            dispatch(updatePost(formData));
-        } else {
-            dispatch(createPost(formData))
-        }
+        dispatch(createPost({formData : formData,type: pathName === '/edit-post' ? 'update':'create'}));
     };
     const handleDeleteImages = (file, id) => {
-        console.log("----------->file", file, id, files, post)
         files.splice(id, 1);
-        post.imageUrl.splice(id, 1)
-        setFiles([...files])
+        post.imageUrl.splice(id, 1);
+        setFiles([...files]);
         setPost({...post, imageUrl: post.imageUrl})
 
     }

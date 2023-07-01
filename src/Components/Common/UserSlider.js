@@ -90,7 +90,7 @@ const UserSlider = ({data, title}) => {
                             <div key={index} className="px-2">
                                 <div
                                     className="relative max-w-md mx-auto md:max-w-2xl min-w-0 break-words bg-white w-full shadow-lg shadow-gray-300 rounded-xl  ">
-                                    <div
+                                    <div ref={blockRef}
                                         className={`absolute  z-10 mt-8 w-36 left-32 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${open.show && open.blockId === ele?._id ? '' : 'hidden'}`}
                                         role="menu"
                                         aria-orientation="vertical"
@@ -108,7 +108,7 @@ const UserSlider = ({data, title}) => {
                                     </div>
                                     <div className="px-6 pt-8">
                                         <div
-                                            className={`flex justify-end cursor-pointer ${title !== "Followers" ? 'hidden' : 'mt-2'}`}
+                                            className={`flex justify-end cursor-pointer mt-2`}
                                             onClick={() => setOpen({
                                                 show: !open?.show,
                                                 blockId: ele?._id

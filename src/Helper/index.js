@@ -2,6 +2,9 @@ import React from 'react';
 import {BsFillPlusSquareFill} from "react-icons/bs";
 import {FaUserCheck} from 'react-icons/fa';
 import {AiFillMinusSquare} from 'react-icons/ai';
+import {removeFollower, sendRequest, updateRequest} from "../Actions/requestActions";
+import {getLocalStorageData} from "./TokenHandler";
+const userData = getLocalStorageData('user');
 
 export function getStarEmail(email) {
     let result = email.indexOf("@") - 3;
@@ -35,7 +38,7 @@ export const getStatus = ({_id},requests,userData,title,isOnlyUser) => {
         data = 'Follow';
     }
     return data;
-}
+};
 
 export const getIcon = (status) => {
     switch (status) {
@@ -47,4 +50,17 @@ export const getIcon = (status) => {
         default:
             return <BsFillPlusSquareFill/>;
     }
-}
+};
+
+export const handleManageRequest = (e, status,item,dispatch,requests = null) => {
+    if (status === 'Follow') {
+        dispatch(sendRequest({toUserId: item?._id, fromUserId: userData?._id}));
+    }else if(status === 'UnFollow'){
+        dispatch(removeFollower({followerId:userData?._id,followingId:item?._id,status:'UnFollow'}));
+    } else if (status === 'Requested') {
+        let req = requests?.data && requests.data.filter(ele => ele?.fromUserId === userData?._id).find((ele) => ele?.toUserId === item?._id);
+        if (req) {
+            dispatch(updateRequest({id: req?._id, status: status}));
+        }
+    }
+};

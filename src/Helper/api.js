@@ -41,7 +41,7 @@ export const httpPost = (request) => {
     }:{
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token?.accessToken}`
-    }
+    };
     const requestOptions = {
         method: 'POST',
         headers: headers,

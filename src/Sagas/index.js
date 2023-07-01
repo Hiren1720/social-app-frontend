@@ -13,9 +13,8 @@ import {removeFollowerSaga} from "./FollowerSagas/removeFollowerSaga";
 import {createPostSaga} from "./PostSagas/createPostSaga";
 import {getAllPostSaga} from "./PostSagas/getAllPostSaga";
 import {createLikeSaga} from "./PostSagas/createLikeSaga";
-import {getAllLikesSaga} from "./PostSagas/getAllLikesSaga";
+import {getLikesCommentsSaga} from "./PostSagas/getLikesCommentsSaga";
 import {createCommentSaga} from "./CommentSagas/createCommentSaga";
-import {getCommentsSaga} from "./CommentSagas/getCommentsSaga";
 import {getMentionPostsSaga} from "./PostSagas/getMentionPostsSaga";
 import {getProfileViewersSaga} from "./UserSagas/getProfileViewersSaga";
 import {userForgetPasswordSaga} from "./AuthSagas/forgetPasswordSaga";
@@ -23,7 +22,6 @@ import {userResetPasswordSaga} from "./AuthSagas/resetPasswordSaga";
 import {deleteAccountSaga} from "./UserSagas/deleteAccountSaga";
 import {blockUserSaga} from "./BlockUserSaga/blockUserSaga";
 import {deletePostSaga} from "./PostSagas/deletePostSaga";
-import {updatePostSaga} from "./PostSagas/updatePostSaga";
 import {savePostSaga} from "./PostSagas/savePostSaga";
 import {getAllSavedPostsSaga} from "./PostSagas/getAllSavedPost";
 export default function* root() {
@@ -42,16 +40,14 @@ export default function* root() {
         createPostSaga(),
         getAllPostSaga(),
         createLikeSaga(),
-        getAllLikesSaga(),
+        getLikesCommentsSaga(),
         createCommentSaga(),
-        getCommentsSaga(),
         getMentionPostsSaga(),
         getProfileViewersSaga(),
         userForgetPasswordSaga(),
         userResetPasswordSaga(),
         blockUserSaga(),
         deletePostSaga(),
-        updatePostSaga(),
         userResetPasswordSaga(),
         deleteAccountSaga(),
         savePostSaga(),

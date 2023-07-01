@@ -22,7 +22,6 @@ import {getAllSavedPost, savePost} from "../../Actions/userActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
 import Modal from 'react-modal';
-import {getCommentsById} from "../../Actions/commentAction";
 import ButtonLoader from "../ButtonLoader";
 import useWidthHeight from "../../Hooks/useWidthHeight";
 import '../User/User.css';
@@ -133,6 +132,7 @@ const BlogPage = ({socket, type}) => {
         } else {
             dispatch(getAllPost())
         }
+        // eslint-disable-next-line
     }, [postId, postResult,savedPostResult,type]);
 
     const handleCreateLike = (id) => {
@@ -155,13 +155,13 @@ const BlogPage = ({socket, type}) => {
             return `${postDate.getDate()} ${postDate.toLocaleString('default', {month: 'long'})} ${postDate.getFullYear()}`;
         }
     };
-    const handleShowLikes = (e, likes) => {
+    const handleShowLikes = (e, id) => {
         e.stopPropagation();
-        dispatch(getAllLikes(likes));
+        dispatch(getAllLikes({id,type:'likes'}));
         setModal({open: true, data: null, title: 'Likes'});
     }
     const handleAddComment = (data) => {
-        dispatch(getCommentsById(data?._id))
+        dispatch(getAllLikes({id:data?._id,type:'comments'}))
         setModal({open: true, data: data, title: 'Comments'});
     }
     const handleSaveComment = () => {
@@ -440,7 +440,7 @@ const BlogPage = ({socket, type}) => {
                                                         onClick={() => handleCreateLike(ele?._id)}>{ele?.likes.includes(userToken?._id) ?
                                                         <BsHandThumbsUpFill color='#3C5AF0'/> :
                                                         <BsHandThumbsUp color='#3C5AF0'/>}&nbsp;&nbsp;<span
-                                                        onClick={(e) => handleShowLikes(e, ele?.likes)}>{ele?.likes.length} likes</span>
+                                                        onClick={(e) => handleShowLikes(e, ele?._id)}>{ele?.likes.length} likes</span>
                                                     </div>
                                                     <div
                                                         className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer"

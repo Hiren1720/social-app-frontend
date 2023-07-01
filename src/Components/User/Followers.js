@@ -14,33 +14,20 @@ import {getProfile} from "../../Actions/userActions";
 import {getStatus} from "../../Helper";
 import {getAllPost} from "../../Actions/postActions";
 const url = process.env.REACT_APP_API_URL;
-const Followers = ({type,setActive}) => {
-    const [followers,setFollowers] = useState([]);
-    const data = useSelector(state => state.requestData[type.toLowerCase()]);
+const Followers = ({type,user,setActive}) => {
+    const followers = useSelector(state => state.requestData.followFollowing);
     const requests = useSelector(state => state.requestData.requests);
     const requestResult = useSelector(state => state.requestData.requestResult);
     const posts = useSelector(state => state.postData.posts);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let userData = getLocalStorageData('user');
-    useEffect(()=>{
-        if(data && data?.data && data?.data.length){
-            setFollowers([...data?.data]);
+    useEffect(()=> {
+        if(type){
+            dispatch(getFollowers({type: type, id: user?._id}));
         }
-        else {
-            setFollowers([]);
-        }
-    },[data]);
-    useEffect(()=>{
-        if(requestResult && requestResult?.success){
-            dispatch(getRequests({type: 'allRequest'}));
-            dispatch(getProfile({id: userData?._id,isLoggedInUser:true}));
-            dispatch(getFollowers({type: 'user', state: 'followers', id: userData?._id}))
-            dispatch(getFollowers({state: 'followings', id: userData?._id}));
-            dispatch(setRequest());
-            dispatch(getAllPost())
-        }
-    },[requestResult]);
+        // eslint-disable-next-line
+    },[type]);
     const handleSendRequest = async (e,item,status) => {
         e.stopPropagation();
         if(status === 'Follow'){
@@ -65,7 +52,7 @@ const Followers = ({type,setActive}) => {
         <>
             <div className="w-full px-3 py-3 justify-center grid min-[1300px]:grid-cols-2 max-[1000px]:grid-cols-2 max-[600px]:grid-cols-1 gap-y-1 gap-x-10 rounded-b-lg h-[93vh] overflow-y-scroll ">
                 {(followers && followers.length) ? followers.map((ele,index)=> {
-                    let status = getStatus(ele,requests,userData,type,false,true);
+                    let status = getStatus(ele,{},userData,type,false);
                     let UserPost = posts?.filter((post)=>{
                         return post?.createdBy === ele?._id;
                     });
@@ -104,7 +91,7 @@ const Followers = ({type,setActive}) => {
                                 <div className="text-center mt-1">
                                     <h3 className="text-2xl text-slate-700 font-bold leading-normal mb-1">{ele?.userName}</h3>
                                     <div className="text-xs mt-0 mb-2 text-slate-400 font-bold uppercase">
-                                        <i className="fas fa-map-marker-alt mr-2 text-slate-400 opacity-75"></i>{ele?.name}
+                                        <i className="fas fa-map-marker-alt mr-2 text-slate-400 opacity-75"/>{ele?.name}
                                     </div>
                                 </div>
                                 <div className='flex gap-5 pt-4'>

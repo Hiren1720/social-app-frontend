@@ -11,6 +11,9 @@ export function* getProfile({payload}) {
     try{
         yield put({ type: payload?.isLoggedInUser ? types.SET_BUTTON_LOADING : types.SET_LOADING,loading: true })
         let result = yield call(httpGet,`/user/${payload?.id}/profile`);
+        if(payload?.isLoggedInUser){
+            localStorage.setItem('user',JSON.stringify(result?.data));
+        }
         yield put({
             type: types.GET_PROFILE_STATE_RESPONSE,
             payload: result?.data,
