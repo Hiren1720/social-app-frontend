@@ -4,7 +4,7 @@ const PrivateAccount = () =>{
     return(   <>
         <div className="max-h-[400px] pl-2 items-center">
             <div
-                className="bg-white h-full rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 py-10">
+                className="bg-white h-full rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 py-10 px-4">
                 <div className="flex justify-center px-4 py-8">
                     <div
                         className="border-black text-center border-[4px]  rounded-full md:p-8 p-4">

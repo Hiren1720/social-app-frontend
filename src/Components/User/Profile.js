@@ -45,10 +45,9 @@ const Profile = ({socket}) => {
     const [active, setActive] = useState('Posts');
     const [postLength, setPostLength] = useState(0);
     const tabs = [{tab: 'Posts', length: postLength}, {
-        tab: 'Followers',
-        length: user?.followers?.length
-    }, {tab: 'Followings', length: user?.following?.length},
-        userData?._id === id && {tab: "SavedPost", length: savedPost?.length}
+        tab: 'Followers', length: user?.followers?.length},
+        {tab: 'Followings', length: user?.following?.length},
+       {tab: "SavedPost", length: savedPost?.length}
     ];
     const {width} = useWidthHeight();
     const navigate = useNavigate();
@@ -176,7 +175,7 @@ const Profile = ({socket}) => {
                                             <div key={index}
                                                  onClick={() => setActive(tab.tab)}>
                                                 <button type="button"
-                                                        className={` text-black w-full py-2.5 text-md font-bold  font-normal text-center inline-block ${active === tab.tab ? 'border-b-4 border-black' : ''}`}>{tab.tab}
+                                                        className={` text-black w-full py-2.5 text-md font-bold ${userData?._id !== id && tab?.tab === 'SavedPost'? 'hidden':'block' } font-normal text-center inline-block ${active === tab.tab ? 'border-b-4 border-black' : ''}`}>{tab.tab}
                                                     <span
                                                         className="text-xl font-bold block uppercase py-2 tracking-wide text-blueGray-600 text-center">{tab.length}</span>
                                                 </button>
@@ -315,11 +314,12 @@ const Profile = ({socket}) => {
                                                     <div className={`grid ${userData?._id === id ?'grid-cols-4 ': 'grid-cols-3' } `}>
                                                         {tabs.map((tab, index) => (
                                                             <div key={index}
-                                                                 onClick={() => setActive(tab.tab)}>
+
+                                                                 onClick={() => setActive(tab?.tab)}>
                                                                 <button type="button"
-                                                                        className={` text-black w-full py-2.5  text-sm hover:shadow-md font-normal text-center inline-block ${active === tab.tab ? 'border-b-4 border-black' : ''}`}>{tab.tab}
+                                                                        className={` text-black w-full py-2.5  ${userData?._id !== id && tab?.tab === 'SavedPost'? 'hidden':'block' } text-sm hover:shadow-md font-normal text-center inline-block ${active === tab?.tab ? 'border-b-4 border-black' : ''}`}>{tab?.tab}
                                                                     <span
-                                                                        className="text-xl font-bold block uppercase py-2 tracking-wide text-blueGray-600 text-center">{tab.length}</span>
+                                                                        className="text-xl font-bold block uppercase py-2 tracking-wide text-blueGray-600 text-center">{tab?.length}</span>
                                                                 </button>
                                                             </div>
 
