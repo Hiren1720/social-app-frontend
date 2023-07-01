@@ -147,10 +147,12 @@ const Header = () => {
                                     tabIndex="-1">
                                     <span onClick={()=> handleProfile()} className={`block px-4 py-2 text-sm cursor-pointer hover:text-white hover:bg-gray-900 hover:rounded-[6px] text-gray-700 ${pathName.includes('/profile/') ? 'bg-gray-900 text-white rounded-[6px]':''}`} role="menuitem"
                                           tabIndex="-1" id="user-menu-item-0">Your Profile</span>
+                                    <span onClick={()=> {navigate('/settings')}} className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:text-white hover:bg-gray-900 hover:rounded-[6px]" role="menuitem"
+                                          tabIndex="-1" id="user-menu-item-1">Settings</span>
                                     <span onClick={()=> {dispatch(deleteAccount()); setOpen(!open)}} className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:text-white hover:bg-gray-900 hover:rounded-[6px]" role="menuitem"
-                                          tabIndex="-1" id="user-menu-item-1">Delete Account</span>
+                                          tabIndex="-1" id="user-menu-item-2">Delete Account</span>
                                     <span onClick={()=> dispatch(logout())} className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:text-white hover:bg-gray-900 hover:rounded-[6px]" role="menuitem"
-                                          tabIndex="-1" id="user-menu-item-2">Sign out</span>
+                                          tabIndex="-1" id="user-menu-item-3">Sign out</span>
                                 </div>
                             </div>
                         </div>

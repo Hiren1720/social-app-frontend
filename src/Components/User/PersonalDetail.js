@@ -12,8 +12,8 @@ const PersonalDetail = ({user}) => {
                         <div className='col mx-7 grid md:grid-cols-1 text-base gap-2 max-[460px]:mx-1 max-[420px]:mx-0'>
                             <div className='mx-4 my-4 grid grid-cols-1'>
                                 <label htmlFor="first-name" className="block  font-medium text-gray-700 mb-[10px]">Name</label>
-                                <input type="text" name="first-name" placeholder="name" id="first-name" autoComplete="given-name"
-                                       value={user?.name} disabled
+                                <input type="text" name="first-name" placeholder="name" id="first-name" autoComplete="given-name" disabled
+                                       value={user?.name}
                                        className="focus:ring-indigo-500 focus:border-indigo-500 font-bold block w-full py-3 border border-slate-200 rounded-lg px-3 focus:outline-none focus:border-slate-500 hover:shadow shadow-sm sm:text-sm border-gray-300 rounded-md"/>
                             </div>
                         </div>

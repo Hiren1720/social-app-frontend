@@ -91,3 +91,32 @@ export const resetPassword = (payload) =>{
         payload
     }
 };
+
+export const setSettings = (payload) =>{
+    return {
+        type: types.SET_SETTING_STATE,
+        payload
+    }
+};
+
+export const resetSettingResult = () => {
+    return {
+        type: types.SET_SETTING_STATE_FAILURE,
+        payload:null,
+        loading:false
+    }
+}
+
+export const createVisitorTime = (payload) => {
+    return {
+        type: types.SET_VISITOR_TIME,
+        payload
+    }
+}
+
+export const getDailyUsages = (payload) => {
+    return {
+        type: types.GET_DAILY_USAGES,
+        payload
+    }
+}

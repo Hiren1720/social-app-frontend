@@ -134,15 +134,15 @@ const Followers = ({type, setActive}) => {
                         <div
                             className="bg-white h-full rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 py-10">
                             <div className="flex justify-center px-4 py-8">
-                                <div className="border-black text-center border-[4px]  rounded-full p-8">
+                                <div className="border-black text-center border-[4px]  rounded-full md:p-8 p-4">
                                     <HiOutlineUsers size={80} className="p-2"/>
                                 </div>
                             </div>
                             <div className='text-center'>
                                 <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">No {type} found!</h1>
-                                <div className='text-gray-600 text-semibold mb-2'>Save photos and videos to your
-                                    All Posts collection.
-                                </div>
+                                {/*<div className='text-gray-600 text-semibold mb-2'>Save photos and videos to your*/}
+                                {/*    All Posts collection.*/}
+                                {/*</div>*/}
                             </div>
 
                         </div>

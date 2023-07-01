@@ -24,7 +24,8 @@ import {getStatus} from '../../Helper';
 import {getAllPost} from "../../Actions/postActions";
 import PortFolio from "../Addvertisement/Portfolio";
 import ProfileViwedPeople from "../Common/ProfileViewedPeople";
-import {FiLock}from 'react-icons/fi'
+import PrivateAccount from '../Common/PrivateAccount'
+
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
 const Profile = ({socket}) => {
@@ -47,7 +48,7 @@ const Profile = ({socket}) => {
         tab: 'Followers',
         length: user?.followers?.length
     }, {tab: 'Followings', length: user?.following?.length},
-        {tab: "SavedPost", length: savedPost?.length}
+        userData?._id === id && {tab: "SavedPost", length: savedPost?.length}
     ];
     const {width} = useWidthHeight();
     const navigate = useNavigate();
@@ -61,6 +62,7 @@ const Profile = ({socket}) => {
         // eslint-disable-next-line
     }, [requestResult]);
     useEffect(() => {
+        // dispatch(getAllPost());
         let loginUserPost = posts?.filter((ele) => {
             return ele?.createdBy === user?._id;
         });
@@ -75,6 +77,7 @@ const Profile = ({socket}) => {
             dispatch(getFollowers({state: 'followers', id: id}));
             dispatch(getFollowers({state: 'followings', id: id}));
             dispatch(getAllSavedPost());
+
             if (id === userData?._id) {
                 dispatch(getProfileViewers());
             }
@@ -103,7 +106,6 @@ const Profile = ({socket}) => {
         }
     }
     const handleButton = (e, item, status) => {
-        console.log("item", item)
         if (userData?._id === id) {
             navigate('/edit-profile', {state: item});
             e.stopPropagation();
@@ -164,7 +166,6 @@ const Profile = ({socket}) => {
                                     </svg>
                                 </div>
                             </div>
-
                             <div
                                 className="font-sans mt-0 flex lg:order-1 flex-row text-center sm:flex-row sm:text-left  shadow-lg px-6 bg-white shadow  w-full ">
                                 <div
@@ -172,7 +173,8 @@ const Profile = ({socket}) => {
                                     <div className="w-40 hidden lg:flex"></div>
                                     <div className="grid grid-cols-4 lg:gap-10 md:gap-2">
                                         {tabs.map((tab, index) => (
-                                            <div key={index} onClick={() => setActive(tab.tab)}>
+                                            <div key={index}
+                                                 onClick={() => setActive(tab.tab)}>
                                                 <button type="button"
                                                         className={` text-black w-full py-2.5 text-md font-bold  font-normal text-center inline-block ${active === tab.tab ? 'border-b-4 border-black' : ''}`}>{tab.tab}
                                                     <span
@@ -217,7 +219,7 @@ const Profile = ({socket}) => {
                                 </div>
                             </div>
                             <div
-                                className="2xl:mx-[208px] flex  max-[380px]:mx-[0px] max-[380px]:px-[10px] ">
+                                className="2xl:mx-[208px] flex  max-[380px]:mx-[0px]  ">
                                 <div
                                     className="relative bg-blueGray-200 flex-col w-full lg:grid lg:gap-4 2xl:gap-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 2xl:row-span-2 ">
                                     <div className="container mx-auto pt-[214px]">
@@ -275,10 +277,11 @@ const Profile = ({socket}) => {
                                                         <div className="mt-5 mx-[20px]">
                                                             <div className="flex justify-between">
                                                                 <h3 className="text-xl font-semibold">Bio</h3>
-                                                                <BsInfoCircle onClick={() => setActive('Profile')}
-                                                                              className="cursor-pointer"/>
+                                                                <BsInfoCircle
+                                                                    onClick={() => user?.privacy && user?._id !== userData?._id ? "" : setActive('Profile')}
+                                                                    className="cursor-pointer"/>
                                                             </div>
-                                                            <p className="text-gray-600 mt-2 text-start">{userData?.bio}</p>
+                                                            <p className="text-gray-600 mt-2 text-start">{user?.bio}</p>
                                                         </div>
 
                                                         <div className="my-4">
@@ -309,9 +312,10 @@ const Profile = ({socket}) => {
 
                                                 <div
                                                     className="bg-white shadow shadow-lg w-full border-t border-gray-300 md:hidden ">
-                                                    <div className="grid grid-cols-4">
+                                                    <div className={`grid ${userData?._id === id ?'grid-cols-4 ': 'grid-cols-3' } `}>
                                                         {tabs.map((tab, index) => (
-                                                            <div key={index} onClick={() => setActive(tab.tab)}>
+                                                            <div key={index}
+                                                                 onClick={() => setActive(tab.tab)}>
                                                                 <button type="button"
                                                                         className={` text-black w-full py-2.5  text-sm hover:shadow-md font-normal text-center inline-block ${active === tab.tab ? 'border-b-4 border-black' : ''}`}>{tab.tab}
                                                                     <span
@@ -329,30 +333,13 @@ const Profile = ({socket}) => {
                                             <ProfileViwedPeople id={id}/>
                                         </div>
                                     </div>
-                                     <div
-                                            className="container mx-auto col-span-1 lg:col-span-2 sm:col-span-5 max-[490px]:col-span-5 h-96 pt-6">
-                                         {!userData?._id ? renderUserDetails():  <>
+                                    <div
+                                        className="container mx-auto col-span-1 lg:col-span-2 sm:col-span-5 max-[490px]:col-span-5 h-96 pt-6">
+                                        {user?.privacy && id !== userData?._id && !userData?.following?.includes(user?._id)  ?
+                                            <PrivateAccount/>
+                                            : renderUserDetails()}
 
-                                        <div className="max-h-[400px] pl-2 items-center">
-                                            <div
-                                                className="bg-white h-full rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 py-10">
-                                                <div className="flex justify-center px-4 py-8">
-                                                    <div
-                                                        className="border-black text-center border-[4px]  rounded-full p-8">
-                                                        <FiLock size={80} className="p-2"/>
-                                                    </div>
-                                                </div>
-                                                <div className='text-center'>
-                                                    <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">This Account is Private</h1>
-                                                    <div className='text-gray-600 text-semibold mb-2'>Follow this account to see their photos and videos.
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </>}
-                                        </div>
+                                    </div>
                                     <PortFolio/>
                                 </div>
                             </div>

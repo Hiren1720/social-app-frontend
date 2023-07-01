@@ -27,6 +27,7 @@ const initialState = {
         'profile':{},
         status: false,
     },
+    dailyUsages:[],
     profileViewers:[],
     loggedInUser:null,
     profile: null,
@@ -34,6 +35,7 @@ const initialState = {
     verifyOTPResult:null,
     verifyForgetPasswordUser:null,
     deleteAccountResult:null,
+    settingResult:null,
     users: []
 }
 
@@ -59,6 +61,12 @@ const user = (state = initialState, action) => {
             return {...state, verifyForgetPasswordUser: action.payload, loading: action.loading}
         case types.DELETE_ACCOUNT_RESPONSE:
             return {...state,deleteAccountResult: action.payload,loading: action.loading}
+        case types.SET_SETTING_STATE_SUCCESS:
+        case types.SET_SETTING_STATE_FAILURE:
+            return {...state,settingResult: action.payload,loading: action.loading}
+        case types.GET_DAILY_USAGES_SUCCESS:
+        case types.GET_DAILY_USAGES_FAILURE:
+            return {...state,dailyUsages: action.payload,loading: action.loading}
         default:
             return state;
     }

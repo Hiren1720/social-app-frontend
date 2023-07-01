@@ -40,6 +40,7 @@ const BlogPage = ({socket, type}) => {
     let userToken = getLocalStorageData('user');
     const {width} = useWidthHeight();
     const {id, postId} = useParams();
+
     const posts = useSelector(state => state.postData.posts);
     const savedPost = useSelector(state => state.postData.savedPost);
     const savedPostResult = useSelector(state => state.postData.savedPostResult);
@@ -299,8 +300,8 @@ const BlogPage = ({socket, type}) => {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        nextArrow: <MdArrowForwardIos size={15}/>,
-        prevArrow: <MdArrowBackIosNew size={15}/>
+        nextArrow: <div><MdArrowForwardIos size={15} className="!bg-gray-200 !rounded-full -ml-4 cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/></div>,
+        prevArrow: <div><MdArrowBackIosNew size={15} className="!bg-gray-200 !rounded-full -ml-[4px] cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/></div>
     };
     const renderDeleteModal = () => {
         return (
@@ -406,7 +407,7 @@ const BlogPage = ({socket, type}) => {
                                         <div className="mb-3 text-xl font-bold">{ele?.title}</div>
                                         <div
                                             className="text-sm text-neutral-600">{ele?.content}</div>
-                                        <Slider {...settings}>
+                                        <Slider {...settings} >
                                             {Array.isArray(ele?.imageUrl) ? ele?.imageUrl.map((file, index) => {
                                                     if (file.type === 'video') {
                                                         return <video src={`${url}${file.url}`} autoPlay controls={true}/>
@@ -420,7 +421,7 @@ const BlogPage = ({socket, type}) => {
                                         </Slider>
                                     </div>
                                     <div>
-                                        <div className="sm:px-6 pt-4 pb-2">
+                                        <div className="sm:px-6 pt-8 pb-2">
                                             {ele?.mentions?.length ? ele.mentions.map((mention, id) => (
                                                 <span key={id}
                                                       className={`inline-block bg-pink-500 text-white rounded-full px-3 py-1 text-sm font-semibold  mr-2 mb-2`}
@@ -469,7 +470,7 @@ const BlogPage = ({socket, type}) => {
                                 className="bg-white h-full rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 py-10">
                                 {type === 'SavedPost' ? <>
                                         <div className="flex justify-center px-4 py-8">
-                                            <div className="border-black text-center border-[4px]  rounded-full p-8">
+                                            <div className="border-black text-center border-[4px]  rounded-full md:p-8 p-4">
                                                 <BsBookmark size={80} className="p-2"/>
                                             </div>
                                         </div>
@@ -482,7 +483,7 @@ const BlogPage = ({socket, type}) => {
                                     </> :
                                     <>
                                         <div className="flex justify-center px-4 py-8">
-                                            <div className="border-black text-center border-[4px]  rounded-full p-8">
+                                            <div className="border-black text-center border-[4px]  rounded-full md:p-8 p-4">
                                                 <BsCamera size={80} className="p-2"/>
                                             </div>
                                         </div>
