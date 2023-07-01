@@ -20,6 +20,7 @@ const UserSlider = ({data, title}) => {
     const [open, setOpen] = useState({show: false, blockId: ''});
     const blockRef = useRef();
     const navigate = useNavigate();
+    console.log("title",title)
     useEffect(() => {
         if (blocked?.success) {
             dispatch(getProfile({id: userData?._id, isLoggedInUser: true}));
@@ -107,14 +108,14 @@ const UserSlider = ({data, title}) => {
                                         </ul>
                                     </div>
                                     <div className="px-6 pt-8">
-                                        <div
+                                       { title === 'Followings' && <div
                                             className={`flex justify-end cursor-pointer mt-2`}
                                             onClick={() => setOpen({
                                                 show: !open?.show,
                                                 blockId: ele?._id
                                             })}>
                                             <BsThreeDotsVertical className="pointer" size={20}/>
-                                        </div>
+                                        </div>}
                                         <div className="flex flex-wrap justify-center">
                                             <div className="w-full flex justify-center">
                                                 <img

@@ -177,10 +177,10 @@ const Profile = ({socket}) => {
                                     <div className="w-40 hidden lg:flex"/>
                                     <div className="grid grid-cols-4 lg:gap-10 md:gap-2">
                                         {tabs.map((tab, index) => (
-                                            <div key={index}
+                                            <div key={index} className={`${userData?._id !== id && tab?.tab === 'SavedPost'? 'hidden':'block' }`}
                                                  onClick={() => setActive(tab.tab)}>
                                                 <button type="button"
-                                                        className={` text-black w-full py-2.5 text-md font-bold ${userData?._id !== id && tab?.tab === 'SavedPost'? 'hidden':'block' } font-normal text-center inline-block ${active === tab.tab ? 'border-b-4 border-black' : ''}`}>{tab.tab}
+                                                        className={` text-black w-full py-2.5 text-md font-bold  font-normal text-center inline-block ${active === tab.tab ? 'border-b-4 border-black' : ''}`}>{tab.tab}
                                                     <span
                                                         className="text-xl font-bold block uppercase py-2 tracking-wide text-blueGray-600 text-center">{tab.length}</span>
                                                 </button>
@@ -318,11 +318,10 @@ const Profile = ({socket}) => {
                                                     className="bg-white shadow shadow-lg w-full border-t border-gray-300 md:hidden ">
                                                     <div className={`grid ${userData?._id === id ?'grid-cols-4 ': 'grid-cols-3' } `}>
                                                         {tabs.map((tab, index) => (
-                                                            <div key={index}
-
+                                                            <div key={index} className={`${userData?._id !== id && tab?.tab === 'SavedPost'? 'hidden':'block' }`}
                                                                  onClick={() => setActive(tab?.tab)}>
                                                                 <button type="button"
-                                                                        className={` text-black w-full py-2.5  ${userData?._id !== id && tab?.tab === 'SavedPost'? 'hidden':'block' } text-sm hover:shadow-md font-normal text-center inline-block ${active === tab?.tab ? 'border-b-4 border-black' : ''}`}>{tab?.tab}
+                                                                        className={` text-black w-full py-2.5   text-sm hover:shadow-md font-normal text-center inline-block ${active === tab?.tab ? 'border-b-4 border-black' : ''}`}>{tab?.tab}
                                                                     <span
                                                                         className="text-xl font-bold block uppercase py-2 tracking-wide text-blueGray-600 text-center">{tab?.length}</span>
                                                                 </button>
