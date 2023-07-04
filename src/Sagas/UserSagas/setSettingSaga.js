@@ -14,6 +14,7 @@ export function* setSetting({payload}) {
         let request = {url:'/user/' + payload.id,body:payload?.data || {}}
         let result = yield call(httpPost,request)
         if(result && result?.data){
+            console.log("user result.data", result?.data)
             setLocalStorageData('user',result?.data)
         }
         yield put({

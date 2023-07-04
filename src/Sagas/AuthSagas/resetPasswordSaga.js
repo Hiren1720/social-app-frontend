@@ -17,14 +17,14 @@ export function* userResetPassword({payload}) {
             window.location.href = '/';
         }
         yield put({
-            type: types.RESET_PASSWORD_SUCCESS,
+            type: types.RESET_PASSWORD_RESPONSE,
             payload: result,
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.RESET_PASSWORD_FAILURE,
+            type: types.RESET_PASSWORD_RESPONSE,
             payload: null,
             loading:false
         });

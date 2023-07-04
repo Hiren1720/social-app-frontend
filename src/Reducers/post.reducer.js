@@ -9,7 +9,9 @@ const initialState = {
     comments:[],
     likeLoading: false,
     commentLoading:false,
-    commentResult:null
+    commentResult:null,
+    savedPost:[],
+    savedPostResult:null
 }
 
 const post = (state = initialState, action) => {
@@ -18,28 +20,21 @@ const post = (state = initialState, action) => {
             return {...state, [action.key]: action.loading};
         case types.SET_USER_STATE:
             return {...state, [action.state]: action.payload};
-        case types.SET_POST_STATE_SUCCESS:
-        case types.SET_POST_STATE_FAILURE:
-        case types.SET_DELETE_POST_STATE_SUCCESS:
-        case types.SET_DELETE_POST_STATE_FAILURE:
-        case types.SET_UPDATE_POST_STATE_SUCCESS:
-        case types.SET_UPDATE_POST_STATE_FAILURE:
+        case types.SET_POST_RESPONSE:
+        case types.DELETE_POST_RESPONSE:
             return {...state, postResult: action.payload, loading: action.loading};
-        case types.GET_POST_STATE_SUCCESS:
-        case types.GET_POST_STATE_FAILURE:
+        case types.GET_POST_RESPONSE:
             return {...state, posts: action.payload, loading: action.loading};
-        case types.GET_LIKE_STATE_SUCCESS:
-        case types.GET_LIKE_STATE_FAILURE:
-            return {...state, likes: action.payload, likeLoading: action.loading};
-        case types.SET_POST_LIKE_STATE_SUCCESS:
-        case types.SET_POST_LIKE_STATE_FAILURE:
+        case types.SAVE_POST_RESPONSE:
+            return {...state, savedPostResult: action.payload,loading: action.loading};
+        case types.GET_SAVED_POST_RESPONSE:
+            return {...state, savedPost: action.payload,loading: action.loading};
+        case types.GET_LIKES_COMMENTS_RESPONSE:
+            return {...state, [action?.state]: action.payload, likeLoading: action.loading};
+        case types.SET_POST_LIKE_RESPONSE:
             return {...state, postLikeResult: action.payload, loading: action.loading};
-        case types.SET_COMMENT_STATE_SUCCESS:
-        case types.SET_COMMENT_STATE_FAILURE:
+        case types.SET_COMMENT_RESPONSE:
             return {...state, commentResult: action.payload, commentLoading: action.loading};
-        case types.GET_COMMENT_STATE_SUCCESS:
-        case types.GET_COMMENT_STATE_FAILURE:
-            return {...state, comments: action.payload, likeLoading: action.loading};
         default:
             return state;
     }

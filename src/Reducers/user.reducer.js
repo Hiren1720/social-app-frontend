@@ -45,32 +45,21 @@ const user = (state = initialState, action) => {
             return {...state, loading: action.loading};
         case types.SET_USER_STATE:
             return {...state, [action.state]: action.payload};
-        case types.SAVE_USER_STATE_SUCCESS:
-        case types.SAVE_USER_STATE_FAILURE:
-        case types.USER_LOGIN_SUCCESS:
-        case types.USER_LOGIN_FAILURE:
-        case types.UPDATE_USER_STATE_SUCCESS:
-        case types.UPDATE_USER_STATE_FAILURE:
-        case types.RESET_PASSWORD_SUCCESS:
-        case types.RESET_PASSWORD_FAILURE:
+        case types.SAVE_USER_STATE_RESPONSE:
+        case types.USER_LOGIN_RESPONSE:
+        case types.RESET_PASSWORD_RESPONSE:
             return {...state, userResult: action.payload, loading: action.loading};
-        case types.VERIFY_OTP_SUCCESS:
-        case types.VERIFY_OTP_FAILURE:
+        case types.VERIFY_OTP_RESPONSE:
             return {...state, verifyOTPResult: action.payload, loading: action.loading};
-        case types.GET_USER_STATE_SUCCESS:
-        case types.GET_USER_STATE_FAILURE:
+        case types.GET_USER_STATE_RESPONSE:
             return {...state, users: action.payload, loading: action.loading};
-        case types.GET_PROFILE_SUCCESS:
-        case types.GET_PROFILE_FAILURE:
+        case types.GET_PROFILE_STATE_RESPONSE:
             return {...state, [action?.state]: action.payload,rating:action?.rating, loading: action.loading};
-        case types.GET_PROFILE_VIEWERS_SUCCESS:
-        case types.GET_PROFILE_VIEWERS_FAILURE:
+        case types.GET_PROFILE_VIEWERS_RESPONSE:
             return {...state, profileViewers: action.payload};
-        case types.FORGET_PASSWORD_SUCCESS:
-        case types.FORGET_PASSWORD_FAILURE:
+        case types.FORGET_PASSWORD_RESPONSE:
             return {...state, verifyForgetPasswordUser: action.payload, loading: action.loading}
-        case types.DELETE_ACCOUNT_SUCCESS:
-        case types.DELETE_ACCOUNT_FAILURE:
+        case types.DELETE_ACCOUNT_RESPONSE:
             return {...state,deleteAccountResult: action.payload,loading: action.loading}
         case types.SET_SETTING_STATE_SUCCESS:
         case types.SET_SETTING_STATE_FAILURE:

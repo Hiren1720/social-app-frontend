@@ -6,9 +6,9 @@ export const createPost = (payload) => {
     }
 };
 
-export const resetPostResult = (payload) => {
+export const resetPostResult = () => {
     return {
-        type: types.SET_POST_STATE_FAILURE,
+        type: types.SET_POST_RESPONSE,
         payload: null,
         loading:false
     }
@@ -30,7 +30,7 @@ export const getPost = (payload) => {
 
 export const getAllLikes = (payload) => {
     return {
-        type: types.GET_LIKE_STATE,
+        type: types.GET_LIKES_COMMENTS_STATE,
         payload
     }
 };
@@ -44,13 +44,7 @@ export const createLike = (payload) => {
 
 export const deletePost = (payload) => {
     return {
-        type: types.SET_DELETE_POST_STATE,
-        payload
-    }
-};
-export const updatePost = (payload) => {
-    return {
-        type: types.SET_UPDATE_POST_STATE,
+        type: types.DELETE_POST_STATE,
         payload
     }
 };

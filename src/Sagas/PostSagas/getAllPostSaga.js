@@ -12,14 +12,14 @@ export function* getAllPost({payload}) {
         yield put({ type: types.SET_POST_LOADING,loading: payload.isLoading ? !payload.isLoading : true })
         let result = yield call(httpGet,payload?.postId ? `/post/${payload?.postId}/getPost`:'/post/getAllPost');
         yield put({
-            type: types.GET_POST_STATE_SUCCESS,
+            type: types.GET_POST_RESPONSE,
             payload: (result?.data && result?.data.length) ? result?.data: [],
             loading:false
         });
     }
     catch (e) {
         yield put({
-            type: types.GET_POST_STATE_FAILURE,
+            type: types.GET_POST_RESPONSE,
             payload: [],
             loading:false
         });

@@ -14,7 +14,7 @@ export function* updateRequest({payload}) {
         let request = {url:UPDATE_REQUEST_URL,body:{}}
         let result = yield call(httpPost,request)
         yield put({
-            type: types.UPDATE_REQUEST_STATE_SUCCESS,
+            type: types.UPDATE_REQUEST_RESPONSE,
             payload: result,
             loading:false
         });
@@ -26,7 +26,7 @@ export function* updateRequest({payload}) {
     }
     catch (e) {
         yield put({
-            type: types.UPDATE_REQUEST_STATE_FAILURE,
+            type: types.UPDATE_REQUEST_RESPONSE,
             payload: null,
             loading:false
         });
