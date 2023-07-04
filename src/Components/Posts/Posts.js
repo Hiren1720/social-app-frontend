@@ -42,7 +42,6 @@ const BlogPage = ({socket, type}) => {
     const posts = useSelector(state => state.postData.posts);
     const savedPost = useSelector(state => state.postData.savedPost);
     const savedPostResult = useSelector(state => state.postData.savedPostResult);
-
     const postResult = useSelector(state => state.postData.postResult);
     const likes = useSelector(state => state.postData.likes);
     const comments = useSelector(state => state.postData.comments);
@@ -114,7 +113,12 @@ const BlogPage = ({socket, type}) => {
         } else if (id && type === "SavedPost") {
             setBlog([...savedPost])
         } else if (posts && posts.length) {
-            setBlog([...posts]);
+            const filteredArray = posts?.filter(item => (
+                !item.author_info[0].privacy ||
+                item.createdBy === userToken?._id ||
+                userToken?.following?.includes(item.createdBy)
+            ));
+            setBlog([...filteredArray]);
         } else {
             setBlog([]);
         }
@@ -153,11 +157,11 @@ const BlogPage = ({socket, type}) => {
     };
     const handleShowLikes = (e, id) => {
         e.stopPropagation();
-        dispatch(getAllLikes({id,type:'likes'}));
+        dispatch(getAllLikes({id, type: 'likes'}));
         setModal({open: true, data: null, title: 'Likes'});
     }
     const handleAddComment = (data) => {
-        dispatch(getAllLikes({id:data?._id,type:'comments'}))
+        dispatch(getAllLikes({id: data?._id, type: 'comments'}))
         setModal({open: true, data: data, title: 'Comments'});
     }
     const handleSaveComment = () => {
@@ -260,6 +264,7 @@ const BlogPage = ({socket, type}) => {
             </div>
         </>
     )
+    console.log("blogs", blog)
     const renderShareModal = () => (
         <>
             <p className="text-sm my-2">Share this link via</p>
@@ -299,8 +304,12 @@ const BlogPage = ({socket, type}) => {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        nextArrow: <div><MdArrowForwardIos size={15} className="!bg-gray-200 !rounded-full -ml-4 cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/></div>,
-        prevArrow: <div><MdArrowBackIosNew size={15} className="!bg-gray-200 !rounded-full -ml-[4px] cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/></div>
+        nextArrow: <div><MdArrowForwardIos size={15}
+                                           className="!bg-gray-200 !rounded-full -ml-4 cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/>
+        </div>,
+        prevArrow: <div><MdArrowBackIosNew size={15}
+                                           className="!bg-gray-200 !rounded-full -ml-[4px] cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/>
+        </div>
     };
     const renderDeleteModal = () => {
         return (
@@ -473,7 +482,8 @@ const BlogPage = ({socket, type}) => {
                                             </div>
                                         </div>
                                         <div className='text-center'>
-                                            <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">Start Saving</h1>
+                                            <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">Start
+                                                Saving</h1>
                                             <div className='text-gray-600 text-semibold mb-2'>Save photos and videos to your
                                                 All Posts collection.
                                             </div>
@@ -481,12 +491,14 @@ const BlogPage = ({socket, type}) => {
                                     </> :
                                     <>
                                         <div className="flex justify-center px-4 py-8">
-                                            <div className="border-black text-center border-[4px]  rounded-full md:p-8 p-4">
+                                            <div
+                                                className="border-black text-center border-[4px]  rounded-full md:p-8 p-4">
                                                 <BsCamera size={80} className="p-2"/>
                                             </div>
                                         </div>
                                         <div className='text-center'>
-                                            <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">Share Posts</h1>
+                                            <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">Share
+                                                Posts</h1>
                                             <div className='text-gray-600 text-semibold mb-2'>When you share photos,
                                                 they will appear on your profile.
                                             </div>
