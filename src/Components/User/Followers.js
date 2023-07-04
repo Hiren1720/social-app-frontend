@@ -47,7 +47,7 @@ const Followers = ({type,user,setActive}) => {
     const handleProfile = (e,user) => {
         e.stopPropagation();
         navigate(`/profile/${user?._id}`);
-        setActive('Profile');
+        setActive('Posts');
     }
     return (
         <>
