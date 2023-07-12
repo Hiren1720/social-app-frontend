@@ -10,7 +10,6 @@ const initialState = {
     likeLoading: false,
     commentLoading:false,
     commentResult:null,
-    savedPost:[],
     savedPostResult:null
 }
 
@@ -27,8 +26,6 @@ const post = (state = initialState, action) => {
             return {...state, posts: action.payload, loading: action.loading};
         case types.SAVE_POST_RESPONSE:
             return {...state, savedPostResult: action.payload,loading: action.loading};
-        case types.GET_SAVED_POST_RESPONSE:
-            return {...state, savedPost: action.payload,loading: action.loading};
         case types.GET_LIKES_COMMENTS_RESPONSE:
             return {...state, [action?.state]: action.payload, likeLoading: action.loading};
         case types.SET_POST_LIKE_RESPONSE:

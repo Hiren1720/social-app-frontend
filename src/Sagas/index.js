@@ -22,12 +22,10 @@ import {userResetPasswordSaga} from "./AuthSagas/resetPasswordSaga";
 import {deleteAccountSaga} from "./UserSagas/deleteAccountSaga";
 import {blockUserSaga} from "./BlockUserSaga/blockUserSaga";
 import {deletePostSaga} from "./PostSagas/deletePostSaga";
-// import {updatePostSaga} from "./PostSagas/updatePostSaga";
 import {setSettingSaga} from "./UserSagas/setSettingSaga";
 import {setVisitorTimeSaga} from "./UserSagas/setVisitorTimeSaga";
 import {getDailyUsagesSaga} from "./UserSagas/getDailyUsagesSaga";
 import {savePostSaga} from "./PostSagas/savePostSaga";
-import {getAllSavedPostsSaga} from "./PostSagas/getAllSavedPost";
 export default function* root() {
     yield all([
         userRegisterSaga(),
@@ -52,11 +50,9 @@ export default function* root() {
         userResetPasswordSaga(),
         blockUserSaga(),
         deletePostSaga(),
-        // updatePostSaga(),
         userResetPasswordSaga(),
         deleteAccountSaga(),
         savePostSaga(),
-        getAllSavedPostsSaga(),
         setSettingSaga(),
         setVisitorTimeSaga(),
         getDailyUsagesSaga()

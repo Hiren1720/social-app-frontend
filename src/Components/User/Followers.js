@@ -1,25 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {
     getFollowers,
-    getRequests,
     removeFollower,
     sendRequest,
-    setRequest,
     updateRequest
 } from "../../Actions/requestActions";
 import {HiOutlineUsers} from 'react-icons/hi';
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {useNavigate} from "react-router-dom";
-import {getProfile} from "../../Actions/userActions";
 import {getStatus} from "../../Helper";
-import {getAllPost} from "../../Actions/postActions";
 const url = process.env.REACT_APP_API_URL;
 const Followers = ({type,user,setActive}) => {
     const followers = useSelector(state => state.requestData.followFollowing);
-    const requests = useSelector(state => state.requestData.requests);
-    const requestResult = useSelector(state => state.requestData.requestResult);
-    const posts = useSelector(state => state.postData.posts);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let userData = getLocalStorageData('user');
@@ -55,9 +48,6 @@ const Followers = ({type,user,setActive}) => {
                     className="w-full px-3 py-3 justify-center grid min-[1300px]:grid-cols-2 max-[1000px]:grid-cols-2 max-[600px]:grid-cols-1 gap-y-1 gap-x-10 rounded-b-lg h-[93vh] overflow-y-scroll ">
                     {followers.map((ele, index) => {
                         let status = getStatus(ele,{},userData,type,false);
-                        let UserPost = posts?.filter((post) => {
-                            return post?.createdBy === ele?._id;
-                        });
                         return (
                             <div key={index}>
                                 <div
@@ -67,13 +57,13 @@ const Followers = ({type,user,setActive}) => {
                                             <div className="w-full flex justify-center">
                                                 <img
                                                     src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}/${ele?.profile_url}` : "https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
-                                                    className="rounded-full align-middle object-cover border-none absolute mt-2 w-[100px] h-[100px]"/>
+                                                    className="rounded-full align-middle object-cover border-none absolute mt-2 w-[100px] h-[100px]" alt="profile"/>
                                             </div>
                                             <div className="w-full text-center mt-20">
                                                 <div className="flex justify-center lg:pt-4 pt-8 pb-0">
                                                     <div className="lg:p-3 p-2 text-center !px-8">
                                                     <span
-                                                        className="text-xl font-bold block uppercase tracking-wide text-slate-700">{UserPost.length}</span>
+                                                        className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.posts?.length}</span>
                                                 <span className="text-sm text-slate-400">Post</span>
                                             </div>
                                             <div className="lg:p-3 p-2 text-center">

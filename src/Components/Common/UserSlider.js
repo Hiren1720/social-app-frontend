@@ -8,27 +8,24 @@ import {BsThreeDotsVertical} from 'react-icons/bs';
 import {BiBlock} from 'react-icons/bi';
 
 import {getStatus} from "../../Helper";
-import {getAllPost} from "../../Actions/postActions";
 
 const url = process.env.REACT_APP_API_URL;
 const UserSlider = ({data, title}) => {
     const dispatch = useDispatch();
-    const posts = useSelector(state => state.postData.posts);
     const requests = useSelector(state => state.requestData.requests);
     const userData = useSelector(state => state.userData.loggedInUser);
     const blocked = useSelector(state => state.blockData.blockResult);
     const [open, setOpen] = useState({show: false, blockId: ''});
     const blockRef = useRef();
     const navigate = useNavigate();
-    console.log("title",title)
     useEffect(() => {
         if (blocked?.success) {
             dispatch(getProfile({id: userData?._id, isLoggedInUser: true}));
         }
+        // eslint-disable-next-line
     }, [blocked]);
 
     useEffect(() => {
-        dispatch(getAllPost());
         const handleClickOutside = (event) => {
             if (blockRef.current && !blockRef.current.contains(event.target)) {
                 setOpen(false);
@@ -38,7 +35,6 @@ const UserSlider = ({data, title}) => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-
         // eslint-disable-next-line
     }, []);
     const handleSendRequest = async (e, item, status) => {
@@ -65,7 +61,6 @@ const UserSlider = ({data, title}) => {
     }
     const handleProfile = (e, user) => {
         e.stopPropagation();
-
         navigate(`/profile/${user?._id}`);
     }
     const handleBlockAccount = async (e, item, status) => {
@@ -78,15 +73,10 @@ const UserSlider = ({data, title}) => {
     return (
         <>
             <div className='mx-4 w-full overflow-y-scroll h-screen scroll-smooth '>
-                <div
-                    className="w-full py-4 min-[750px]:justify-start  rounded-b-lg flex-row flex  gap-5 grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ">
-
+                <div className="w-full py-4 min-[750px]:justify-start  rounded-b-lg flex-row flex  gap-5 grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ">
                     {data && data?.length > 0 && data?.map((ele, index) => {
-                        let UserPost = posts?.filter((post)=>{
-                            return post?.createdBy === ele?._id;
-                        });
                         let blockUser = getBlockUser(ele);
-                        let status = getStatus(ele, requests, userData, title, false);
+                        let status = getStatus(ele, title === 'Followers'? {}: requests, userData, title, false);
                         return (
                             <div key={index} className="px-2">
                                 <div
@@ -108,7 +98,7 @@ const UserSlider = ({data, title}) => {
                                         </ul>
                                     </div>
                                     <div className="px-6 pt-8">
-                                       { title === 'Followings' && <div
+                                       { (title === 'Followings' || title === 'Users') && <div
                                             className={`flex justify-end cursor-pointer mt-2`}
                                             onClick={() => setOpen({
                                                 show: !open?.show,
@@ -120,7 +110,7 @@ const UserSlider = ({data, title}) => {
                                             <div className="w-full flex justify-center">
                                                 <img
                                                     src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}${ele?.profile_url}` : "https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
-                                                    className="rounded-full align-middle object-cover border-none absolute mt-2 w-[100px] h-[100px]"/>
+                                                    className="rounded-full align-middle object-cover border-none absolute mt-2 w-[100px] h-[100px]" alt='profile'/>
                                             </div>
                                             <div className="w-full text-center mt-20 ">
                                                 <div
@@ -128,7 +118,7 @@ const UserSlider = ({data, title}) => {
                                                     <div
                                                         className="lg:p-3 p-2 text-center max-[750px]:!pr-0 max-[640px]:!pr-8 !pr-8 ">
                             <span
-                                className="text-xl font-bold block uppercase tracking-wide text-slate-700">{UserPost.length}</span>
+                                className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.posts?.length}</span>
                                                         <span className="text-sm text-slate-400">Post</span>
                                                     </div>
                                                     <div className="lg:p-3 p-2 text-center">

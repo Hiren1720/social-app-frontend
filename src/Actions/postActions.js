@@ -14,13 +14,6 @@ export const resetPostResult = () => {
     }
 };
 
-export const getAllPost = (payload) => {
-    return {
-        type: types.GET_POST_STATE,
-        payload:{isLoading:payload || false}
-    }
-};
-
 export const getPost = (payload) => {
     return {
         type: types.GET_POST_STATE,
