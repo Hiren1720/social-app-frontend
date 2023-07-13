@@ -154,6 +154,8 @@ const BlogPage = ({socket, type}) => {
         } else {
             return `${postDate.getDate()} ${postDate.toLocaleString('default', {month: 'long'})} ${postDate.getFullYear()}`;
         }
+
+
     };
     const handleShowLikes = (e, id) => {
         e.stopPropagation();
