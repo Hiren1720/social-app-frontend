@@ -32,7 +32,7 @@ export const getStatus = ({_id},requests,userData,title,isOnlyUser) => {
         data = 'Requested';
     } else if (title === 'Followers' && userData?.followers.includes(_id)) {
         data = 'Remove';
-    } else if ((title === 'Followings' || title === 'Users') && userData?.following.includes(_id)) {
+    } else if ((title === 'Followings' || title === 'Users') && userData?.followings.includes(_id)) {
         data = 'UnFollow';
     } else {
         data = 'Follow';
