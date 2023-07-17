@@ -8,7 +8,7 @@ import {getLocalStorageData} from "../../Helper/TokenHandler";
 import '../User/User.css';
 import Requests from "../FollowFollowing/Requests";
 import Loader from "../Layouts/Loader";
-import {createPost, getAllPost, resetPostResult} from "../../Actions/postActions";
+import {createPost, resetPostResult} from "../../Actions/postActions";
 import getDeviceName from "../../Helper/getDeviceName";
 import {getIcon, getStatus} from "../../Helper";
 const url = process.env.REACT_APP_API_URL;
@@ -30,7 +30,6 @@ const Home = ({socket}) =>{
     useEffect(()=> {
         if(postResult){
             dispatch(resetPostResult())
-            dispatch(getAllPost(true))
             setThought('');
         }
         // eslint-disable-next-line
@@ -115,7 +114,7 @@ const Home = ({socket}) =>{
                                                 <div
                                                     className="mt-6 mb-3 flex gap-14 md:!gap-14 max-[1200px]:flex-col max-[1024px]:flex-row flex-row">
                                                     <div className="flex flex-col items-center justify-center">
-                                                        <p className="text-2xl font-bold text-navy-700 dark:text-white">{postLength}</p>
+                                                        <p className="text-2xl font-bold text-navy-700 dark:text-white">{userData?.posts?.length}</p>
                                                         <p className="text-sm font-normal text-gray-600">Posts</p>
                                                     </div>
                                                     <div className="flex flex-col items-center justify-center">
@@ -213,7 +212,7 @@ const Home = ({socket}) =>{
 
                                         </div>
                                         <div className=''>
-                                            <Post socket={socket}/>
+                                            <Post socket={socket} type={'getAllPost'}/>
                                         </div>
                                     </div>
                                     <div>

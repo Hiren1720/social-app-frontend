@@ -3,12 +3,11 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import ReactStars from "react-rating-stars-component";
 import {BsInfoCircle} from "react-icons/bs";
-import {getAllSavedPost, getProfile, getProfileViewers} from "../../Actions/userActions";
+import {getProfile, getProfileViewers} from "../../Actions/userActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import PersonalDetail from "./PersonalDetail";
 import Followers from "./Followers";
 import {
-    getFollowers,
     getRequests,
     removeFollower,
     sendRequest,
@@ -19,38 +18,28 @@ import './User.css';
 import Loader from "../Layouts/Loader";
 import ButtonLoader from "../ButtonLoader";
 import Posts from '../Posts/Posts';
-import useWidthHeight from "../../Hooks/useWidthHeight";
 import {getStatus} from '../../Helper';
-import {getAllPost} from "../../Actions/postActions";
 import PortFolio from "../Addvertisement/Portfolio";
-import ProfileViwedPeople from "../Common/ProfileViewedPeople";
 import PrivateAccount from '../Common/PrivateAccount'
-
 import ProfileViewedPeople from "../Common/ProfileViewedPeople";
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
 const Profile = ({socket}) => {
-    const [user, setUser] = useState({});
     const {id} = useParams();
     const userData = getLocalStorageData('user');
     const dispatch = useDispatch();
-    const profile = useSelector(state => state.userData.profile);
-    const posts = useSelector(state => state.postData.posts);
-    const savedPostResult = useSelector(state => state.postData.savedPostResult);
-    const savedPost = useSelector(state => state.postData.savedPost);
-    const profileViewers = useSelector(state => state.userData.profileViewers);
+    const user = useSelector(state => state.userData.profile);
     const loading = useSelector(state => state.userData.loading);
     const buttonLoading = useSelector(state => state.requestData.buttonLoading);
     const requests = useSelector(state => state.requestData.requests);
     const requestResult = useSelector(state => state.requestData.requestResult);
+    const savedPostResult = useSelector(state => state.postData.savedPostResult);
     const [active, setActive] = useState('Posts');
-    const [postLength, setPostLength] = useState(0);
-    const tabs = [{tab: 'Posts', length: postLength}, {
+    const tabs = [{tab: 'Posts', length: user?.posts?.length}, {
         tab: 'Followers', length: user?.followers?.length},
         {tab: 'Followings', length: user?.following?.length},
-       {tab: "SavedPost", length: savedPost?.length}
+       {tab: "SavedPost", length: user?.savedPost}
     ];
-    const {width} = useWidthHeight();
     const navigate = useNavigate();
     useEffect(() => {
         if (requestResult && requestResult?.success) {
@@ -58,7 +47,6 @@ const Profile = ({socket}) => {
             dispatch(getProfile({id: id}));
             dispatch(getProfile({id: userData?._id, isLoggedInUser: true}));
             dispatch(setRequest());
-            dispatch(getAllPost());
             if (id === userData?._id) {
                 dispatch(getProfileViewers());
             }
@@ -66,43 +54,30 @@ const Profile = ({socket}) => {
         // eslint-disable-next-line
     }, [requestResult]);
     useEffect(() => {
-        // dispatch(getAllPost());
-        let loginUserPost = posts?.filter((ele) => {
-            return ele?.createdBy === user?._id;
-        });
-        setPostLength(loginUserPost.length)
-        // eslint-disable-next-line
-    }, [postLength, posts])
-    useEffect(() => {
         if (id) {
             dispatch(getProfile({id: id}));
-            dispatch(getProfile({id: userData?._id, isLoggedInUser: true}));
             dispatch(getRequests({type: 'allRequest'}));
-            dispatch(getFollowers({state: 'followers', id: id}));
-            dispatch(getFollowers({state: 'followings', id: id}));
-            dispatch(getAllSavedPost());
-
             if (id === userData?._id) {
                 dispatch(getProfileViewers());
             }
         }
         // eslint-disable-next-line
     }, [id]);
-    useEffect(() => {
-        if (profile) {
-            setUser({...profile});
+    useEffect(()=> {
+        if(savedPostResult){
+            dispatch(getProfile({id: id,isLoading:true}));
         }
         // eslint-disable-next-line
-    }, [profile]);
+    },[savedPostResult]);
     const renderUserDetails = () => {
         switch (active) {
             case 'Followings':
             case 'Followers':
                 return <Followers user={user} type={active} setActive={setActive}/>;
             case 'Posts':
-                return <Posts socket={socket} type={"Post"}/>;
+                return <Posts socket={socket} id={id} type={"getPostsByUserId"}/>;
             case 'SavedPost':
-                return <Posts socket={socket} type={"SavedPost"}/>;
+                return <Posts socket={socket} type={"getSavedPosts"}/>;
             case 'Profile':
             default:
                 return <PersonalDetail user={user}/>;

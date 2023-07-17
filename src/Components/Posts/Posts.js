@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import {
     BsBookmark,
     BsBookmarkFill,
@@ -18,37 +18,36 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {toast} from 'react-toastify';
-import {createLike, deletePost, getAllLikes, getAllPost, getPost} from "../../Actions/postActions";
-import {getAllSavedPost, savePost} from "../../Actions/userActions";
+import {createLike, deletePost, getAllLikes, getPost} from "../../Actions/postActions";
+import {savePost} from "../../Actions/userActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import Loader from "../Layouts/Loader";
 import Modal from 'react-modal';
 import ButtonLoader from "../ButtonLoader";
 import useWidthHeight from "../../Hooks/useWidthHeight";
 import '../User/User.css';
-
+import ProfilePhoto from "../User/ProfilePhoto";
 import {MdArrowBackIosNew, MdArrowForwardIos, MdDelete, MdModeEditOutline} from "react-icons/md";
 // import {getAllSavedPost} from "../../Sagas/UserSagas/getAllSavedPost";
 
 Modal.setAppElement('#modal')
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
-const BlogPage = ({socket, type}) => {
+
+const BlogPage = ({socket, type,id}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let userToken = getLocalStorageData('user');
     const {width} = useWidthHeight();
-    const {id, postId} = useParams();
-    const posts = useSelector(state => state.postData.posts);
-    const savedPost = useSelector(state => state.postData.savedPost);
+    const blog = useSelector(state => state.postData.posts);
     const savedPostResult = useSelector(state => state.postData.savedPostResult);
+
     const postResult = useSelector(state => state.postData.postResult);
     const likes = useSelector(state => state.postData.likes);
     const comments = useSelector(state => state.postData.comments);
     const loading = useSelector(state => state.postData.loading);
     const likeLoading = useSelector(state => state.postData.likeLoading);
     const commentLoading = useSelector(state => state.postData.commentLoading);
-    const [blog, setBlog] = useState([]);
     const [open, setOpen] = useState({show: false, postId: ''});
     const [modal, setModal] = useState({open: false, data: null, title: null});
     const [comment, setComment] = useState('');
@@ -97,46 +96,31 @@ const BlogPage = ({socket, type}) => {
             new Notification('Demo Notification', options)
             setModal({open: false, data: null, title: null});
             setComment('');
-            postId ? dispatch(getPost({postId})) : dispatch(getAllPost());
+            receivePosts()
         })
         socket.on('messageFrom', (data) => {
             setModal({open: false, data: null, title: null});
             setComment('');
-            postId ? dispatch(getPost({postId})) : dispatch(getAllPost());
+            receivePosts()
         })
         // eslint-disable-next-line
-    }, [])
+    }, []);
+
     useEffect(() => {
-        if (id && type === "Post") {
-            let loginUserPost = posts?.filter((ele) => ele?.createdBy === id);
-            setBlog([...loginUserPost])
-        } else if (id && type === "SavedPost") {
-            setBlog([...savedPost])
-        } else if (posts && posts.length) {
-            const filteredArray = posts?.filter(item => (
-                !item.author_info[0].privacy ||
-                item.createdBy === userToken?._id ||
-                userToken?.following?.includes(item.createdBy)
-            ));
-            setBlog([...filteredArray]);
-        } else {
-            setBlog([]);
-        }
+        receivePosts();
         // eslint-disable-next-line
-    }, [posts, id, postResult, postId, type, savedPostResult, savedPost])
+    }, [id, postResult, savedPostResult, type]);
 
-    useEffect(() => {
-        if (postId) {
-            dispatch(getPost({postId}))
-        } else if (type === 'SavedPost') {
-            dispatch(getAllSavedPost());
-        } else {
-            dispatch(getAllPost())
+    const receivePosts =() => {
+        if (id) {
+            dispatch(getPost({id:id,type}))
         }
-    }, [postId, postResult, savedPostResult, type]);
-
+        else {
+            dispatch(getPost({type}));
+        }
+    };
     const handleCreateLike = (id) => {
-        dispatch(createLike({"postId": id, "likeBy": userToken?._id, isSinglePost: postId}))
+        dispatch(createLike({"postId": id, "likeBy": userToken?._id, isSinglePost: type === 'getPost',type}))
     }
 
     const handleSavePost = (id) => {
@@ -154,16 +138,14 @@ const BlogPage = ({socket, type}) => {
         } else {
             return `${postDate.getDate()} ${postDate.toLocaleString('default', {month: 'long'})} ${postDate.getFullYear()}`;
         }
-
-
     };
     const handleShowLikes = (e, id) => {
         e.stopPropagation();
-        dispatch(getAllLikes({id, type: 'likes'}));
+        dispatch(getAllLikes({id,type:'likes'}));
         setModal({open: true, data: null, title: 'Likes'});
     }
     const handleAddComment = (data) => {
-        dispatch(getAllLikes({id: data?._id, type: 'comments'}))
+        dispatch(getAllLikes({id:data?._id,type:'comments'}))
         setModal({open: true, data: data, title: 'Comments'});
     }
     const handleSaveComment = () => {
@@ -266,52 +248,50 @@ const BlogPage = ({socket, type}) => {
             </div>
         </>
     )
-    console.log("blogs", blog)
-    const renderShareModal = () => (
-        <>
-            <p className="text-sm my-2">Share this link via</p>
-            <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                <div className="w-full flex justify-around">
-                    <a href={`whatsapp://send?text=${appUrl}/post/${modal?.data ? modal?.data?.author_info[0]?.userName : 'postById'}/${modal?.data?._id}`}
-                       data-action="share/whatsapp/share" rel="noreferrer"
-                       target="_blank"> <FaWhatsappSquare color={'#25D366'} size={60}/></a>
-                    <a href={`https://www.facebook.com/sharer.php?u=${appUrl}/post/${modal?.data ? modal?.data?.author_info[0]?.userName : 'postById'}/${modal?.data?._id}`}
-                       data-action="share/facebook/share" rel="noreferrer"
-                       target="_blank"> <FaFacebookSquare color={'#4267B2'} size={60}/></a>
-                    <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${appUrl}/post/${modal?.data ? modal?.data?.author_info[0]?.userName : 'postById'}/${modal?.data?._id}`}
-                       data-action="share/linkedin/share" rel="noreferrer"
-                       target="_blank"> <FaLinkedin color={'#0077B5'} size={60}/></a>
+    const renderShareModal = () => {
+        let url = `${appUrl}/post/${(modal?.data && modal?.data?.author_info) ? modal?.data?.author_info[0]?.userName : 'postById'}/${modal?.data?._id}`
+        return (
+            <>
+                <p className="text-sm my-2">Share this link via</p>
+                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                    <div className="w-full flex justify-around">
+                        <a href={`whatsapp://send?text=${url}`}
+                           data-action="share/whatsapp/share" rel="noreferrer"
+                           target="_blank"> <FaWhatsappSquare color={'#25D366'} size={60}/></a>
+                        <a href={`https://www.facebook.com/sharer.php?u=${url}`}
+                           data-action="share/facebook/share" rel="noreferrer"
+                           target="_blank"> <FaFacebookSquare color={'#4267B2'} size={60}/></a>
+                        <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${url}`}
+                           data-action="share/linkedin/share" rel="noreferrer"
+                           target="_blank"> <FaLinkedin color={'#0077B5'} size={60}/></a>
+                    </div>
                 </div>
-            </div>
-            <p className="text-sm my-2">Or copy link</p>
-            <div
-                className="border-2 border-gray-200 flex justify-between items-center mt-4 py-2">
-                <BsLink45Deg size={30} color={'#4267B2'}/>
-                <input className="w-full outline-none bg-transparent" type="text"
-                       placeholder="link" value={`${appUrl}/post`}/>
+                <p className="text-sm my-2">Or copy link</p>
+                <div
+                    className="border-2 border-gray-200 flex justify-between items-center mt-4 py-2">
+                    <BsLink45Deg size={30} color={'#4267B2'}/>
+                    <input className="w-full outline-none bg-transparent" type="text"
+                           placeholder="link" value={`${appUrl}/post`}/>
 
-                <button onClick={() => {
-                    navigator.clipboard.writeText(`${appUrl}/post/${modal?.data ? modal?.data?.author_info[0]?.userName : 'postById'}/${modal?.data?._id}`);
-                    toast('Link Copied', {type: 'success'})
-                }}
-                        className="bg-indigo-500 text-white rounded text-sm py-2 px-5 mr-2 hover:bg-indigo-600">
-                    Copy
-                </button>
-            </div>
-        </>
-    )
+                    <button onClick={() => {
+                        navigator.clipboard.writeText(`${appUrl}/post/${modal?.data ? modal?.data?.author_info[0]?.userName : 'postById'}/${modal?.data?._id}`);
+                        toast('Link Copied', {type: 'success'})
+                    }}
+                            className="bg-indigo-500 text-white rounded text-sm py-2 px-5 mr-2 hover:bg-indigo-600">
+                        Copy
+                    </button>
+                </div>
+            </>
+        )
+    }
     const settings = {
         dots: true,
         infinite: false,
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        nextArrow: <div><MdArrowForwardIos size={15}
-                                           className="!bg-gray-200 !rounded-full -ml-4 cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/>
-        </div>,
-        prevArrow: <div><MdArrowBackIosNew size={15}
-                                           className="!bg-gray-200 !rounded-full -ml-[4px] cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/>
-        </div>
+        nextArrow: <div><MdArrowForwardIos size={15} className="!bg-gray-200 !rounded-full -ml-4 cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/></div>,
+        prevArrow: <div><MdArrowBackIosNew size={15} className="!bg-gray-200 !rounded-full -ml-[4px] cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/></div>
     };
     const renderDeleteModal = () => {
         return (
@@ -392,7 +372,7 @@ const BlogPage = ({socket, type}) => {
                                 <div className=" p-5 bg-white w-full shadow-lg shadow-gray-400  shadow">
                                     <div className="flex w-full items-center  justify-between border-b pb-3">
                                         <div className="flex items-center space-x-3">
-                                            <div className="">
+                                            <div className="" onClick={()=> setModal({open:true,title:'Profile',data:ele?.author_info[0]?.profile_url})}>
                                                 <img className="h-8 w-8 rounded-full bg-slate-400 object-cover"
                                                      src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url : `${url}/${ele?.author_info[0]?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                                                      alt=""/>
@@ -484,8 +464,7 @@ const BlogPage = ({socket, type}) => {
                                             </div>
                                         </div>
                                         <div className='text-center'>
-                                            <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">Start
-                                                Saving</h1>
+                                            <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">Start Saving</h1>
                                             <div className='text-gray-600 text-semibold mb-2'>Save photos and videos to your
                                                 All Posts collection.
                                             </div>
@@ -493,14 +472,12 @@ const BlogPage = ({socket, type}) => {
                                     </> :
                                     <>
                                         <div className="flex justify-center px-4 py-8">
-                                            <div
-                                                className="border-black text-center border-[4px]  rounded-full md:p-8 p-4">
+                                            <div className="border-black text-center border-[4px]  rounded-full md:p-8 p-4">
                                                 <BsCamera size={80} className="p-2"/>
                                             </div>
                                         </div>
                                         <div className='text-center'>
-                                            <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">Share
-                                                Posts</h1>
+                                            <h1 className="md:text-6xl text-4xl font-bold text-black pb-4 ">Share Posts</h1>
                                             <div className='text-gray-600 text-semibold mb-2'>When you share photos,
                                                 they will appear on your profile.
                                             </div>
@@ -516,7 +493,7 @@ const BlogPage = ({socket, type}) => {
                         </div>
                     </>}
                 </div>}
-            <Modal
+            {modal.title !== 'Profile'? <Modal
                 isOpen={modal.open}
                 onAfterOpen={afterOpenModal}
                 onRequestClose={closeModal}
@@ -544,7 +521,7 @@ const BlogPage = ({socket, type}) => {
                         }
                     </div>
                 </div>
-            </Modal>
+            </Modal>: <ProfilePhoto open={modal.open} closeModal={closeModal} imageUrl={modal?.data || ''}/>}
         </>
     )
 };

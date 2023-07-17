@@ -70,13 +70,6 @@ export const savePost = (payload) =>{
     }
 };
 
-export const getAllSavedPost = (payload) =>{
-    return {
-        type: types.GET_SAVED_POST_STATE,
-        payload
-    }
-};
-
 export const forgetPassword = (payload) =>{
     return {
         type: types.FORGET_PASSWORD_STATE,
