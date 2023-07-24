@@ -28,7 +28,6 @@ import useWidthHeight from "../../Hooks/useWidthHeight";
 import '../User/User.css';
 import ProfilePhoto from "../User/ProfilePhoto";
 import {MdArrowBackIosNew, MdArrowForwardIos, MdDelete, MdModeEditOutline} from "react-icons/md";
-// import {getAllSavedPost} from "../../Sagas/UserSagas/getAllSavedPost";
 
 Modal.setAppElement('#modal')
 const url = process.env.REACT_APP_API_URL;
@@ -40,17 +39,22 @@ const BlogPage = ({socket, type,id}) => {
     let userToken = getLocalStorageData('user');
     const {width} = useWidthHeight();
     const blog = useSelector(state => state.postData.posts);
-    const savedPostResult = useSelector(state => state.postData.savedPostResult);
-
-    const postResult = useSelector(state => state.postData.postResult);
-    const likes = useSelector(state => state.postData.likes);
-    const comments = useSelector(state => state.postData.comments);
+    const commentLoading = useSelector(state => state.postData.commentLoading);
     const loading = useSelector(state => state.postData.loading);
     const likeLoading = useSelector(state => state.postData.likeLoading);
     const commentLoading = useSelector(state => state.postData.commentLoading);
     const [open, setOpen] = useState({show: false, postId: ''});
     const [modal, setModal] = useState({open: false, data: null, title: null});
     const [comment, setComment] = useState('');
+    const [page, setPage] = useState(0);
+    const postResult = useSelector(state => state.postData.postResult);
+    const total = useSelector(state => state.postData.total);
+    const likeLoading = useSelector(state => state.postData.likeLoading);
+    const comments = useSelector(state => state.postData.comments);
+    const likes = useSelector(state => state.postData.likes);
+    const {width} = useWidthHeight();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const blockRef = useRef();
     let subtitle;
     const customStyles = {
@@ -109,15 +113,16 @@ const BlogPage = ({socket, type,id}) => {
     useEffect(() => {
         receivePosts();
         // eslint-disable-next-line
-    }, [id, postResult, savedPostResult, type]);
+    }, [id, type]);
 
     const receivePosts =() => {
         if (id) {
-            dispatch(getPost({id:id,type}))
+            dispatch(getPost({id:id,type,page}))
         }
         else {
-            dispatch(getPost({type}));
+            dispatch(getPost({type,page}));
         }
+        setPage(pre => pre + 1);
     };
     const handleCreateLike = (id) => {
         dispatch(createLike({"postId": id, "likeBy": userToken?._id, isSinglePost: type === 'getPost',type}))
@@ -179,23 +184,22 @@ const BlogPage = ({socket, type,id}) => {
             <ul role="presentation" className="divide-y divide-gray-200 dark:divide-gray-700">
                 {likeLoading ? <ButtonLoader/> : <div>
                     {likes && likes?.length && likes?.map((ele, index) => {
-                        return (<>
-                                <li className="py-3 sm:py-4">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="flex-shrink-0">
-                                            <img className="h-8 w-8 rounded-full object-cover"
-                                                 src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}/${ele?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
-                                                 alt=""/>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white"
-                                               onClick={(e) => handleProfile(e, ele?._id)}>
-                                                {ele?.userName}
-                                            </p>
-                                        </div>
+                        return (
+                            <li className="py-3 sm:py-4" key={index}>
+                                <div className="flex items-center space-x-4">
+                                    <div className="flex-shrink-0">
+                                        <img className="h-8 w-8 rounded-full object-cover"
+                                             src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}/${ele?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                             alt=""/>
                                     </div>
-                                </li>
-                            </>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-900 truncate dark:text-white"
+                                           onClick={(e) => handleProfile(e, ele?._id)}>
+                                            {ele?.userName}
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
                         )
                     })}
                 </div>}
@@ -207,27 +211,26 @@ const BlogPage = ({socket, type,id}) => {
             <div className="flow-root h-[250px] overflow-y-scroll">
                 <ul role="presentation" className="divide-y divide-gray-200 dark:divide-gray-700">
                     {comments?.length ? comments?.map((ele, index) => {
-                            return (<>
-                                    <li className="py-3 sm:py-4">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="flex-shrink-0">
-                                                <img className="h-8 w-8 rounded-full object-cover"
-                                                     src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url : `${url}/${ele?.author_info[0]?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
-                                                     alt=""/>
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900 truncate dark:text-white"
-                                                   onClick={(e) => handleProfile(e, ele?.createdBy)}>
-                                                    {ele?.author_info[0]?.userName}
-                                                </p>
-                                            </div>
-                                            <div
-                                                className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                                {ele?.content}
-                                            </div>
+                            return (
+                                <li className="py-3 sm:py-4" key={index}>
+                                    <div className="flex items-center space-x-4">
+                                        <div className="flex-shrink-0">
+                                            <img className="h-8 w-8 rounded-full object-cover"
+                                                 src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url : `${url}/${ele?.author_info[0]?.profile_url}` : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                                                 alt=""/>
                                         </div>
-                                    </li>
-                                </>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white"
+                                               onClick={(e) => handleProfile(e, ele?.createdBy)}>
+                                                {ele?.author_info[0]?.userName}
+                                            </p>
+                                        </div>
+                                        <div
+                                            className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                            {ele?.content}
+                                        </div>
+                                    </div>
+                                </li>
                             )
                         }) :
                         <div>No Comments</div>
@@ -337,8 +340,18 @@ const BlogPage = ({socket, type,id}) => {
     return (
         <>
             {loading ? <Loader/> :
-                <div className='relative lg:overflow-y-scroll lg:h-[80vh]   '>
-                    {blog?.length > 0 ? blog?.map((ele, index) => (
+                <div className='relative lg:overflow-y-scroll lg:h-[80vh]'>
+                    {blog?.length > 0 ? <InfiniteScroll
+                        dataLength={blog?.length}
+                        next={receivePosts}
+                        hasMore={blog.length !== total}
+                        loader={<ButtonLoader/>}
+                        endMessage={
+                            <p style={{ textAlign: "center" }}>
+                                <b>Yay! You have seen it all</b>
+                            </p>
+                        }
+                    >{blog?.map((ele, index) => (
                         <div className="" key={index}>
                             {id && userToken._id === id && ele?._id === open?.postId &&
                             <div ref={blockRef}
@@ -400,13 +413,13 @@ const BlogPage = ({socket, type,id}) => {
                                         <Slider {...settings} >
                                             {Array.isArray(ele?.imageUrl) ? ele?.imageUrl.map((file, index) => {
                                                     if (file.type === 'video') {
-                                                        return <video src={`${url}${file.url}`} autoPlay controls={true}/>
+                                                        return <video src={`${url}${file.url}`} autoPlay controls={true} key={index}/>
                                                     } else {
-                                                        return <img src={`${url}${file.url}`} alt=''
+                                                        return <img src={`${url}${file.url}`} alt='post' key={index}
                                                                     className="md:h-[400px] h-[300px] w-full py-2 object-contain"/>
                                                     }
                                                 }) :
-                                                <img src={`${url}${ele?.imageUrl}`} alt=''
+                                                <img src={`${url}${ele?.imageUrl}`} alt='post'
                                                      className="md:h-[400px] h-[300px] w-full object-contain py-2"/>}
                                         </Slider>
                                     </div>
@@ -453,7 +466,7 @@ const BlogPage = ({socket, type,id}) => {
                                     </div>
                                 </div>
                             </div>
-                        </div>)) : <>
+                        </div>))}</InfiniteScroll> : <>
                         <div className="max-h-[400px] pl-2 items-center">
                             <div
                                 className="bg-white h-full rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 py-10">

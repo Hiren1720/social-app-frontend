@@ -28,8 +28,8 @@ const Home = ({socket}) =>{
     const [postLength , setPostLength] = useState(0);
     let userToken = getLocalStorageData('user');
     useEffect(()=> {
-        if(postResult){
-            dispatch(resetPostResult())
+        if(postResult?.success){
+            dispatch(resetPostResult());
             setThought('');
         }
         // eslint-disable-next-line
@@ -65,7 +65,7 @@ const Home = ({socket}) =>{
         const device = getDeviceName()
         let postData = {content:thought,createdBy: userToken?._id,device:device}
         formData.append('post',JSON.stringify(postData));
-        dispatch(createPost(formData))
+        dispatch(createPost({formData:formData,type:'create'}))
     }
     const handleRequest = (e, item, status) => {
         if (status === 'Follow') {
@@ -125,7 +125,7 @@ const Home = ({socket}) =>{
                                                     </div>
                                                     <div className="flex flex-col items-center justify-center">
                                                         <p className="text-2xl font-bold text-navy-700 dark:text-white">
-                                                            {userData?.following?.length}
+                                                            {userData?.followings?.length}
                                                         </p>
                                                         <p className="text-sm font-normal text-gray-600">Following</p>
                                                     </div>
@@ -148,7 +148,7 @@ const Home = ({socket}) =>{
                                                                             <h3>Suggestion </h3>
                                                                         </div>
                                                                         <div>
-                                                                            {profileViewers && profileViewers?.length ? profileViewers.filter(ele => !userData.following.includes(ele?.author_info[0]?._id)).map((ele,index)=>{
+                                                                            {profileViewers && profileViewers?.length ? profileViewers.filter(ele => !userData.followings.includes(ele?.author_info[0]?._id)).map((ele,index)=>{
                                                                                 let status = getStatus(ele?.author_info[0],requestAll,userData,'Followings',true);
                                                                                 return(
                                                                                 <div className="m-auto text-gray-600 " key={index}>
@@ -183,7 +183,7 @@ const Home = ({socket}) =>{
                                     <div
                                         className="col-span-1 lg:col-span-2 sm:col-span-5 max-[490px]:col-span-5 h-96 ">
                                         <div className="flex items-center  bg-white justify-center shadow-lg mb-4 ">
-                                            <form className="w-full bg-white rounded-lg px-4 pt-2">
+                                            <div className="w-full bg-white rounded-lg px-4 pt-2">
                                                 <div className='border-2 border-pink-400'/>
                                                 <div className="flex flex-wrap -mx-3 mb-6">
                                                     <div className="w-full  flex md:w-full px-3 mb-2 mt-2 items-center">
@@ -198,6 +198,7 @@ const Home = ({socket}) =>{
                                                                 className="bg-gray-100 rounded-[40px] shadow-inner  shadow-gray-700 leading-normal resize-none w-full h-15 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white"
                                                                 id="comment" type="text" placeholder="Say Something"
                                                                 name={"comment"}
+                                                                value={thought}
                                                                 onChange={(e)=> setThought(e.target.value)}
                                                             />
                                                             <button type='button' onClick={()=> handleOnShare()}
@@ -208,7 +209,7 @@ const Home = ({socket}) =>{
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </form>
+                                            </div>
 
                                         </div>
                                         <div className=''>

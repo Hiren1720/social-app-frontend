@@ -37,7 +37,7 @@ const Profile = ({socket}) => {
     const [active, setActive] = useState('Posts');
     const tabs = [{tab: 'Posts', length: user?.posts?.length}, {
         tab: 'Followers', length: user?.followers?.length},
-        {tab: 'Followings', length: user?.following?.length},
+        {tab: 'Followings', length: user?.followings?.length},
        {tab: "SavedPost", length: user?.savedPost}
     ];
     const navigate = useNavigate();
@@ -314,7 +314,7 @@ const Profile = ({socket}) => {
                                     </div>
                                     <div
                                         className="container mx-auto col-span-1 lg:col-span-2 sm:col-span-5 max-[490px]:col-span-5 h-96 pt-6">
-                                        {user?.privacy && id !== userData?._id && !userData?.following?.includes(user?._id)  ?
+                                        {user?.privacy && id !== userData?._id && !userData?.followings?.includes(user?._id)  ?
                                             <PrivateAccount/>
                                             : renderUserDetails()}
 

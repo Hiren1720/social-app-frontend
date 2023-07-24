@@ -5,12 +5,12 @@ const initialState = {
     postResult: null,
     postLikeResult:null,
     posts:[],
+    total:0,
     likes:[],
     comments:[],
     likeLoading: false,
     commentLoading:false,
-    commentResult:null,
-    savedPostResult:null
+    commentResult:null
 }
 
 const post = (state = initialState, action) => {
@@ -21,11 +21,10 @@ const post = (state = initialState, action) => {
             return {...state, [action.state]: action.payload};
         case types.SET_POST_RESPONSE:
         case types.DELETE_POST_RESPONSE:
+        case types.SAVE_POST_RESPONSE:
             return {...state, postResult: action.payload, loading: action.loading};
         case types.GET_POST_RESPONSE:
-            return {...state, posts: action.payload, loading: action.loading};
-        case types.SAVE_POST_RESPONSE:
-            return {...state, savedPostResult: action.payload,loading: action.loading};
+            return {...state, posts: action?.state !== 'getPost' ? [...state?.posts,...action.payload]: action.payload,total:action.total, loading: action.loading};
         case types.GET_LIKES_COMMENTS_RESPONSE:
             return {...state, [action?.state]: action.payload, likeLoading: action.loading};
         case types.SET_POST_LIKE_RESPONSE:

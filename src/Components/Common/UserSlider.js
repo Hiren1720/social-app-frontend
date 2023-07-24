@@ -129,7 +129,7 @@ const UserSlider = ({data, title}) => {
 
                                                     <div className="lg:p-3 p-2 text-center">
                             <span
-                                className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.following?.length}</span>
+                                className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.followings?.length}</span>
                                                         <span className="text-sm text-slate-400">Following</span>
                                                     </div>
                                                 </div>
