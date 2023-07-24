@@ -15,6 +15,8 @@ export const resetPostResult = () => {
 };
 
 export const getPost = (payload) => {
+
+    console.log("payload", payload)
     return {
         type: types.GET_POST_STATE,
         payload

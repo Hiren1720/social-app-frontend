@@ -26,6 +26,7 @@ export function generateRandomColor(){
 }
 
 export const getStatus = ({_id},requests,userData,title,isOnlyUser) => {
+    console.log('userData',userData)
     let status = requests?.data ? isOnlyUser ? requests?.data.find((ele) => ele?.toUserId === _id)?.status : requests?.data.find((ele) => ele?.fromUserId === userData?._id && ele?.toUserId === _id)?.status:'';
     let data = 'Follow';
     if (status === 'pending') {
@@ -75,4 +76,22 @@ export function secondsToHms(d) {
     var mDisplay = m > 0 ? m + (m === 1 ? " minute, " : " minutes, ") : "";
     var sDisplay = s > 0 ? s + (s === 1 ? " second" : " seconds") : "";
     return hDisplay + mDisplay + sDisplay;
+}
+
+
+const toBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+};
+export const tobase64Handler = async (files) => {
+    const filePathsPromises = [];
+    files.forEach(file => {
+        filePathsPromises.push(toBase64(file));
+    });
+    const filePaths = await Promise.all(filePathsPromises);
+    return filePaths.map((base64File) => ({selectedFile: base64File}));
 }
