@@ -8,6 +8,7 @@ import * as types from '../../Actions/Types'
 
 import {httpGet} from "../../Helper/api";
 function switchUrl({type,id,page}) {
+
     switch(type){
         case 'getPost':
             return `${type}?postId=${id}`;
@@ -24,6 +25,8 @@ export function* getAllPost({payload}) {
         yield put({ type: types.SET_POST_LOADING,loading: payload.isLoading ? !payload.isLoading : true });
         let postUrl = switchUrl(payload);
         let result = yield call(httpGet,`/post/${postUrl}`);
+
+        console.log("result", result.data)
         yield put({
             type: types.GET_POST_RESPONSE,
             payload: (result?.data && result?.data.length) ? result?.data: [],

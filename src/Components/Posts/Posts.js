@@ -28,20 +28,16 @@ import useWidthHeight from "../../Hooks/useWidthHeight";
 import '../User/User.css';
 import ProfilePhoto from "../User/ProfilePhoto";
 import {MdArrowBackIosNew, MdArrowForwardIos, MdDelete, MdModeEditOutline} from "react-icons/md";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 Modal.setAppElement('#modal')
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
 
 const BlogPage = ({socket, type,id}) => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
     let userToken = getLocalStorageData('user');
-    const {width} = useWidthHeight();
-    const blog = useSelector(state => state.postData.posts);
-    const commentLoading = useSelector(state => state.postData.commentLoading);
+    const posts = useSelector(state => state.postData.posts);
     const loading = useSelector(state => state.postData.loading);
-    const likeLoading = useSelector(state => state.postData.likeLoading);
     const commentLoading = useSelector(state => state.postData.commentLoading);
     const [open, setOpen] = useState({show: false, postId: ''});
     const [modal, setModal] = useState({open: false, data: null, title: null});
@@ -52,6 +48,7 @@ const BlogPage = ({socket, type,id}) => {
     const likeLoading = useSelector(state => state.postData.likeLoading);
     const comments = useSelector(state => state.postData.comments);
     const likes = useSelector(state => state.postData.likes);
+    const [blog, setBlog] = useState([]);
     const {width} = useWidthHeight();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -78,6 +75,7 @@ const BlogPage = ({socket, type,id}) => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
+
         // eslint-disable-next-line
     }, []);
 
@@ -110,11 +108,15 @@ const BlogPage = ({socket, type,id}) => {
         // eslint-disable-next-line
     }, []);
 
-    useEffect(() => {
+
+
+    useEffect(()=>{
+        setBlog([...posts])
+    },[posts, id, type]);
+    useEffect(() =>{
         receivePosts();
         // eslint-disable-next-line
     }, [id, type]);
-
     const receivePosts =() => {
         if (id) {
             dispatch(getPost({id:id,type,page}))
@@ -124,6 +126,7 @@ const BlogPage = ({socket, type,id}) => {
         }
         setPage(pre => pre + 1);
     };
+
     const handleCreateLike = (id) => {
         dispatch(createLike({"postId": id, "likeBy": userToken?._id, isSinglePost: type === 'getPost',type}))
     }
@@ -287,6 +290,7 @@ const BlogPage = ({socket, type,id}) => {
             </>
         )
     }
+
     const settings = {
         dots: true,
         infinite: false,
@@ -340,7 +344,7 @@ const BlogPage = ({socket, type,id}) => {
     return (
         <>
             {loading ? <Loader/> :
-                <div className='relative lg:overflow-y-scroll lg:h-[80vh]'>
+                <div className='relative lg:overflow-y-scroll '>
                     {blog?.length > 0 ? <InfiniteScroll
                         dataLength={blog?.length}
                         next={receivePosts}
@@ -398,7 +402,7 @@ const BlogPage = ({socket, type,id}) => {
                                         <div className="flex items-center space-x-8">
                                             <div className="text-xs text-neutral-500 flex items-center">
                                                 <BsDot/> {handleDate(ele?.createdAt)}</div>
-                                            {id && userToken._id === id && type === 'Post' &&
+                                            {id && userToken._id === id && type === 'getPostsByUserId' &&
                                             <BsThreeDotsVertical className="pointer cursor-pointer"
                                                                  onClick={() => setOpen({
                                                                      show: !open?.show,
@@ -470,7 +474,7 @@ const BlogPage = ({socket, type,id}) => {
                         <div className="max-h-[400px] pl-2 items-center">
                             <div
                                 className="bg-white h-full rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 py-10">
-                                {type === 'SavedPost' ? <>
+                                {type === 'getSavedPosts' ? <>
                                         <div className="flex justify-center px-4 py-8">
                                             <div className="border-black text-center border-[4px]  rounded-full md:p-8 p-4">
                                                 <BsBookmark size={80} className="p-2"/>
