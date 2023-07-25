@@ -26,7 +26,6 @@ export function generateRandomColor(){
 }
 
 export const getStatus = ({_id},requests,userData,title,isOnlyUser) => {
-    console.log('userData',userData)
     let status = requests?.data ? isOnlyUser ? requests?.data.find((ele) => ele?.toUserId === _id)?.status : requests?.data.find((ele) => ele?.fromUserId === userData?._id && ele?.toUserId === _id)?.status:'';
     let data = 'Follow';
     if (status === 'pending') {

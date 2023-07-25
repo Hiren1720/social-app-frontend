@@ -7,17 +7,17 @@ import {
 import * as types from '../../Actions/Types'
 
 import {httpGet} from "../../Helper/api";
-function switchUrl({type,id,page}) {
+function switchUrl({type,id,page,pageSize}) {
 
     switch(type){
         case 'getPost':
             return `${type}?postId=${id}`;
         case 'getPostsByUserId':
-            return `${type}?id=${id}&page=${page}`;
+            return `${type}?id=${id}&page=${page}&pageSize=${pageSize}`;
         case 'getSavedPosts':
         case 'getAllPost':
         default:
-            return `${type}?page=${page}`;
+            return `${type}?page=${page}&pageSize=${pageSize}`;
     }
 }
 export function* getAllPost({payload}) {
@@ -31,7 +31,6 @@ export function* getAllPost({payload}) {
             type: types.GET_POST_RESPONSE,
             payload: (result?.data && result?.data.length) ? result?.data: [],
             total: result?.total,
-            state: payload?.type,
             loading:false
         });
     }
@@ -40,7 +39,6 @@ export function* getAllPost({payload}) {
             type: types.GET_POST_RESPONSE,
             payload: [],
             total:0,
-            state: payload?.type,
             loading:false
         });
     }

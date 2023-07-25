@@ -12,13 +12,14 @@ import {getLocalStorageData} from "../../Helper/TokenHandler";
 const Users = () => {
     const [searchValue,setSearchValue] = useState('');
     const [page,setPage] = useState(0);
+    const pageSize = 2;
     const dispatch = useDispatch();
     const requestResult = useSelector(state => state.requestData.requestResult);
     const loading = useSelector(state => state.userData.loading);
     const users = useSelector(state => state.userData.users);
     const userData = getLocalStorageData('user');
     useEffect(() => {
-        dispatch(getAllUsers({page,pageSize:100,searchValue}));
+        receiveUsers();
         dispatch(getRequests({type: 'allRequest'}));
         dispatch(getProfile({id: userData?._id,isLoggedInUser:true}));
         // eslint-disable-next-line
@@ -32,9 +33,14 @@ const Users = () => {
         }
         // eslint-disable-next-line
     }, [requestResult]);
+
+    const receiveUsers = () => {
+        setPage(pre => pre + 1);
+        dispatch(getAllUsers({page: page, pageSize: pageSize, searchValue: '',isLoading:true}));
+    }
     const handleClearSearch = () => {
         setSearchValue('');
-        dispatch(getAllUsers({page,pageSize:100,searchValue:''}));
+        dispatch(getAllUsers({page:0,pageSize:pageSize,searchValue:'',clearAll:true}));
     }
     return (
         <>
@@ -56,7 +62,7 @@ const Users = () => {
                                 id="grid-last-name" type="button"><FaFilter size='20' color={'gray'}/></button>
                         </div>
                     </div>
-                    <UserSlider data={users} title={'Users'}/>
+                    <UserSlider data={users} receiveUsers={receiveUsers} title={'Users'}/>
                 </div>}
         </>
     )

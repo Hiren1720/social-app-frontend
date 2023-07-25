@@ -1,9 +1,10 @@
 
 export const getLocalStorageData = (key) => {
-   return JSON.parse(localStorage.getItem(key));
+    let data = localStorage.getItem(key);
+   return data !== 'undefined' ? JSON.parse(localStorage.getItem(key)) : null;
 };
 export const setLocalStorageData = (key,data) => {
-    localStorage.setItem(key, data ? JSON.stringify(data): data);
+    localStorage.setItem(key, data ? JSON.stringify(data): data || "");
 
 }
 

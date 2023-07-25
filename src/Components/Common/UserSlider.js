@@ -6,11 +6,13 @@ import {blockUser} from "../../Actions/blockUserAction";
 import {getProfile} from "../../Actions/userActions";
 import {BsThreeDotsVertical} from 'react-icons/bs';
 import {BiBlock} from 'react-icons/bi';
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import {getStatus} from "../../Helper";
+import ButtonLoader from "../ButtonLoader";
 
 const url = process.env.REACT_APP_API_URL;
-const UserSlider = ({data, title}) => {
+const UserSlider = ({data,receiveUsers, title,total}) => {
     const dispatch = useDispatch();
     const requests = useSelector(state => state.requestData.requests);
     const userData = useSelector(state => state.userData.loggedInUser);
@@ -74,7 +76,17 @@ const UserSlider = ({data, title}) => {
         <>
             <div className='mx-4 w-full overflow-y-scroll h-screen scroll-smooth '>
                 <div className="w-full py-4 min-[750px]:justify-start  rounded-b-lg flex-row flex  gap-5 grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ">
-                    {data && data?.length > 0 && data?.map((ele, index) => {
+                    {data && data?.length > 0 && <InfiniteScroll
+                        dataLength={data?.length}
+                        next={receiveUsers}
+                        hasMore={data.length !== total}
+                        loader={<ButtonLoader/>}
+                        endMessage={
+                            <div className='flex justify-center my-4'>
+                                <b>Yay! You have seen it all</b>
+                            </div>
+                        }
+                    > {data?.map((ele, index) => {
                         let blockUser = getBlockUser(ele);
                         let status = getStatus(ele, title === 'Followers'? {}: requests, userData, title, false);
                         return (
@@ -166,7 +178,7 @@ const UserSlider = ({data, title}) => {
                                 </div>
                             </div>
                         )
-                    })}
+                    })}</InfiniteScroll>}
 
                 </div>
             </div>

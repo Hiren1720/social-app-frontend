@@ -49,6 +49,27 @@ const Settings = () => {
                             </label>
                         </div>
                     </div>
+                    <div className='flex justify-between rounded-[6px] mt-2.5 border-2 p-5'>
+                        <div>
+                            <h3>Account Privacy</h3>
+                        </div>
+                        <div>
+                            <label className="inline-flex relative items-center mr-5 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={userData?.privacy}
+                                    readOnly
+                                />
+                                <div
+                                    onClick={() => {
+                                        dispatch(setSettings({id: 'setPrivacy',}));
+                                    }}
+                                    className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-blue-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+                                />
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
         )

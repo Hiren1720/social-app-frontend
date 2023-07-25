@@ -31,6 +31,7 @@ const Login = () => {
             toast(userResult?.error,{type:'error'});
             dispatch(setUserData('userResult', null));
         }
+        // eslint-disable-next-line
     }, [userResult]);
     const handleOnChange = (event) => {
         let {name, value} = event.target;
@@ -48,7 +49,7 @@ const Login = () => {
     const handleSwitchAccount = (id) => {
         let user = users.find(ele => ele?._id === id);
         setLocalStorageData('accessToken',user?.token);
-        setLocalStorageData('user',user);
+        setLocalStorageData('user',user || {});
         navigate('/');
     };
     const handleDeleteAccount = (id) =>{
@@ -95,7 +96,7 @@ const Login = () => {
                                         </div>
                                         <div className="flex flex-col items-center">
                                             <img className="mb-3 w-16 h-16 rounded-full shadow-lg" onClick={()=>{handleSwitchAccount(ele?._id)}}
-                                                 src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url:`${url}${ele?.profile_url}` : "https://flowbite.com/docs/images/people/profile-picture-3.jpg"} alt="Bonnie image"/>
+                                                 src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url:`${url}${ele?.profile_url}` : "https://flowbite.com/docs/images/people/profile-picture-3.jpg"} alt="user"/>
                                             <span className="text-sm text-gray-500 dark:text-gray-400">{ele?.name}</span>
                                         </div>
                                     </div>
