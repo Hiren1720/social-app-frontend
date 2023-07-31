@@ -36,7 +36,8 @@ const initialState = {
     verifyForgetPasswordUser:null,
     deleteAccountResult:null,
     settingResult:null,
-    users: []
+    users: [],
+    totalUsers:0,
 }
 
 const user = (state = initialState, action) => {
@@ -52,7 +53,7 @@ const user = (state = initialState, action) => {
         case types.VERIFY_OTP_RESPONSE:
             return {...state, verifyOTPResult: action.payload, loading: action.loading};
         case types.GET_USER_STATE_RESPONSE:
-            return {...state, users: action?.clearAll ? action.payload : [...state?.users,...action?.payload], loading: action.loading};
+            return {...state, users: action?.payload, loading: action.loading,totalUsers: action?.total};
         case types.GET_PROFILE_STATE_RESPONSE:
             return {...state, [action?.state]: action.payload,rating:action?.rating, loading: action.loading};
         case types.GET_PROFILE_VIEWERS_RESPONSE:

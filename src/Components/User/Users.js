@@ -12,12 +12,23 @@ import {getLocalStorageData} from "../../Helper/TokenHandler";
 const Users = () => {
     const [searchValue,setSearchValue] = useState('');
     const [page,setPage] = useState(0);
-    const pageSize = 2;
+    const pageSize = 10;
     const dispatch = useDispatch();
+    const [users,setUsers] = useState([]);
     const requestResult = useSelector(state => state.requestData.requestResult);
     const loading = useSelector(state => state.userData.loading);
-    const users = useSelector(state => state.userData.users);
+    const user = useSelector(state => state.userData.users);
+    const totalUsers = useSelector(state => state.userData.totalUsers);
     const userData = getLocalStorageData('user');
+    useEffect(()=> {
+        if(user?.length){
+            setUsers([...users,...user]);
+        }
+        else {
+            setUsers([]);
+            setPage(0);
+        }
+    },[user])
     useEffect(() => {
         receiveUsers();
         dispatch(getRequests({type: 'allRequest'}));
@@ -62,7 +73,7 @@ const Users = () => {
                                 id="grid-last-name" type="button"><FaFilter size='20' color={'gray'}/></button>
                         </div>
                     </div>
-                    <UserSlider data={users} receiveUsers={receiveUsers} title={'Users'}/>
+                    <UserSlider data={users} total={totalUsers} receiveUsers={receiveUsers} title={'Users'}/>
                 </div>}
         </>
     )

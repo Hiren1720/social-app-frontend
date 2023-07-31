@@ -25,7 +25,7 @@ import useWidthHeight from "../../Hooks/useWidthHeight";
 
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
-const Post = ({item, userData, type, socket, key, id}) => {
+const Post = ({item, userData, type, socket, key, id,handleUpdateComment}) => {
     const comments = useSelector(state => state.postData.comments);
     const commentLoading = useSelector(state => state.postData.commentLoading);
     const likes = useSelector(state => state.postData.likes);
@@ -33,6 +33,7 @@ const Post = ({item, userData, type, socket, key, id}) => {
     const [modal, setModal] = useState({open: false, data: null, title: null});
     const [open, setOpen] = useState({show: false, postId: ''});
     const [comment, setComment] = useState('');
+    const [isLiked,setIsLiked] = useState(false);
     const blockRef = useRef();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -67,8 +68,16 @@ const Post = ({item, userData, type, socket, key, id}) => {
     function afterOpenModal() {
         subtitle.style.color = '#f00';
     }
-    const handleCreateLike = (id) => {
-        dispatch(createLike({"postId": id, "likeBy": userData?._id, isSinglePost: type === 'getPost', type}))
+    const handleCreateLike = ({_id,createdBy}) => {
+        let data = {
+            id: createdBy,
+            likeBy: userData?._id,
+            postId: _id,
+            userName: userData?.userName
+        };
+        socket.emit('likeNotification', data);
+        handleUpdateComment({...data,createdBy:userData?._id},'likes');
+        // dispatch(createLike({"postId": id, "likeBy": userData?._id, isSinglePost: type === 'getPost', type}))
     };
 
     const handleSavePost = (id) => {
@@ -97,13 +106,15 @@ const Post = ({item, userData, type, socket, key, id}) => {
         setModal({open: true, data: data, title: 'Comments'});
     };
     const handleSaveComment = () => {
-        socket.emit('commentNotification', {
+        let data = {
             content: comment,
             id: modal?.data?.createdBy,
             createdBy: userData?._id,
             postId: modal?.data?._id,
             userName: userData?.userName
-        });
+        };
+        socket.emit('commentNotification', data);
+        handleUpdateComment(data,'comments');
         setModal({open: false, data: null, title: null});
         setComment('');
     };
@@ -370,7 +381,7 @@ const Post = ({item, userData, type, socket, key, id}) => {
                                         className="flex items-center text-gray-500 mb-3 flex-wrap max-[560px]:text-[14px] max-[589px]:text-[15px]">
                                         <div
                                             className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer"
-                                            onClick={() => handleCreateLike(item?._id)}>{item?.likes.includes(userData?._id) ?
+                                            onClick={() => handleCreateLike(item)}>{item?.likes.includes(userData?._id) ?
                                             <BsHandThumbsUpFill color='#3C5AF0'/> :
                                             <BsHandThumbsUp color='#3C5AF0'/>}&nbsp;&nbsp;<span
                                             onClick={(e) => handleShowLikes(e, item?._id)}>{item?.likes.length} likes</span>

@@ -9,7 +9,8 @@ import {httpGet} from "../../Helper/api";
 export function* getFollowers({payload}) {
     try{
         yield put({ type: types.SET_FOLLOWER_LOADING,loading:true });
-        let result = yield call(httpGet,`/follower/get?type=${payload?.type}&id=${payload?.id}`);
+        const {page=0,pageSize=10,type,id} = payload;
+        let result = yield call(httpGet,`/follower/get?type=${type}&id=${id}&page=${page}&pageSize=${pageSize}`);
 
         yield put({
             type: types.GET_FOLLOWERS_STATE_RESPONSE,
