@@ -8,7 +8,6 @@ import { BsArrowLeft} from "react-icons/bs";
 import {getRequests, setRequest} from "../../Actions/requestActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 
-
 const Users = () => {
     const [searchValue,setSearchValue] = useState('');
     const [page,setPage] = useState(0);
@@ -42,10 +41,11 @@ const Users = () => {
         setSearchValue('');
         dispatch(getAllUsers({page:0,pageSize:pageSize,searchValue:'',clearAll:true}));
     }
+
     return (
         <>
             {loading ? <Loader/> :
-                <div className='mx-48  max-[1500px]:mx-[30px] '>
+                <div className='mx-48  max-[1500px]:mx-[30px]'>
                     <div className='flex flex-row mb-2 mt-4 px-3'>
                         <div
                             className="w-[300px] px-3 mb-6 md:mb-0 relative text-gray-600 focus-within:text-gray-400">

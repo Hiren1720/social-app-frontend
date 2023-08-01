@@ -7,11 +7,11 @@ import {getProfile} from "../../Actions/userActions";
 import {BsThreeDotsVertical} from 'react-icons/bs';
 import {BiBlock} from 'react-icons/bi';
 import InfiniteScroll from "react-infinite-scroll-component";
-
 import {getStatus} from "../../Helper";
 import ButtonLoader from "../ButtonLoader";
-
+import '../Common/Card.css';
 const url = process.env.REACT_APP_API_URL;
+
 const UserSlider = ({data,receiveUsers, title,total}) => {
     const dispatch = useDispatch();
     const requests = useSelector(state => state.requestData.requests);
@@ -75,112 +75,125 @@ const UserSlider = ({data,receiveUsers, title,total}) => {
     return (
         <>
             <div className='mx-4 w-full overflow-y-scroll h-screen scroll-smooth '>
-                <div className="w-full py-4 min-[750px]:justify-start  rounded-b-lg flex-row flex  gap-5 grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ">
-                    {data && data?.length > 0 && <InfiniteScroll
-                        dataLength={data?.length}
-                        next={receiveUsers}
-                        hasMore={data.length !== total}
-                        loader={<ButtonLoader/>}
-                        endMessage={
-                            <div className='flex justify-center my-4'>
-                                <b>Yay! You have seen it all</b>
-                            </div>
-                        }
-                    > {data?.map((ele, index) => {
-                        let blockUser = getBlockUser(ele);
-                        let status = getStatus(ele, title === 'Followers'? {}: requests, userData, title, false);
-                        return (
-                            <div key={index} className="px-2">
-                                <div
-                                    className="relative max-w-md mx-auto md:max-w-2xl min-w-0 break-words bg-white w-full shadow-lg shadow-gray-300 rounded-xl  ">
-                                    <div ref={blockRef}
-                                        className={`absolute  z-10 mt-8 w-36 left-32 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${open.show && open.blockId === ele?._id ? '' : 'hidden'}`}
-                                        role="menu"
-                                        aria-orientation="vertical"
-                                        aria-labelledby="user-menu-button"
-                                        tabIndex="-1">
-                                        <ul className="space-y-2">
-                                            <li className='cursor-pointer'>
-                                                <div onClick={(e) => handleBlockAccount(e, ele, blockUser)}
-                                                     className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                                                    <BiBlock/>
-                                                    <span className="ml-3">{blockUser}</span>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div className="px-6 pt-8">
-                                       { (title === 'Followings' || title === 'Users') && <div
-                                            className={`flex justify-end cursor-pointer mt-2`}
-                                            onClick={() => setOpen({
-                                                show: !open?.show,
-                                                blockId: ele?._id
-                                            })}>
-                                            <BsThreeDotsVertical className="pointer" size={20}/>
-                                        </div>}
-                                        <div className="flex flex-wrap justify-center">
-                                            <div className="w-full flex justify-center">
-                                                <img
-                                                    src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}${ele?.profile_url}` : "https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
-                                                    className="rounded-full align-middle object-cover border-none absolute mt-2 w-[100px] h-[100px]" alt='profile'/>
-                                            </div>
-                                            <div className="w-full text-center mt-20 ">
-                                                <div
-                                                    className={`flex justify-between lg:pt-4 pt-8 pb-0 ${(title === "Followers" || title === "Followings") ? 'max-[750px]:flex-col max-[640px]:!flex-row' : ''}`}>
-                                                    <div
-                                                        className="lg:p-3 p-2 text-center max-[750px]:!pr-0 max-[640px]:!pr-8 !pr-8 ">
-                            <span
-                                className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.posts?.length}</span>
-                                                        <span className="text-sm text-slate-400">Post</span>
-                                                    </div>
-                                                    <div className="lg:p-3 p-2 text-center">
-                            <span
-                                className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.followers?.length}</span>
-                                                        <span className="text-sm text-slate-400">Followers</span>
-                                                    </div>
+                {data && data?.length > 0 && <InfiniteScroll
+                    dataLength={data?.length}
+                    next={receiveUsers}
+                    hasMore={data.length !== total}
+                    loader={<ButtonLoader/>}
+                    endMessage={
+                        <div className='flex justify-center my-4'>
+                            <b>Yay! You have seen it all</b>
+                        </div>
+                    }
+                >  <div className="w-full py-4 min-[750px]:justify-start  rounded-b-lg  gap-5 grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">{data?.map((ele, index) => {
+                    let blockUser = getBlockUser(ele);
+                    let status = getStatus(ele, title === 'Followers'? {}: requests, userData, title, false);
+                    return (
 
-                                                    <div className="lg:p-3 p-2 text-center">
-                            <span
-                                className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.followings?.length}</span>
-                                                        <span className="text-sm text-slate-400">Following</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="text-center mt-1">
-                                            <h3 className="text-2xl text-slate-700 font-bold leading-normal mb-1">{ele?.userName}</h3>
-                                            <div className="text-xs mt-0 mb-2 text-slate-400 font-bold uppercase">
-                                                <i className="fas fa-map-marker-alt mr-2 text-slate-400 opacity-75"/>{ele?.name}
-                                            </div>
-                                        </div>
-                                        <div className='flex gap-5 pt-4'>
-                                            <button onClick={(e) => {
-                                                blockUser === "unBlock" ? handleBlockAccount(e, ele, blockUser) : handleSendRequest(e, ele, status)
-                                            }}
-                                                    className={`uppercase mx-auto shadow bg-[#234e70] hover:[#fa6a48] 
-                                                        focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 
-                                                        rounded ${ele?._id === userData?._id ? 'hidden' : 'block'} 
-                                                        ${status === 'UnFollow' ? '' : 'bg-[#fa6a48]'}`}>{blockUser === "unBlock" ? blockUser : status}
-                                            </button>
-                                            <button
-                                                className="block uppercase mx-auto shadow bg-[#fa6a48] hover:bg-[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded">Message
-                                            </button>
-                                        </div>
-                                        <div className="mt-4 py-4 border-t border-slate-200 text-center">
-                                            <div className="flex flex-wrap justify-center">
-                                                <div className="w-full px-4 cursor-pointer"
-                                                     onClick={(e) => handleProfile(e, ele)}>
-                                                    View Profile
-                                                </div>
-                                            </div>
-                                        </div>
+                        <div key={index}>
+                            {/*    <div*/}
+                            {/*        className="relative max-w-md mx-auto md:max-w-2xl min-w-0 break-words bg-white w-full shadow-lg shadow-gray-300 rounded-xl  ">*/}
+                            {/*        <div ref={blockRef}*/}
+                            {/*            className={`absolute  z-10 mt-8 w-36 left-32 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${open.show && open.blockId === ele?._id ? '' : 'hidden'}`}*/}
+                            {/*            role="menu"*/}
+                            {/*            aria-orientation="vertical"*/}
+                            {/*            aria-labelledby="user-menu-button"*/}
+                            {/*            tabIndex="-1">*/}
+                            {/*            <ul className="space-y-2">*/}
+                            {/*                <li className='cursor-pointer'>*/}
+                            {/*                    <div onClick={(e) => handleBlockAccount(e, ele, blockUser)}*/}
+                            {/*                         className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">*/}
+                            {/*                        <BiBlock/>*/}
+                            {/*                        <span className="ml-3">{blockUser}</span>*/}
+                            {/*                    </div>*/}
+                            {/*                </li>*/}
+                            {/*            </ul>*/}
+                            {/*        </div>*/}
+                            {/*        <div className="px-6 pt-8">*/}
+                            {/*           { (title === 'Followings' || title === 'Users') && <div*/}
+                            {/*                className={`flex justify-end cursor-pointer mt-2`}*/}
+                            {/*                onClick={() => setOpen({*/}
+                            {/*                    show: !open?.show,*/}
+                            {/*                    blockId: ele?._id*/}
+                            {/*                })}>*/}
+                            {/*                <BsThreeDotsVertical className="pointer" size={20}/>*/}
+                            {/*            </div>}*/}
+                            {/*            <div className="flex flex-wrap justify-center">*/}
+                            {/*                <div className="w-full flex justify-center">*/}
+                            {/*                    <img*/}
+                            {/*                        src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}${ele?.profile_url}` : "https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}*/}
+                            {/*                        className="rounded-full align-middle object-cover border-none absolute mt-2 w-[100px] h-[100px]" alt='profile'/>*/}
+                            {/*                </div>*/}
+                            {/*                <div className="w-full text-center mt-20 ">*/}
+                            {/*                    <div*/}
+                            {/*                        className={`flex justify-between lg:pt-4 pt-8 pb-0 ${(title === "Followers" || title === "Followings") ? 'max-[750px]:flex-col max-[640px]:!flex-row' : ''}`}>*/}
+                            {/*                        <div*/}
+                            {/*                            className="lg:p-3 p-2 text-center max-[750px]:!pr-0 max-[640px]:!pr-8 !pr-8 ">*/}
+                            {/*<span*/}
+                            {/*    className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.posts?.length}</span>*/}
+                            {/*                            <span className="text-sm text-slate-400">Post</span>*/}
+                            {/*                        </div>*/}
+                            {/*                        <div className="lg:p-3 p-2 text-center">*/}
+                            {/*<span*/}
+                            {/*    className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.followers?.length}</span>*/}
+                            {/*                            <span className="text-sm text-slate-400">Followers</span>*/}
+                            {/*                        </div>*/}
+
+                            {/*                        <div className="lg:p-3 p-2 text-center">*/}
+                            {/*<span*/}
+                            {/*    className="text-xl font-bold block uppercase tracking-wide text-slate-700">{ele?.followings?.length}</span>*/}
+                            {/*                            <span className="text-sm text-slate-400">Following</span>*/}
+                            {/*                        </div>*/}
+                            {/*                    </div>*/}
+                            {/*                </div>*/}
+                            {/*            </div>*/}
+                            {/*            <div className="text-center mt-1">*/}
+                            {/*                <h3 className="text-2xl text-slate-700 font-bold leading-normal mb-1">{ele?.userName}</h3>*/}
+                            {/*                <div className="text-xs mt-0 mb-2 text-slate-400 font-bold uppercase">*/}
+                            {/*                    <i className="fas fa-map-marker-alt mr-2 text-slate-400 opacity-75"/>{ele?.name}*/}
+                            {/*                </div>*/}
+                            {/*            </div>*/}
+                            {/*            <div className='flex gap-5 pt-4'>*/}
+                            {/*                <button onClick={(e) => {*/}
+                            {/*                    blockUser === "unBlock" ? handleBlockAccount(e, ele, blockUser) : handleSendRequest(e, ele, status)*/}
+                            {/*                }}*/}
+                            {/*                        className={`uppercase mx-auto shadow bg-[#234e70] hover:[#fa6a48] */}
+                            {/*                            focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 */}
+                            {/*                            rounded ${ele?._id === userData?._id ? 'hidden' : 'block'} */}
+                            {/*                            ${status === 'UnFollow' ? '' : 'bg-[#fa6a48]'}`}>{blockUser === "unBlock" ? blockUser : status}*/}
+                            {/*                </button>*/}
+                            {/*                <button*/}
+                            {/*                    className="block uppercase mx-auto shadow bg-[#fa6a48] hover:bg-[#fa6a48] focus:shadow-outline focus:outline-none text-white text-xs py-2 px-3 rounded">Message*/}
+                            {/*                </button>*/}
+                            {/*            </div>*/}
+                            {/*            <div className="mt-4 py-4 border-t border-slate-200 text-center">*/}
+                            {/*                <div className="flex flex-wrap justify-center">*/}
+                            {/*                    <div className="w-full px-4 cursor-pointer"*/}
+                            {/*                         onClick={(e) => handleProfile(e, ele)}>*/}
+                            {/*                        View Profile*/}
+                            {/*                    </div>*/}
+                            {/*                </div>*/}
+                            {/*            </div>*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+
+                            <div
+                                className="flip-card w-full bg-white rounded-lg shadow-lg overflow-hidden flex flex-col justify-center items-center cursor-pointer">
+                                <div className="flip-card-inner">
+                                    <div className="flip-card-front">
+                                        <img className="object-center object-cover h-full w-full"
+                                             src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}${ele?.profile_url}` : "https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
+                                             alt="photo"/>
+                                    </div>
+                                    <div className="text-center py-8 sm:py-6 flip-card-back">
+                                        <p className="text-xl text-gray-700 font-bold mb-2">{ele.userName}</p>
+                                        <p className="text-base text-gray-400 font-normal">{ele?.name}</p>
                                     </div>
                                 </div>
                             </div>
-                        )
-                    })}</InfiniteScroll>}
-
-                </div>
+                        </div>
+                    )
+                })}</div></InfiniteScroll>}
             </div>
 
         </>
