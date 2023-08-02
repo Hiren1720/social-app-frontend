@@ -37,31 +37,23 @@ const BlogPage = ({socket, type,id}) => {
     }
 
     useEffect(() => {
-        socket.on('message', (data) => {
+        socket.on('comment', (data) => {
             toast(data?.text, {type: 'success'});
             let options = {
                 body: data?.text,
-                icon: require("../../assets/images/favicon.png"),//https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Chrome_icon_%28September_2014%29.svg
+                icon: require("../../assets/images/favicon.png"),
                 dir: "ltr"
             };
-            new Notification('Social App Notification', options)
-            setModal({open: false, data: null, title: null});
-            // receivePosts()
-            // let newPosts = blog.map(ele => {
-            //     console.log(ele?.id,data?.postId)
-            //     if(ele?._id === data?.postId){
-            //         console.log('ele',data)
-            //     }
-            // })
+            new Notification('Social App Notification', options);
         })
-        socket.on('messageFrom', (data) => {
-            setModal({open: false, data: null, title: null});
-            // console.log('ele',[...blog])
-            // let newPosts = blog.map(ele => {
-            //     if(ele?._id === data?.postId){
-            //     }
-            // })
-            // receivePosts()
+        socket.on('like', (data) => {
+            toast(data?.text, {type: 'success'});
+            let options = {
+                body: data?.text,
+                icon: require("../../assets/images/favicon.png"),
+                dir: "ltr"
+            };
+            new Notification('Social App Notification', options);
         })
         // eslint-disable-next-line
     }, []);
@@ -72,6 +64,7 @@ const BlogPage = ({socket, type,id}) => {
         else {
             setBlog([]);
         }
+        // eslint-disable-next-line
     },[posts, id, type]);
     useEffect(() =>{
         if (page !== 0) {
@@ -90,10 +83,22 @@ const BlogPage = ({socket, type,id}) => {
         }
         setPage(pre => pre + 1);
     };
+    const handleUpdateComment = (data,key) => {
+        const postIndex = blog.findIndex(ele => ele._id === data?.postId);
+        if(postIndex !== -1){
+            if(key === 'likes' && blog[postIndex][key].includes(data?.createdBy)){
+                blog[postIndex][key] = blog[postIndex][key].filter(ele => ele !== data?.createdBy)
+            }
+            else {
+                blog[postIndex][key].push(data?.createdBy);
+            }
+            setBlog([...blog]);
+        }
+    };
     return (
         <>
             {loading ? <Loader/> :
-                <div className='relative lg:overflow-y-scroll '>
+                <div className='relative lg:overflow-y-scroll lg:h-[80vh]'>
                     {blog?.length > 0 ? <InfiniteScroll
                         dataLength={blog?.length}
                         next={receivePosts}
@@ -105,7 +110,7 @@ const BlogPage = ({socket, type,id}) => {
                             </p>
                         }
                     >{blog?.map((ele, index) => (
-                        <Post key={index} item={ele} type={type} userData={userToken} id={id} socket={socket}/>
+                        <Post key={index} item={ele} type={type} userData={userToken} id={id} socket={socket} handleUpdateComment={handleUpdateComment}/>
                     ))}</InfiniteScroll> : <>
                         <div className="max-h-[400px] pl-2 items-center">
                             <div

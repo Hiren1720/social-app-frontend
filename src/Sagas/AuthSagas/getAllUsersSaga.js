@@ -17,7 +17,7 @@ export function* gerAllUsers({payload}) {
         yield put({
             type: types.GET_USER_STATE_RESPONSE,
             payload: result.data,
-            clearAll: payload?.clearAll,
+            total: result?.total,
             loading:false
         });
     }
@@ -25,7 +25,7 @@ export function* gerAllUsers({payload}) {
         yield put({
             type: types.GET_USER_STATE_RESPONSE,
             payload: null,
-            clearAll: payload?.clearAll,
+            total: 0,
             loading:false
         });
     }

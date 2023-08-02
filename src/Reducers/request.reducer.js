@@ -7,6 +7,7 @@ const initialState = {
     userRequests:[],
     followFollowing:[],
     buttonLoading:false,
+    totalUsers: 0
 }
 
 const request =  (state = initialState, action) => {
@@ -25,7 +26,7 @@ const request =  (state = initialState, action) => {
         case types.SET_REQUEST_STATE:
             return {...state, requestResult: action.payload};
         case types.GET_FOLLOWERS_STATE_RESPONSE:
-            return {...state, followFollowing: action.payload, loading: action.loading};
+            return {...state, followFollowing: action.payload, loading: action.loading,totalUsers: action?.total};
         default:
             return state;
     }

@@ -8,12 +8,14 @@ import * as types from '../../Actions/Types';
 import {httpGet} from "../../Helper/api";
 export function* getFollowers({payload}) {
     try{
-        yield put({ type: types.SET_FOLLOWER_LOADING,loading:true });
-        let result = yield call(httpGet,`/follower/get?type=${payload?.type}&id=${payload?.id}`);
+        yield put({ type: types.SET_FOLLOWER_LOADING,loading: payload?.isLoading ? !payload?.isLoading : true });
+        const {page=0,pageSize=10,type,id} = payload;
+        let result = yield call(httpGet,`/follower/get?type=${type}&id=${id}&page=${page}&pageSize=${pageSize}`);
 
         yield put({
             type: types.GET_FOLLOWERS_STATE_RESPONSE,
             payload: result?.data || null,
+            total: result?.total,
             loading:false
         });
     }
@@ -21,6 +23,7 @@ export function* getFollowers({payload}) {
         yield put({
             type: types.GET_FOLLOWERS_STATE_RESPONSE,
             payload: null,
+            total: 0,
             loading:false
         });
     }

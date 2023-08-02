@@ -16,10 +16,6 @@ export function* createLike({payload}) {
             payload: result,
             loading:false
         });
-        yield put({
-            type: types.GET_POST_STATE,
-            payload: {id:payload?.postId,type:payload?.type},
-        });
     }
     catch (e) {
         yield put({
