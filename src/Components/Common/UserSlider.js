@@ -27,18 +27,18 @@ const UserSlider = ({data, receiveUsers, title, total}) => {
         // eslint-disable-next-line
     }, [blocked]);
 
-    // useEffect(() => {
-    //     const handleClickOutside = (event) => {
-    //         if (blockRef.current && !blockRef.current.contains(event.target)) {
-    //             setOpen({show: false, blockId: ''});
-    //         }
-    //     };
-    //     document.addEventListener('mousedown', handleClickOutside);
-    //     return () => {
-    //         document.removeEventListener('mousedown', handleClickOutside);
-    //     };
-    //     // eslint-disable-next-line
-    // }, []);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (blockRef.current && !blockRef.current.contains(event.target)) {
+                setOpen({show: false, blockId: ''});
+            }
+        };
+        document.addEventListener('mouseup', handleClickOutside);
+        return () => {
+            document.removeEventListener('mouseup', handleClickOutside);
+        };
+        // eslint-disable-next-line
+    }, []);
     const handleSendRequest = async (e, item, status) => {
         let request = requests && requests.data && requests.data.find((ele) => ele?.fromUserId === userData?._id && ele?.toUserId === item?._id);
         e.stopPropagation();
@@ -65,7 +65,7 @@ const UserSlider = ({data, receiveUsers, title, total}) => {
         e.stopPropagation();
         navigate(`/profile/${user?._id}`);
     }
-    const handleBlockAccount = async (e, item, status) => {
+    const handleBlockAccount = (e, item, status) => {
         e.stopPropagation();
         dispatch(blockUser({userId: userData?._id, blockUserId: item?._id, status: status}));
         setOpen({show: false, blockId: null})
@@ -95,13 +95,13 @@ const UserSlider = ({data, receiveUsers, title, total}) => {
                                     <div key={index}
                                         className="flip-card w-full md:h-[365px] h-[340px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col justify-center items-center cursor-pointer"
                                         onMouseLeave={() => setOpen({show: false, blockId: ''})}>
-                                        <div ref={blockRef}
+                                        <div
                                              className={`absolute right-11 z-10 -mt-[14rem] w-36 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${open.show && open.blockId === ele?._id ? '' : 'hidden'}`}
                                              role="menu"
                                              aria-orientation="vertical"
                                              aria-labelledby="user-menu-button"
                                              tabIndex="-1">
-                                            <ul className="space-y-2">
+                                            <ul className="space-y-2" ref={blockRef}>
                                                 <li className='cursor-pointer'>
                                                     <div onClick={(e) =>
                                                         handleBlockAccount(e, ele, blockUser)
@@ -122,21 +122,25 @@ const UserSlider = ({data, receiveUsers, title, total}) => {
                                             <div className=" flex items-center justify-center flip-card-back">
 
                                                 <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
-                                                    {(title === 'Followings' || title === 'Users') && <div
+                                                    <div
                                                         className={` float-right cursor-pointer mt-6`}
                                                         onClick={() => setOpen({
                                                             show: !open?.show,
                                                             blockId: ele?._id
                                                         })}>
                                                         <BsThreeDotsVertical className="pointer text-black" size={20}/>
-                                                    </div>}
+                                                    </div>
                                                     <h1
                                                         className="text-2xl font-semibold text-center text-gray-500 mt-4 mb-4">{ele?.userName}</h1>
 
-                                                    <div className='flex justify-center'><img
+                                                    <div className='flex justify-center relative'><img
                                                         className="object-center object-cover h-28 w-28 rounded-full"
                                                         src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}${ele?.profile_url}` : "https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
-                                                        alt="photo"/></div>
+                                                        alt="photo"/>
+                                                        <div
+                                                            className={`absolute top-[100px] left-[150px] bottom-auto left-auto z-10 inline-block translate-x-2/4 -translate-y-1/2 rotate-0 skew-x-0 skew-y-0 scale-x-100 scale-y-100 whitespace-nowrap rounded-full bg-${ele?.status ? 'green-700' : 'gray-300'} py-2.5 px-2.5 text-center align-baseline text-xs font-bold leading-none text-white`}>
+                                                        </div>
+                                                    </div>
                                                     <p className="text-sm text-gray-600 text-justify  mt-2 mb-4">
                                                         <div
                                                             className="mt-2 mb-2 flex gap-14 justify-center flex-row">
@@ -178,7 +182,6 @@ const UserSlider = ({data, receiveUsers, title, total}) => {
                                             </div>
                                         </div>
                                     </div>
-
                                 </>
                             )
                         })}

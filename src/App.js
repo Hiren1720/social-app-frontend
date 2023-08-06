@@ -20,7 +20,7 @@ import './App.css'
 import SharedPost from "./Components/Posts/SharedPost";
 import Settings from "./Components/User/Settings";
 import {useDispatch} from "react-redux";
-import {createVisitorTime} from "./Actions/userActions";
+import {createVisitorTime, setUserStatus} from "./Actions/userActions";
 
 function App() {
   const dispatch = useDispatch();
@@ -50,10 +50,21 @@ function App() {
     if(user) {
       window.addEventListener('pagehide', async () => {
         window.clearInterval();
-        dispatch(createVisitorTime({totalTime, user: user}));
+        dispatch(createVisitorTime({totalTime, user}));
+        dispatch(setUserStatus({_id:user?._id,status:false}))
       });
     }
+    // eslint-disable-next-line
   }, []);
+  useEffect(()=> {
+    const user = getLocalStorageData('user');
+    if(user) {
+      window.addEventListener('load', async () => {
+        dispatch(setUserStatus({_id:user?._id,status:true}))
+      });
+    }
+    // eslint-disable-next-line
+  },[]);
 
   return (
     <div className="w-full h-screen ">

@@ -92,6 +92,13 @@ export const setSettings = (payload) =>{
     }
 };
 
+export const setUserStatus = (payload) => {
+    return {
+        type: types.SET_USER_STATUS,
+        payload
+    }
+};
+
 export const resetSettingResult = () => {
     return {
         type: types.SET_SETTING_STATE_FAILURE,

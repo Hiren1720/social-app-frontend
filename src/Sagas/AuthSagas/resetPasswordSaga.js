@@ -5,15 +5,15 @@ import {
     takeLatest
 } from 'redux-saga/effects'
 import * as types from '../../Actions/Types';
-import {httpAuth} from "../../Helper/api";
+import {httpAuth, httpPost} from "../../Helper/api";
 
 
 export function* userResetPassword({payload}) {
     try{
         yield put({ type: types.SET_LOADING,loading:true })
-        let request = {url:'/user/reset-password',body:payload}
-        let result = yield call(httpAuth,request)
-        if(result && result.success){
+        let request = {url:`/user/${payload?.type}`,body:payload}
+        let result = yield call(payload?.type === 'reset-password' ? httpAuth:httpPost,request)
+        if(result && result.success && payload?.type === 'reset-password'){
             window.location.href = '/';
         }
         yield put({

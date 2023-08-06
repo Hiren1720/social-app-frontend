@@ -1,26 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {useDispatch, useSelector} from "react-redux";
-import {getDailyUsages, resetSettingResult, setSettings, setUserData} from "../../Actions/userActions";
-import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from 'recharts';
-import {barStyle, container} from './Style';
-import {toast} from "react-toastify";
-import {secondsToHms} from "../../Helper";
+import {resetSettingResult, setSettings} from "../../Actions/userActions";
 import {AiTwotoneSetting} from "react-icons/ai"
 import {BsGraphUpArrow, BsFillLockFill} from "react-icons/bs"
 import {SiPrivateinternetaccess} from "react-icons/si"
 import {GrShieldSecurity} from "react-icons/gr"
 import Privacy from "./PrivacySetting";
 import useWidthHeight from "../../Hooks/useWidthHeight";
-import {useLocation} from "react-router";
-import {MdOutlineKeyboardBackspace,MdArrowForward} from "react-icons/md"
+import {useLocation} from "react-router-dom";
+import {MdOutlineKeyboardBackspace,MdArrowForward} from "react-icons/md";
+import AppUsagesGraph from "./AppUsagesGraph";
+import ChangePassword from "./ChangePassword";
+import DeActivateAccount from "./DeActivateAccount";
 const Settings = () => {
     const dispatch = useDispatch();
     const {state} = useLocation();
-    const [dailyData, setDailyData] = useState([]);
-    const [todayTime, setTodayTime] = useState('');
     const settingResult = useSelector(state => state.userData.settingResult);
-    const dailyUsages = useSelector(state => state.userData.dailyUsages);
     const [open , setOpen] = useState(state);
     let userData = getLocalStorageData('user');
     const {width} = useWidthHeight();
@@ -53,177 +49,21 @@ const Settings = () => {
             </div>
         )
     };
-    const [active , setActive] = useState({name: 'Account Settings', content: AccountSetting(), icon: <AiTwotoneSetting size={20}/>});
-    let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const [active , setActive] = useState({name: 'Account Settings', icon: <AiTwotoneSetting size={20}/>});
+
 
     useEffect(() => {
         if (settingResult?.success) {
             dispatch(resetSettingResult())
         }
+        // eslint-disable-next-line
     }, [settingResult]);
-    useEffect(() => {
-        if (dailyUsages?.length) {
-            let data = dailyUsages.map((ele) => {
-                let d = new Date(ele?.createdAt);
-                let dayName = days[d.getDay()];
-                return {Day: dayName, Time: ele.time}
-            });
-            setDailyData([...data]);
-            let today = dailyUsages.find(ele => new Date(ele.createdAt).getDate() === new Date().getDate())?.time;
-            let hms = secondsToHms(today);
-            setTodayTime(hms);
-            console.log('data', hms, data)
-        }
-    }, [dailyUsages])
-    useEffect(() => {
-        dispatch(getDailyUsages())
-    }, []);
-
-    const renderLegend = (data) => {
-        return (
-            <div className='flex p-2'>
-                <div className='flex ml-5'>
-                    <div className=''>
-                        <span>Daily Average</span>
-                    </div>
-                    <div className=''>
-                        <b style={{color: '#77A3FC'}}>{todayTime}</b>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-    const CustomTooltip = ({active, payload, label}) => {
-        if (active && payload && payload.length) {
-            return (
-                <div className="border-2 bg-white p-3 rounded-[6px]">
-                    <p className="label text-[#77A3FC]">{label}</p>
-                    <p className="label">{secondsToHms(payload[0]?.payload.Time)}</p>
-                </div>
-            );
-        }
-        return null;
-    };
-    const Graph = () =>{
-        return( <div className="px-3  items-center bg-grey-light cursor-pointer">
-            <div className='h-[400px] rounded-[6px] mt-2.5 border-2'>
-                <ResponsiveContainer width={container.width} height={container.height}>
-                    <BarChart
-                        width={barStyle.width}
-                        height={barStyle.height}
-                        data={dailyData}
-                        margin={barStyle.margin}
-                        cursor="pointer"
-                        barSize={barStyle.default}
-                    >
-                        <CartesianGrid vertical={false} horizontal={true}/>
-                        <XAxis dataKey={'Day'} tickLine={false} textAnchor="end" sclaeToFit="true"
-                               verticalAnchor="start" interval={0} angle={"-20"} height={70}
-                               tick={{fontSize: 11}}/>
-                        <YAxis tickCount={barStyle.tickCount} tick={{fontSize: 13}} allowDecimals={false}
-                               domain={['dataMin', 'auto']} axisLine={false} tickLine={false}/>
-                        <Tooltip cursor={{fill: 'transparent'}} content={<CustomTooltip/>}/>
-                        <Legend layout='horizontal' verticalAlign='top' align='center'
-                                content={renderLegend('')}/>
-                        <Bar dataKey="Time" stackId="a" fill="#77A3FC"/>
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
-        </div>)
-    }
-    const ChangePassword = ()=>{
-        return(
-            <div className="px-3 flex items-center bg-grey-light cursor-pointer">
-                <div className="ml-4 flex-1 border-b border-grey-lighter py-4">
-                    <div className="relative  items-bottom justify-between">
-                        <div className="mt-4 w-full">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">Old Password</label>
-                            <input
-                                className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                type="text" placeholder="old password" name='oldPassword'
-                            />
-                        </div>
-                        <div className="mt-4 w-full">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">New Password</label>
-                            <input
-                                className=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                type="text" placeholder="new password" name='newPassword'
-                            />
-                        </div>
-                        <div className="mt-4 w-full">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">Repeat Password</label>
-                            <input
-                                className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                type="text" placeholder="repeat password" name='repeatPassword'
-                            />
-                        </div>
-                        <div className="mt-4 w-full"> <label className="block text-gray-700 text-sm font-bold mb-2 hover:underline cursor-pointer hover:text-[#234e70]">Forget Password ?</label></div>
-                        <div className="mt-4 w-full flex gap-10">
-                            <button
-                                className="text-black font-bold py-2 mt-5 px-4 w-full border border-gray-300 rounded bg-white hover:bg-[#234e70]"
-                                type="button" >
-                                Save Settings
-                            </button>
-                            <button
-                                className="text-black font-bold py-2 mt-5 px-4 w-full border border-gray-300 rounded hover:bg-[#234e70] bg-white "
-                                type="button">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-    const DeActivateAccount = () =>{
-        return(<>
-            <div className="px-3 flex items-center bg-grey-light cursor-pointer">
-                <div className="ml-4 flex-1 border-b border-grey-lighter py-4">
-                    <div className="relative  items-bottom justify-between">
-                        <div className="mt-4 w-full">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                            <input
-                                className="text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                type="text" placeholder="Email" name='email'
-                            />
-                        </div>
-                        <div className="mt-4 w-full">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                            <input
-                                className=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                type="text" placeholder="password" name='password'
-                            />
-                        </div>
-                        <div className="mt-4 w-full">
-                            <label className="block text-gray-700 text-sm font-bold mb-2">Please Explain Further</label>
-                            <textarea
-                                className=" text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                name='explanation'>
-                        </textarea>
-                        </div>
-                        <div className="mt-4 w-full flex gap-10">
-                            <button
-                                className="text-black font-bold py-2 mt-5 px-4 w-full border border-gray-300 rounded bg-white hover:bg-[#234e70]"
-                                type="button" >
-                                Save Settings
-                            </button>
-                            <button
-                                className="text-black font-bold py-2 mt-5 px-4 w-full border border-gray-300 rounded hover:bg-[#234e70] bg-white "
-                                type="button">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>)
-    }
     const navBars = [
-        {name: 'Account Settings', content: AccountSetting(), icon: <AiTwotoneSetting size={20}/>,},
-        {name: 'Status', content: Graph(), icon: <BsGraphUpArrow size={20}/>,},
-        {name: 'Change Password', content: ChangePassword(), icon: <BsFillLockFill size={20}/>,},
-        {name: 'Deactivate Account', content: DeActivateAccount(), icon: <SiPrivateinternetaccess size={20}/>,},
-        {name: 'Privacy', content: <Privacy/>, icon: <GrShieldSecurity size={20}/>},
+        {name: 'Account Settings', icon: <AiTwotoneSetting size={20}/>,},
+        {name: 'Status', icon: <BsGraphUpArrow size={20}/>,},
+        {name: 'Change Password', icon: <BsFillLockFill size={20}/>,},
+        {name: 'Deactivate Account', icon: <SiPrivateinternetaccess size={20}/>,},
+        {name: 'Privacy', icon: <GrShieldSecurity size={20}/>},
     ];
     return (
         <>
@@ -338,8 +178,15 @@ const Settings = () => {
                                                    </div>
                                                </div>
                                            </div>
-                                           {active.content}
-                                       </div></>}
+                                           {{
+                                               'Account Settings':<AccountSetting/>,
+                                               'Status': <AppUsagesGraph/>,
+                                               'Change Password': <ChangePassword/>,
+                                               'Deactivate Account': <DeActivateAccount/>,
+                                               'Privacy': <Privacy/>,
+                                           }[active.name]}
+                                       </div>
+                                   </>}
                            </div>
                        </div>
                    </div>

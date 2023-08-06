@@ -18,7 +18,7 @@ const ResetPassword = () => {
     }
     const handlePassword = (e) => {
         if (passwordValue.password === passwordValue.confirmPassword) {
-            dispatch(resetPassword(user));
+            dispatch(resetPassword({...user,type:'reset-password'}));
         } else {
             toast("Password not match to confirm password", {type: 'error'});
         }

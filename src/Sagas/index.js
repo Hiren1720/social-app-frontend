@@ -19,6 +19,7 @@ import {getMentionPostsSaga} from "./PostSagas/getMentionPostsSaga";
 import {getProfileViewersSaga} from "./UserSagas/getProfileViewersSaga";
 import {userForgetPasswordSaga} from "./AuthSagas/forgetPasswordSaga";
 import {userResetPasswordSaga} from "./AuthSagas/resetPasswordSaga";
+import {setUserStatusSaga} from "./AuthSagas/setUserStatusSaga";
 import {deleteAccountSaga} from "./UserSagas/deleteAccountSaga";
 import {blockUserSaga} from "./BlockUserSaga/blockUserSaga";
 import {deletePostSaga} from "./PostSagas/deletePostSaga";
@@ -50,11 +51,11 @@ export default function* root() {
         userResetPasswordSaga(),
         blockUserSaga(),
         deletePostSaga(),
-        userResetPasswordSaga(),
         deleteAccountSaga(),
         savePostSaga(),
         setSettingSaga(),
         setVisitorTimeSaga(),
-        getDailyUsagesSaga()
+        getDailyUsagesSaga(),
+        setUserStatusSaga()
     ]);
 }
