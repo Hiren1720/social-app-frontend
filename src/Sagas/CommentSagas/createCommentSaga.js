@@ -10,16 +10,12 @@ import {httpPost} from "../../Helper/api";
 export function* createComment({payload}) {
     try{
         yield put({ type: types.SET_POST_LOADING,key:'commentLoading',loading:true })
-        let request = {url:'/comment/create',body:payload}
+        let request = {url:'/post/comment',body:payload}
         let result = yield call(httpPost,request)
         yield put({
             type: types.SET_COMMENT_RESPONSE,
             payload: result,
             loading:false
-        });
-        yield put({
-            type: types.GET_POST_STATE,
-            payload: true,
         });
     }
     catch (e) {

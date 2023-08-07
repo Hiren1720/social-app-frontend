@@ -1,7 +1,7 @@
 import {userRegisterSaga,userRegister} from './../../Sagas/AuthSagas/userRegistrationSaga';
 
 import { call, put, all, takeLatest } from 'redux-saga/effects';
-import {httpAuth} from '../../Helper/api';
+import {httpFormDataAuth} from '../../Helper/api';
 
 describe('user register saga', () => {
     const genObject = userRegisterSaga();
@@ -12,9 +12,9 @@ describe('user register saga', () => {
     });
 
     it('should call for httpAuth and return success for valid request', () => {
-        const payload = {};
+        const payload = {type:'register',formData: new FormData()};
         const register = userRegister({payload:payload});
-        let request = {url:'/user/register',body:payload}
+        let request = {url:`/user/${payload?.type}`,body:payload?.formData,isFormData:payload?.type === 'update'}
         expect(register.next().value).toEqual(
             put({
                 type: "SET_LOADING",
@@ -22,7 +22,7 @@ describe('user register saga', () => {
             })
         );
         expect(register.next().value)
-            .toEqual(call(httpAuth, request));
+            .toEqual(call(httpFormDataAuth, request));
 
         const result = 'result';
         expect(register.next(result).value).toEqual(put({
@@ -30,12 +30,16 @@ describe('user register saga', () => {
             payload: "result",
             loading:false
         }));
+        expect(register.next(result).value).toEqual(put({
+            type: payload?.type === 'update' ? "GET_USER_STATE" : '',
+            payload: {type:'user'},
+        }));
     });
 
     it('should call for httpAuth and throw error for invalid request', () => {
-        const payload = {}
+        const payload = {type:'register',formData: new FormData()};
         const register = userRegister({payload:payload});
-        let request = {url:'/user/register',body:payload}
+        let request = {url:`/user/${payload?.type}`,body:payload?.formData,isFormData:payload?.type === 'update'}
         expect(register.next().value).toEqual(
             put({
                 type: "SET_LOADING",
@@ -43,7 +47,7 @@ describe('user register saga', () => {
             })
         );
         expect(register.next().value)
-            .toEqual(call(httpAuth, request));
+            .toEqual(call(httpFormDataAuth, request));
 
         expect(register.throw(new Error("Some error occured")).value).toEqual(put({
             type: "SAVE_USER_STATE_RESPONSE",

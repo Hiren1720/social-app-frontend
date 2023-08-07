@@ -25,10 +25,11 @@ describe('get all user saga', () => {
         expect(getUser.next().value)
             .toEqual(call(httpGet, request));
 
-        const result = {data:[]};
+        const result = {data:[],total:0};
         expect(getUser.next(result).value).toEqual(put({
             type: 'GET_USER_STATE_RESPONSE',
             payload: result?.data,
+            total: result?.total,
             loading:false
         }));
     });
@@ -50,6 +51,7 @@ describe('get all user saga', () => {
         expect(getUser.throw(new Error("Some error occured")).value).toEqual(put({
             type: "GET_USER_STATE_RESPONSE",
             payload: null,
+            total: 0,
             loading: false
         }));
 

@@ -22,7 +22,7 @@ const ResetPassword = () => {
         } else {
             toast("Password not match to confirm password", {type: 'error'});
         }
-    }
+    };
     return (<>
         <div>
             <div className="min-w-screen min-h-screen flex items-center p-5 lg:p-10 overflow-hidden relative">
@@ -80,7 +80,6 @@ const ResetPassword = () => {
                                                     ...passwordValue,
                                                     confirmPassword: e.target.value
                                                 })}
-
                                             />
                                         </div>
 
