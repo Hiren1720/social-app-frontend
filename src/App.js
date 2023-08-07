@@ -21,7 +21,7 @@ import SharedPost from "./Components/Posts/SharedPost";
 import Settings from "./Components/User/Settings";
 import {useDispatch} from "react-redux";
 import {createVisitorTime, setUserStatus} from "./Actions/userActions";
-
+import {ssEvents} from "./SSE/sse";
 function App() {
   const dispatch = useDispatch();
   const [socket] = React.useState(io('http://localhost:4040/', {
@@ -30,7 +30,12 @@ function App() {
   let user = getLocalStorageData('user');
   useEffect(()=>{
     if(user && user?._id){
-      socket.emit('joinUserId',user?._id)
+      if ('EventSource' in window) {
+        ssEvents.addEventListener(`comment`, function (e) {
+
+        }, false);
+      }
+      // socket.emit('joinUserId',user?._id)
     }
     if (!("Notification" in window)) {
       toast.error("Browser does not support desktop notification");

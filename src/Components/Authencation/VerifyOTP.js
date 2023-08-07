@@ -139,7 +139,7 @@ const VerifyOTP = () => {
                                         </div>
 
                                         <div className="mt-8 md:px-32">
-                                            <button
+                                            <button id='verify'
                                                 className={`text-white font-bold py-2 px-4 w-full rounded  ${loading ? 'bg-gray-200' : 'hover:bg-green-900 bg-green-500'}`}
                                                 type="button" onClick={(e) => handleOnSubmit(e)}
                                                 disabled={loading}>

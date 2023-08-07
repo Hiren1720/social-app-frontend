@@ -55,6 +55,13 @@ export const deleteAccount = (payload = {}) =>{
         payload
     }
 };
+export const resetUserResult = () =>{
+    return {
+        type: types.DELETE_ACCOUNT_RESPONSE,
+        payload:null,
+        loading:false
+    }
+};
 
 export const getProfile = (payload) =>{
     return {
