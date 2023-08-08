@@ -15,14 +15,15 @@ import {
     BsShare,
     BsThreeDotsVertical
 } from 'react-icons/bs';
-import {createLike, deletePost, getAllLikes} from "../../Actions/postActions";
+import {createLike, deletePost, getAllLikes,getPost} from "../../Actions/postActions";
 import {savePost} from "../../Actions/userActions";
 import Modal from "react-modal";
 import ProfilePhoto from "../User/ProfilePhoto";
 import ButtonLoader from "../ButtonLoader";
 import {toast} from "react-toastify";
 import useWidthHeight from "../../Hooks/useWidthHeight";
-
+import {createComment} from "../../Actions/commentAction";
+import {ssEvents} from "../../SSE/sse";
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
 const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
@@ -62,6 +63,21 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
         };
         // eslint-disable-next-line
     }, []);
+
+
+    useEffect(()=>{
+        ssEvents.addEventListener(`comment`, function (e) {
+            let data =JSON.parse(e.data)
+            if(item?._id === data?.postId){
+                handleUpdateComment(data,'comments');
+            }
+        }, false);
+        ssEvents.addEventListener(`likes`, function (e) {
+            let data =JSON.parse(e.data)
+            handleUpdateComment({likes:data?.likes,postId:data?._id},'likes');
+        }, false);
+    },[]);
+
     function closeModal() {
         setModal({open: false, data: null, title: null});
     }
@@ -73,10 +89,11 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
             id: createdBy,
             likeBy: userData?._id,
             postId: _id,
-            userName: userData?.userName
+            userName: userData?.userName,
+            isSinglePost: type === 'getPost',
+            type
         };
-        handleUpdateComment({...data,createdBy:userData?._id},'likes');
-        // dispatch(createLike({"postId": id, "likeBy": userData?._id, isSinglePost: type === 'getPost', type}))
+        dispatch(createLike(data))
     };
 
     const handleSavePost = (id) => {
@@ -112,7 +129,7 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
             postId: modal?.data?._id,
             userName: userData?.userName
         };
-        handleUpdateComment(data,'comments');
+        dispatch(createComment(data));
         setModal({open: false, data: null, title: null});
         setComment('');
     };

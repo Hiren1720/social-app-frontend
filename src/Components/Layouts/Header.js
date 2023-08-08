@@ -41,7 +41,7 @@ const Header = () => {
         // eslint-disable-next-line
     }, []);
     useEffect(()=> {
-        if(deleteAccountResult && deleteAccountResult?.success){
+        if(deleteAccountResult && deleteAccountResult?.success && deleteAccountResult?.type === 'delete-account'){
             navigate('/verify-otp')
         }
     },[deleteAccountResult])
@@ -149,7 +149,7 @@ const Header = () => {
                                           tabIndex="-1" id="user-menu-item-0">Your Profile</span>
                                     <span onClick={()=> {navigate('/settings')}} className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:text-white hover:bg-gray-900 hover:rounded-[6px]" role="menuitem"
                                           tabIndex="-1" id="user-menu-item-1">Settings</span>
-                                    <span onClick={()=> {dispatch(deleteAccount()); setOpen(!open)}} className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:text-white hover:bg-gray-900 hover:rounded-[6px]" role="menuitem"
+                                    <span onClick={()=> {dispatch(deleteAccount({type:'delete-account'})); setOpen(!open)}} className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:text-white hover:bg-gray-900 hover:rounded-[6px]" role="menuitem"
                                           tabIndex="-1" id="user-menu-item-2">Delete Account</span>
                                     <span onClick={()=> dispatch(logout())} className="block px-4 py-2 cursor-pointer text-sm text-gray-700 hover:text-white hover:bg-gray-900 hover:rounded-[6px]" role="menuitem"
                                           tabIndex="-1" id="user-menu-item-3">Sign out</span>

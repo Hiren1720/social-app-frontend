@@ -5,18 +5,19 @@ import {
     takeEvery
 } from 'redux-saga/effects';
 import * as types from '../../Actions/Types';
-import {httpDelete} from "../../Helper/api";
+import {httpDelete,httpPost} from "../../Helper/api";
 
-export function* deleteAccount() {
+export function* deleteAccount({payload}) {
     try{
         yield put({ type: types.SET_LOADING,loading: true })
-        let result = yield call(httpDelete,{url:`/user/delete-account`,body: JSON.stringify({})});
+        let result = yield call(payload?.type === 'deactivate-account' ? httpPost : httpDelete,{url:`/user/${payload?.type}`,body: payload?.type === 'deactivate-account' ? payload : JSON.stringify({})});
         yield put({
             type: types.DELETE_ACCOUNT_RESPONSE,
-            payload: {...result,isDelete:true},
+            payload: {...result,isDelete:true,type:payload?.type},
             loading:false
         });
     }
+
     catch (e) {
         yield put({
             type: types.DELETE_ACCOUNT_RESPONSE,

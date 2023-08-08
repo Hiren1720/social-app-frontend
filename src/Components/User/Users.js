@@ -81,7 +81,9 @@ const Users = () => {
                         {/*        id="grid-last-name" type="button"><FaFilter size='20' color={'gray'}/></button>*/}
                         {/*</div>*/}
                         <div className='w-full'>
-                            <div className=" w-full rounded-lg p-3 relative ">
+                            <div className=" w-full rounded-lg p-3 relative flex items-center"><span className="absolute left-3 flex pl-2 text-gray-500 cursor-pointer" onClick={()=> { searchValue && handleClearSearch()}}>
+                                { searchValue ? <BsArrowLeft /> : <FaSearch/>}
+                            </span>
                                 <input type="text" placeholder="Search" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}
                                        className="bg-white border-2 border-gray-300 h-12 w-full px-8 rounded-lg focus:outline-none hover:cursor"
                                        name=""/>

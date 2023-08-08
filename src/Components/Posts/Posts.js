@@ -63,9 +63,10 @@ const BlogPage = ({type,id}) => {
     };
     const handleUpdateComment = (data,key) => {
         const postIndex = blog.findIndex(ele => ele._id === data?.postId);
+        const postData = blog.find(ele => ele._id === data?.postId);
         if(postIndex !== -1){
-            if(key === 'likes' && blog[postIndex][key].includes(data?.createdBy)){
-                blog[postIndex][key] = blog[postIndex][key].filter(ele => ele !== data?.createdBy)
+            if(key === 'likes'){
+                blog[postIndex] = {...postData,likes:data?.likes};
             }
             else {
                 blog[postIndex][key].push(data?.createdBy);

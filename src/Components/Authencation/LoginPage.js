@@ -48,9 +48,11 @@ const Login = () => {
 
     const handleSwitchAccount = (id) => {
         let user = users.find(ele => ele?._id === id);
-        setLocalStorageData('accessToken',user?.token);
-        setLocalStorageData('user',user || {});
-        navigate('/');
+        if(!user?.deActivated) {
+            setLocalStorageData('accessToken', user?.token);
+            setLocalStorageData('user', user || {});
+            navigate('/');
+        }
     };
     const handleDeleteAccount = (id) =>{
         users.splice(id, 1);
