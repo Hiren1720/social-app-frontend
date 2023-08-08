@@ -24,7 +24,7 @@ import PrivateAccount from '../Common/PrivateAccount'
 import ProfileViewedPeople from "../Common/ProfileViewedPeople";
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
-const Profile = ({socket}) => {
+const Profile = () => {
     const {id} = useParams();
     const userData = getLocalStorageData('user');
     const dispatch = useDispatch();
@@ -75,9 +75,9 @@ const Profile = ({socket}) => {
             case 'Followers':
                 return <Followers user={user} type={active} setActive={setActive}/>;
             case 'Posts':
-                return <Posts socket={socket} id={id} type={"getPostsByUserId"}/>;
+                return <Posts id={id} type={"getPostsByUserId"}/>;
             case 'SavedPost':
-                return <Posts socket={socket} type={"getSavedPosts"}/>;
+                return <Posts type={"getSavedPosts"}/>;
             case 'Profile':
             default:
                 return <PersonalDetail user={user}/>;

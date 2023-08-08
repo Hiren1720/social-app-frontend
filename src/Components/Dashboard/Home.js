@@ -15,7 +15,7 @@ import {GrGallery} from 'react-icons/gr';
 import {HiOutlineEmojiHappy} from "react-icons/hi";
 import Picker from 'emoji-picker-react';
 const url = process.env.REACT_APP_API_URL;
-const Home = ({socket}) => {
+const Home = () => {
     const [thought, setThought] = useState({content: '', imageUrl: ''});
     const dispatch = useDispatch();
     const userData = useSelector(state => state.userData.loggedInUser);
@@ -271,7 +271,7 @@ const Home = ({socket}) => {
                                             </div>
                                         </div>
                                         <div >
-                                            <Post socket={socket} type={'getAllPost'}/>
+                                            <Post type={'getAllPost'}/>
                                         </div>
                                     </div>
                                     <div>

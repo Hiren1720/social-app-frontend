@@ -25,7 +25,7 @@ import useWidthHeight from "../../Hooks/useWidthHeight";
 
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
-const Post = ({item, userData, type, socket, key, id,handleUpdateComment}) => {
+const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
     const comments = useSelector(state => state.postData.comments);
     const commentLoading = useSelector(state => state.postData.commentLoading);
     const likes = useSelector(state => state.postData.likes);
@@ -75,7 +75,6 @@ const Post = ({item, userData, type, socket, key, id,handleUpdateComment}) => {
             postId: _id,
             userName: userData?.userName
         };
-        socket.emit('likeNotification', data);
         handleUpdateComment({...data,createdBy:userData?._id},'likes');
         // dispatch(createLike({"postId": id, "likeBy": userData?._id, isSinglePost: type === 'getPost', type}))
     };
@@ -113,7 +112,6 @@ const Post = ({item, userData, type, socket, key, id,handleUpdateComment}) => {
             postId: modal?.data?._id,
             userName: userData?.userName
         };
-        socket.emit('commentNotification', data);
         handleUpdateComment(data,'comments');
         setModal({open: false, data: null, title: null});
         setComment('');
