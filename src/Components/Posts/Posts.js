@@ -20,7 +20,7 @@ import Post from "../Common/Post";
 
 Modal.setAppElement('#modal');
 
-const BlogPage = ({socket, type,id}) => {
+const BlogPage = ({type,id}) => {
     let userToken = getLocalStorageData('user');
     const [blog,setBlog] = useState([]);
     const posts = useSelector(state => state.postData.posts);
@@ -35,28 +35,6 @@ const BlogPage = ({socket, type,id}) => {
     function closeModal() {
         setModal({open: false, data: null, title: null});
     }
-
-    useEffect(() => {
-        socket.on('comment', (data) => {
-            toast(data?.text, {type: 'success'});
-            let options = {
-                body: data?.text,
-                icon: require("../../assets/images/favicon.png"),
-                dir: "ltr"
-            };
-            new Notification('Social App Notification', options);
-        })
-        socket.on('like', (data) => {
-            toast(data?.text, {type: 'success'});
-            let options = {
-                body: data?.text,
-                icon: require("../../assets/images/favicon.png"),
-                dir: "ltr"
-            };
-            new Notification('Social App Notification', options);
-        })
-        // eslint-disable-next-line
-    }, []);
     useEffect(()=>{
         if(posts?.length){
             setBlog([...blog,...posts])
@@ -111,7 +89,7 @@ const BlogPage = ({socket, type,id}) => {
                             </p>
                         }
                     >{blog?.map((ele, index) => (
-                        <Post key={index} item={ele} type={type} userData={userToken} id={id} socket={socket} handleUpdateComment={handleUpdateComment}/>
+                        <Post key={index} item={ele} type={type} userData={userToken} id={id} handleUpdateComment={handleUpdateComment}/>
                     ))}</InfiniteScroll> : <>
                         <div className="max-h-[400px] pl-2 items-center">
                             <div

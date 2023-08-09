@@ -24,9 +24,6 @@ import {createVisitorTime, setUserStatus} from "./Actions/userActions";
 import {ssEvents} from "./SSE/sse";
 function App() {
   const dispatch = useDispatch();
-  const [socket] = React.useState(io('http://localhost:4040/', {
-    transports: ["websocket"]
-  }));
   let user = getLocalStorageData('user');
   // useEffect(()=>{
   //   if(user && user?._id){
@@ -123,21 +120,21 @@ function App() {
     <div className="w-full h-screen ">
       <BrowserRouter>
         <Routes>
-          <Route path='/login' element={<Login socket={socket}/>}  />
+          <Route path='/login' element={<Login/>}  />
           <Route path='/sign-up' element={<Registration/>}  />
           <Route path='/verify-otp' element={<VerifyOTP/>}  />
           <Route path='/reset-password/:id' element={<ResetPassword/>}  />
           <Route path='/forget-password' element={<ForgetPassword/>}/>
           <Route path='/' element={<Header/>} >
-            <Route index element={<Home socket={socket}/>}/>
+            <Route index element={<Home />}/>
             <Route path='post' element={<CreatePost/>}  />
             <Route path='edit-post' element={<CreatePost/>}  />
-            <Route path='profile/:id' element={<Profile socket={socket}/>}  />
+            <Route path='profile/:id' element={<Profile />}  />
             <Route path='/edit-profile' element={<Registration/>}  />
             <Route path='requests' element={<Requests/>}  />
             <Route path='followers' element={<Followers/>}  />
             <Route path='users' element={<Users/>}  />
-            <Route path='post/:userName/:postId' element={<SharedPost socket={socket}/>}  />
+            <Route path='post/:userName/:postId' element={<SharedPost />}  />
             <Route path='settings' element={<Settings />}  />
           </Route>
           <Route path='*' element={<h1>404 Page not found.</h1>}/>
