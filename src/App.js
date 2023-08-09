@@ -28,23 +28,71 @@ function App() {
     transports: ["websocket"]
   }));
   let user = getLocalStorageData('user');
-  useEffect(()=>{
-    if(user && user?._id){
-      if ('EventSource' in window) {
-        ssEvents.addEventListener(`comment`, function (e) {
+  // useEffect(()=>{
+  //   if(user && user?._id){
+  //     if ('EventSource' in window) {
+  //       ssEvents.addEventListener(`comment`, function (e) {
+  //
+  //       }, false);
+  //     }
+  //     // socket.emit('joinUserId',user?._id)
+  //   }
+  //   if (!("Notification" in window)) {
+  //     toast.error("Browser does not support desktop notification");
+  //   } else {
+  //     // toast.success("Notifications are supported");
+  //     Notification.requestPermission();
+  //   }
+  //   // eslint-disable-next-line
+  // },[user]);
 
-        }, false);
-      }
+
+  useEffect(()=>{
+    // if(user && user?._id){
+    //   socket.emit('joinUserId',user?._id)
+    // }
+    if (user && user?._id) {
       // socket.emit('joinUserId',user?._id)
+      if ('EventSource' in window || 'Notification' in window) {
+        ssEvents.addEventListener(`comment ${user?._id}`, function (e) {
+          let data = JSON.parse(e.data);
+          toast(data, {type: 'success'});
+          let options = {
+            body: data,
+            icon: require("../src/assets/images/favicon.png"),
+            dir: "ltr"
+          };
+          if(!data.includes(user?.userName)){
+            new Notification('Social App Notification', options);
+          }
+        }, false);
+
+        ssEvents.addEventListener(`likes ${user?._id}`, function (e) {
+          let data = JSON.parse(e.data);
+          toast(data, {type: 'success'});
+          let options = {
+            body: data,
+            icon: require("../src/assets/images/favicon.png"),
+            dir: "ltr"
+          };
+          if(!data.includes(user?.userName)){
+            new Notification('Social App Notification', options);
+          }
+        }, false);
+        ssEvents.addEventListener('post',function (e) {
+          let data = JSON.parse(e.data)
+          toast(data, {type:'success'})
+        },false)
+      }
     }
     if (!("Notification" in window)) {
-      toast.error("Browser does not support desktop notification");
+      // toast.error("Browser does not support desktop notification");
     } else {
       // toast.success("Notifications are supported");
       Notification.requestPermission();
     }
     // eslint-disable-next-line
-  },[user]);
+  },[]);
 
   let totalTime = 0;
   setInterval(function() {
