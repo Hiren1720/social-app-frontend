@@ -117,22 +117,37 @@ const CreatePost = () => {
         }
     };
     const handleOnImportFile = async (fileData) => {
+        const cloudName = 'socialposts';
+        const uploadPreset = 'postimagevideo';
+        let imageFiles = [];
+        const formData = new FormData();
         if (fileData.length <= 10 || post.imageUrl.length < 10) {
             Array.from(fileData).forEach((ele, id) => {
+                console.log("filesDAta", ele)
                 let extension = ele.name.split('.').pop().replace(' ', '');
                 if (extension !== 'jpg' && extension !== 'jpeg' && extension !== 'png' && extension !== 'mp4') {
                     setImportError('Post Only JPEG,JPG & PNG File');
                 } else {
-                    setImportError(null);
+                    formData.append('file', ele);// ele
+                    formData.append('upload_preset', uploadPreset);
+                    const options = {
+                        method: 'POST',
+                        body: formData
+                    };
+                    fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, options)
+                        .then(res => res.json())
+                        .then(res => {
+                            imageFiles.push(res.secure_url);
+                            setPost({...post, imageUrl: [...post.imageUrl, ...imageFiles]});
+                            setFiles([...files,...imageFiles]);
+                            setImportError(null);
+                        })
+                        .catch(err => console.log(err));
                 }
-                setPost({...post, imageUrl: [...post.imageUrl, ...fileData]});
-            })
-            let file = await tobase64Handler(Array.from(fileData));
-            setFiles([...files, ...file]);
-        } else {
-            setImportError('You can post maximum 10 files!');
+            });
         }
     }
+
     const toBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -150,17 +165,18 @@ const CreatePost = () => {
         return filePaths.map((base64File) => ({selectedFile: base64File}));
     }
     const handleCreate = async (e) => {
+
         let mUsers = post?.mentions?.map((ele) => {
             let user = users.find((item) => ele.trim() === item?.userName)
             return {id: user?._id, name: user?.userName};
         });
-        let formData = new FormData();
-        Array.from(post?.imageUrl).forEach(file => {
-            formData.append('postImage', file);
-        });
+        // let formData = new FormData();
+        // Array.from(post?.imageUrl).forEach(file => {
+        //     formData.append('postImage', file);
+        // });
         let postData = {...post, mentions: mUsers, createdBy: userToken?._id, device: device}
-        formData.append('post', JSON.stringify(postData));
-        dispatch(createPost({formData : formData,type: pathName === '/edit-post' ? 'update':'create'}));
+        // formData.append('post', JSON.stringify(postData));
+        dispatch(createPost({...postData,type: pathName === '/edit-post' ? 'update':'create'}));
     };
     const handleDeleteImages = (file, id) => {
         files.splice(id, 1);
@@ -244,8 +260,10 @@ const CreatePost = () => {
                             <div className=' mt-2 w-full justify-between  relative'>
                                 {files?.length > 0 ?<div id="gallery" className="flex -m-1 relative">
                                 <div className='grid grid-cols-3 gap-2 mt-2'>{files?.length ? files.map((file, id) =>
-                                        <div className="flex justify-between relative mb-2 border border-black border-2 rounded-t-lg"> <img className="rounded-t-lg w-40 h-40" src={file?.selectedFile}
-                                            height='150' width='150' alt='PostImage'/><GrFormClose size={28} className="absolute top-[8px] right-[16px] bg-white rounded-full cursor-pointer hover:bg-gray-200"
+
+                                        <div className="flex justify-between relative mb-2 border border-black border-2 rounded-t-lg"> <img className="rounded-t-lg w-40 h-40" src={file}
+                                            height='150' width='150' alt='PostImage'/>
+                                            {console.log("------------------------------", file)}<GrFormClose size={28} className="absolute top-[8px] right-[16px] bg-white rounded-full cursor-pointer hover:bg-gray-200"
                                     onClick={() => handleDeleteImages(file, id)}/></div>) :
                                     ''}</div>
                                 </div>:<>
