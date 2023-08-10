@@ -374,7 +374,8 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
                                         if (file.type === 'video') {
                                             return <video src={`${url}${file.url}`} autoPlay controls={true} key={index}/>
                                         } else {
-                                            return <img src={`${url}${file.url}`} alt='post' key={index}
+                                            // return <img src={`${url}${file.url}`} alt='post' key={index}
+                                            return <img src={file} alt='post' key={index}
                                                         className="md:h-[400px] h-[300px] w-full py-2 object-contain"/>
                                         }
                                     }) :
