@@ -34,7 +34,7 @@ const ProfileViewedPeople = () =>{
                                                     <div
                                                         className="bg-white justify-between">
                                                         <div className={`flex items-center justify-between px-4 py-2  gap-2 lg:gap-1 ${index !== profileViewers.length - 1? 'border-b-[1px]':''}`}>
-                                                            <div className='flex cursor-pointer' onClick={()=> navigate(`/profile/${ele?.author_info[0]?._id}`)}>
+                                                            <div className='flex cursor-pointer' data-testid={`profile${index}`} onClick={()=> navigate(`/profile/${ele?.author_info[0]?._id}`)}>
                                                                 <img className="w-12 h-12 rounded-full object-cover mr-4 "
                                                                      src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url :`${url}${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"}
                                                                      alt="avatar"/>
@@ -42,7 +42,7 @@ const ProfileViewedPeople = () =>{
                                                                     <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">{ele?.author_info[0]?.name}</h2>
                                                                 </div>
                                                             </div>
-                                                            <div className="flex items-center text-2xl cursor-pointer" onClick={(e)=> handleManageRequest(e,status,ele?.author_info[0],dispatch,requests)}>
+                                                            <div className="flex items-center text-2xl cursor-pointer" data-testid={`requests${index}`} onClick={(e)=> handleManageRequest(e,status,ele?.author_info[0],dispatch,requests)}>
                                                                 {getIcon(status)}
                                                             </div>
                                                         </div>

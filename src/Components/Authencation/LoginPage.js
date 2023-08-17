@@ -120,7 +120,7 @@ const Login = () => {
                                             <label className="block text-gray-700 text-sm font-bold mb-2">{t("Email Address")}</label>
                                             <input
                                                    className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                                   id="email" type="text" placeholder={t("Email")} name={"email"}
+                                                   id="email" type="text" placeholder={t("Email")} name={"email"} data-testid="email"
                                                    value={email}
                                                    onChange={(e) => handleOnChange(e)}
                                             />
@@ -129,7 +129,7 @@ const Login = () => {
                                             <div className="flex justify-between">
                                                 <label className="block text-gray-700 text-sm font-bold mb-2">{t("Password")}</label>
                                             </div>
-                                            <input id="password" type="password" placeholder={t("Password")}
+                                            <input id="password" type="password" placeholder={t("Password")} data-testid="password"
                                                    className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
                                                    name={"password"}
                                                    value={password}
@@ -147,7 +147,7 @@ const Login = () => {
                                     </div>
                                     <div className="mt-8 md:px-32">
                                         <button
-
+                                            data-testid='login'
                                             className=" text-white font-bold py-2 px-4 w-full rounded hover:bg-green-900 bg-green-500"
                                             type="button" onClick={handleOnSubmit} disabled={loading}>
                                             {loading ?
@@ -155,13 +155,13 @@ const Login = () => {
                                         </button>
                                         <button
                                             className=" text-white font-bold py-2 mt-5 px-4 w-full rounded hover:bg-red-900 bg-red-500 "
-                                            type="button" onClick={()=>navigate('/sign-up')} >
+                                            type="button" onClick={()=>navigate('/sign-up')} data-testid="sign-up" >
                                             {t("Create new account")}
                                         </button>
 
                                         <div className="mt-4 flex items-center justify-between">
                                             <span className="border-b w-1/5 md:w-1/4"/>
-                                            <Link to="/sign-up" className="text-xs text-gray-500 uppercase">{t("or sign up")}</Link>
+                                            <span className="text-xs text-gray-500 uppercase">{t("or sign up")}</span>
                                             <span className="border-b w-1/5 md:w-1/4"/>
                                         </div>
                                         <LoginSocialGoogle
