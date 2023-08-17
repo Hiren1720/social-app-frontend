@@ -71,14 +71,8 @@ const Home = () => {
         dispatch(setRequest());
     }
     const handleOnShare = () => {
-        // let formData = new FormData();
         const device = getDeviceName()
-        // Array.from(thought?.imageUrl).forEach(file => {
-        //     formData.append('postImage', file);
-        // });
-        console.log("create post", device)
         let postData = {...thought, createdBy: userToken?._id, device: device, type: 'create'}
-        // formData.append('post', JSON.stringify(postData));
         dispatch(createPost(postData));
     }
     const handleRequest = (e, item, status) => {
