@@ -40,6 +40,8 @@ const Registration = () => {
     },[userResult]);
 
     const handleChange = (e) => {
+        const cloudName = 'socialposts';
+        const uploadPreset = 'userprofile';
         let {name, value, checked, files} = e.target;
         if (name === 'hobby') {
             if (checked && !user.hobby.includes(value)) {
@@ -51,28 +53,45 @@ const Registration = () => {
                 dispatch(setUserData('user', {...user}))
             }
         } else if (name === 'profile') {
-            var url = URL.createObjectURL(files[0]);
-            setImage(url);
-            if (user?.profile_url) {
-                delete user.profile_url;
-                dispatch(setUserData('user', {...user, [name]: files[0]}))
-            } else {
-                dispatch(setUserData('user', {...user, [name]: files[0]}))
-            }
+            // var url = URL.createObjectURL(files[0]);
+            // setImage(url);
+            // if (user?.profile_url) {
+            //     delete user.profile_url;
+            //     dispatch(setUserData('user', {...user, [name]: files[0]}))
+            // } else {
+                // dispatch(setUserData('user', {...user, [name]: files[0]}))
+                const formData = new FormData();
+                formData.append('file', files[0]);
+                formData.append('upload_preset', uploadPreset);
+                const options = {
+                    method: 'POST',
+                    body: formData,
+                };
+                fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, options)
+                    .then(res => res.json())
+                    .then(res => {
+                        setImage(res.secure_url);
+                        dispatch(setUserData('user', {...user, profile_url: res.secure_url}))
+                    })
+                    // eslint-disable-next-line no-console
+                    .catch(err => console.log(err));
+            // }
         } else {
             dispatch(setUserData('user', {...user, [name]: value}))
         }
     };
     const handleCreate = (e) => {
-        let formData = new FormData();
-        formData.append('profile', user?.profile || {});
-        formData.append('user', JSON.stringify(user));
-        if (pathName === '/edit-profile') {
-            dispatch(registerUser({formData:formData, type:'update'}));
-        } else {
-            dispatch(registerUser({formData:formData, type:'register'}));
-        }
+        // let formData = new FormData();
+        // formData.append('profile', user?.profile || {});
+        // formData.append('user', JSON.stringify(user));
+        // if (pathName === '/edit-profile') {
+        //     dispatch(registerUser({formData:formData, type:'update'}));
+        // } else {
+        //     dispatch(registerUser({...user, type:'register'}));
+        // }
+        dispatch(registerUser({...user,type: pathName === '/edit-profile' ? 'update':'register'}));
         setImage('')
+
     }
 
     let {name, email, contact, gender, hobby, password, userName, birthDate, state,bio} = user;
@@ -123,7 +142,7 @@ const Registration = () => {
                                         </div>
                                         <div className="relative top-[77%] right-[65px]">
                                             <FaCamera size={40} className="text-gray-400"/>
-                                            <input className="absolute top-[0px] opacity-0" id="grid-profile"
+                                            <input className="absolute top-[0px] opacity-0 w-10" id="grid-profile"
                                                    name='profile' type="file" onChange={(e) => handleChange(e)}
                                                    placeholder={t("Profile")} accept="image/*"/>
                                         </div>
@@ -138,7 +157,7 @@ const Registration = () => {
                                             <label
                                                 className="block mb-2 text-sm   text-gray-600 font-bold dark:text-gray-200">{t("Name")}</label>
                                             <input id="grid-first-name" type="text" name='name' value={name}
-                                                   onChange={(e) => handleChange(e)} placeholder={t("Name")}
+                                                   onChange={(e) => handleChange(e)} placeholder={t("Name")} data-testid='name'
                                                    className="block w-full px-5 py-3 mt-2 placeholder-gray-400 bg-white border border-gray-200
                            shadow-inner  shadow-gray-400 rounded-full font-bold
                            dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400
@@ -148,7 +167,7 @@ const Registration = () => {
                                         <div>
                                             <label
                                                 className="block mb-2 text-sm text-gray-600 font-bold dark:text-gray-200">{t("User name")}</label>
-                                            <input id="grid-user-name" type="text" name='userName' value={userName}
+                                            <input id="grid-user-name" type="text" name='userName' value={userName} data-testid='user-name'
                                                    onChange={(e) => handleChange(e)} placeholder={t("User Name")}
                                                    className="block w-full px-5 py-3 mt-2 font-bold placeholder-gray-400 bg-white border border-gray-200 shadow-inner shadow-gray-400 rounded-full dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"/>
                                         </div>
@@ -157,7 +176,7 @@ const Registration = () => {
                                             <div>
                                                 <label
                                                     className="block mb-2 text-sm text-gray-600  font-bold dark:text-gray-200">{t("Email address")}</label>
-                                                <input id="grid-email" name='email' value={email}
+                                                <input id="grid-email" name='email' value={email} data-testid='email'
                                                        onChange={(e) => handleChange(e)} type="text"
                                                        placeholder={t("Email")}
                                                        className="block w-full px-5 py-3 mt-2 font-bold placeholder-gray-400 bg-white border border-gray-200  shadow-inner  shadow-gray-400 rounded-full dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"/>
@@ -166,7 +185,7 @@ const Registration = () => {
                                             <div>
                                                 <label
                                                     className="block mb-2 text-sm text-gray-600  font-bold dark:text-gray-200">{t("Password")}</label>
-                                                <input id="grid-password" name='password' value={password}
+                                                <input id="grid-password" name='password' value={password} data-testid='password'
                                                        onChange={(e) => handleChange(e)} type="password"
                                                        placeholder={t("Password")}
                                                        className="block w-full px-5 py-3 mt-2 font-bold placeholder-gray-400 bg-white border border-gray-200  shadow-inner  shadow-gray-400 rounded-full dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"/>
@@ -175,14 +194,14 @@ const Registration = () => {
                                         <div>
                                             <label
                                                 className="block mb-2 text-sm text-gray-600  font-bold dark:text-gray-200">{t("Phone number")}</label>
-                                            <input id="grid-password" name='contact' type="number" value={contact}
+                                            <input id="grid-password" name='contact' type="number" value={contact} data-testid='contact'
                                                    onChange={(e) => handleChange(e)} placeholder={t("Phone number")}
                                                    className="block w-full px-5 py-3 mt-2 font-bold placeholder-gray-400 bg-white border border-gray-200  shadow-inner  shadow-gray-400 rounded-full dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"/>
                                         </div>
                                         <div>
                                             <label
                                                 className="block mb-2 text-sm text-gray-600  font-bold dark:text-gray-200">{t("Birth Date")}</label>
-                                            <input id="grid-date" name='birthDate' type="datetime-local"
+                                            <input id="grid-date" name='birthDate' type="datetime-local" data-testid='birth-date'
                                                    value={birthDate} onChange={(e) => handleChange(e)}
                                                    placeholder={t("Birth Date")}
                                                    className="block w-full px-5 py-3 mt-2 font-bold placeholder-gray-400 bg-white border border-gray-200  shadow-inner  shadow-gray-400 rounded-full dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"/>
@@ -195,14 +214,14 @@ const Registration = () => {
                                                 <div className="flex items-center pl-4 ">
                                                     <input id="bordered-radio-1" type="radio" value="Male"
                                                            placeholder='Male' name="gender" checked={gender === 'Male'}
-                                                           onChange={(e) => handleChange(e)}
+                                                           onChange={(e) => handleChange(e)} data-testid='gender-male'
                                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                                                     <label htmlFor="bordered-radio-1"
                                                            className="py-4 ml-2 w-full text-sm  font-bold text-gray-900 dark:text-gray-300">{t("Male")}</label>
                                                 </div>
                                                 <div className="flex items-center pl-4 ">
                                                     <input id="bordered-radio-2" type="radio" value="Female"
-                                                           placeholder='Female' name="gender"
+                                                           placeholder='Female' name="gender"  data-testid='gender-female'
                                                            checked={gender === 'Female'}
                                                            onChange={(e) => handleChange(e)}
                                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
@@ -224,7 +243,7 @@ const Registration = () => {
                                                 className="block mb-2 text-sm text-gray-600  font-bold dark:text-gray-200">{t("State")}</label>
                                             <select name='state' value={state} onChange={(e) => handleChange(e)}
                                                     className=" block w-full px-5 py-3 mt-2 font-bold text-gray-700 placeholder-gray-400 bg-white border border-gray-200  shadow-inner  shadow-gray-400 rounded-full dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
-                                                    id="grid-state" placeholder={t("Select State")}>
+                                                    id="grid-state" placeholder={t("Select State")} data-testid='select-state'>
                                                 <option value=''>{t("Select State")}</option>
                                                 <option value='Gujarat'>{t("Gujarat")}</option>
                                                 <option value='Maharashtra'>{t("Maharashtra")}</option>

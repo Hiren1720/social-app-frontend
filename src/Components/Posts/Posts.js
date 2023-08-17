@@ -24,6 +24,7 @@ const BlogPage = ({type,id}) => {
     let userToken = getLocalStorageData('user');
     const [blog,setBlog] = useState([]);
     const posts = useSelector(state => state.postData.posts);
+    const postResult = useSelector(state => state.postData.postResult);
     const loading = useSelector(state => state.postData.loading);
     const [modal, setModal] = useState({open: false, data: null, title: null});
     const [page, setPage] = useState(0);
@@ -31,7 +32,6 @@ const BlogPage = ({type,id}) => {
     const total = useSelector(state => state.postData.total);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
     function closeModal() {
         setModal({open: false, data: null, title: null});
     }
@@ -51,7 +51,7 @@ const BlogPage = ({type,id}) => {
         setBlog([]);
         receivePosts(page !== 0);
         // eslint-disable-next-line
-    }, [id, type]);
+    }, [id, type,postResult]);
     const receivePosts =(isFirstPage) => {
         if (id) {
             dispatch(getPost({id:id,type,page:isFirstPage ?0:page,pageSize}))
@@ -77,7 +77,7 @@ const BlogPage = ({type,id}) => {
     return (
         <>
             {loading ? <Loader/> :
-                <div className='relative lg:overflow-y-scroll lg:h-[80vh]'>
+                <div className='relative overflow-y-scroll h-[80vh]'>
                     {blog?.length > 0 ? <InfiniteScroll
                         dataLength={blog?.length}
                         next={receivePosts}

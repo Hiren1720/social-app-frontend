@@ -10,12 +10,19 @@ export const httpAuth = async (request) => {
         body:JSON.stringify(request.body)
     }).then((res)=> res.json())
 }
+// export const httpFormDataAuth = async (request) => {
+//     return await fetch(`${API_END_POINT}${request.url}`,{
+//         method:'POST',
+//         body:request.body
+//     }).then((res)=> res.json())
+// }
+
 export const httpFormDataAuth = async (request) => {
     return await fetch(`${API_END_POINT}${request.url}`,{
         method:'POST',
-        body:request.body
+        body:JSON.stringify(request.body)
     }).then((res)=> res.json())
-}
+};
 
 export const httpDelete = async (request) => {
     let token = tokenUtil.getLocalStorageData('accessToken');

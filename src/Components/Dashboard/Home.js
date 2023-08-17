@@ -16,7 +16,7 @@ import {HiOutlineEmojiHappy} from "react-icons/hi";
 import Picker from 'emoji-picker-react';
 const url = process.env.REACT_APP_API_URL;
 const Home = () => {
-    const [thought, setThought] = useState({content: '', imageUrl: ''});
+    const [thought, setThought] = useState({content: '', imageUrl: []});
     const dispatch = useDispatch();
     const userData = useSelector(state => state.userData.loggedInUser);
     const navigate = useNavigate();
@@ -39,7 +39,8 @@ const Home = () => {
     useEffect(() => {
         if (postResult?.success) {
             dispatch(resetPostResult());
-            setThought('');
+            setThought({content: "", imageUrl: []});
+            setFiles([]);
         }
         // eslint-disable-next-line
     }, [postResult])
@@ -70,16 +71,15 @@ const Home = () => {
         dispatch(setRequest());
     }
     const handleOnShare = () => {
-        let formData = new FormData();
+        // let formData = new FormData();
         const device = getDeviceName()
-        Array.from(thought?.imageUrl).forEach(file => {
-            formData.append('postImage', file);
-        });
-        let postData = {content: thought?.content, imageUrl: [thought?.imageUrl], createdBy: userToken?._id, device: device}
-        formData.append('post', JSON.stringify(postData));
-        dispatch(createPost({formData: formData, type: 'create'}))
-        setThought({content: "", imageUrl: ''});
-        setFiles([]);
+        // Array.from(thought?.imageUrl).forEach(file => {
+        //     formData.append('postImage', file);
+        // });
+        console.log("create post", device)
+        let postData = {...thought, createdBy: userToken?._id, device: device, type: 'create'}
+        // formData.append('post', JSON.stringify(postData));
+        dispatch(createPost(postData));
     }
     const handleRequest = (e, item, status) => {
         if (status === 'Follow') {
@@ -95,23 +95,54 @@ const Home = () => {
         navigate(`/profile/${data?._id}`);
     };
     const handleOnImportFile = async (fileData) => {
+        // if (fileData.length <= 10 || thought.imageUrl.length < 10) {
+        //     Array.from(fileData).forEach((ele, id) => {
+        //         let extension = ele.name.split('.').pop().replace(' ', '');
+        //         if (extension !== 'jpg' && extension !== 'jpeg' && extension !== 'png' && extension !== 'mp4') {
+        //             setImportError('Post Only JPEG,JPG & PNG File');
+        //         } else {
+        //             setImportError(null);
+        //         }
+        //         setThought({...thought, imageUrl: [thought.imageUrl, ...fileData]});
+        //     })
+        //     let file = await tobase64Handler(Array.from(fileData));
+        //     setFiles([...files, ...file]);
+        // }
+        const cloudName = 'socialposts';
+        const uploadPreset = 'postimagevideo';
+        let imageFiles = [];
+        const formData = new FormData();
         if (fileData.length <= 10 || thought.imageUrl.length < 10) {
             Array.from(fileData).forEach((ele, id) => {
                 let extension = ele.name.split('.').pop().replace(' ', '');
                 if (extension !== 'jpg' && extension !== 'jpeg' && extension !== 'png' && extension !== 'mp4') {
                     setImportError('Post Only JPEG,JPG & PNG File');
                 } else {
-                    setImportError(null);
+                    formData.append('file', ele);// ele
+                    formData.append('upload_preset', uploadPreset);
+                    const options = {
+                        method: 'POST',
+                        body: formData
+                    };
+                    fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, options)
+                        .then(res => res.json())
+                        .then(res => {
+                            imageFiles.push(res.secure_url);
+                            setFiles([...files,...imageFiles]);
+                            console.log('thought?.imageUrl',thought?.imageUrl,imageFiles)
+                            setThought({...thought, imageUrl: [...thought?.imageUrl, ...imageFiles]});
+                            setImportError(null);
+                        })
+                        .catch(err => console.log(err));
                 }
-                setThought({...thought, imageUrl: [thought.imageUrl, ...fileData]});
-            })
-            let file = await tobase64Handler(Array.from(fileData));
-            setFiles([...files, ...file]);
-        } else {
+            });
+        }
+        else {
             setImportError('You can post maximum 10 files!');
         }
 
     }
+
     return(
         <>
             {loading ? <Loader/> :

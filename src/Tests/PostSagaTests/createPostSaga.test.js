@@ -14,7 +14,7 @@ describe('create & update post saga', () => {
     it('should call for httpPost and return success for create post', () => {
         const payload = {type:'create',formData: new FormData()};
         const login = createPost({payload:payload});
-        let request = {url:`/post/${payload?.type}`,body:payload?.formData,isFormData:true}
+        let request = {url:`/post/${payload?.type}`,body:payload}
         expect(login.next().value).toEqual(
             put({
                 type: "SET_POST_LOADING",
@@ -35,7 +35,7 @@ describe('create & update post saga', () => {
     it('should call for httpPost and return success for update post', () => {
         const payload = {type:'update',formData: new FormData()};
         const login = createPost({payload:payload});
-        let request = {url:`/post/${payload?.type}`,body:payload?.formData,isFormData:true}
+        let request = {url:`/post/${payload?.type}`,body:payload}
         expect(login.next().value).toEqual(
             put({
                 type: "SET_POST_LOADING",
@@ -56,7 +56,7 @@ describe('create & update post saga', () => {
     it('should call for httpPost and throw error for invalid request', () => {
         const payload = {type:'create',formData:new FormData()}
         const login = createPost({payload:payload});
-        let request = {url:`/post/${payload?.type}`,body:payload?.formData,isFormData:true}
+        let request = {url:`/post/${payload?.type}`,body:payload}
         expect(login.next().value).toEqual(
             put({
                 type: "SET_POST_LOADING",

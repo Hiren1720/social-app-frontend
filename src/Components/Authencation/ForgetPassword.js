@@ -64,7 +64,7 @@ const ForgetPassword = () => {
                                                 Address</label>
                                             <input
                                                 className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
-                                                id="email" type="text" placeholder="Email" name={"email"}
+                                                id="email" type="text" placeholder="Email" name={"email"} data-testid='email'
                                                 onChange={(e)=>dispatch(setUserData('forgetPassword',{email:e.target.value}))}
                                             />
                                         </div>}
@@ -74,7 +74,7 @@ const ForgetPassword = () => {
                                     <div className="mt-8 md:px-32">
                                         {!verifyForgetPasswordUser?.success  && <button
                                             className=" text-white font-bold py-2 px-4 w-full rounded hover:bg-green-900 bg-green-500"
-                                            type="button" onClick={()=>handleOnSubmit()}>
+                                            type="button" onClick={()=>handleOnSubmit()} data-testid='submit'>
                                             Submit
                                         </button>}
                                         <button
@@ -82,7 +82,7 @@ const ForgetPassword = () => {
                                             onClick={()=>{
                                                 dispatch(setUserData('verifyForgetPasswordUser', null));
                                                 navigate('/login')
-                                            }}
+                                            }} data-testid='cancel'
                                             type="button">
                                             Cancel
                                         </button>

@@ -7,7 +7,7 @@ import {
 import * as types from '../../Actions/Types'
 
 import {httpGet} from "../../Helper/api";
-function switchUrl({type,id,page,pageSize}) {
+export function switchUrl({type,id,page,pageSize}) {
 
     switch(type){
         case 'getPost':

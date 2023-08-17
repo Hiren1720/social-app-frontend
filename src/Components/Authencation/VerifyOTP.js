@@ -127,6 +127,7 @@ const VerifyOTP = () => {
                                             <div className="mt-4 w-full">
                                                 <label className="block text-gray-700 text-sm font-bold mb-2">{t("Enter OTP")}</label>
                                                 <OTPInput
+                                                    data-testid="otp-field"
                                                     onChange={handleOnChange}
                                                     value={otp}
                                                     numInputs={6}
@@ -142,13 +143,13 @@ const VerifyOTP = () => {
                                             <button id='verify'
                                                 className={`text-white font-bold py-2 px-4 w-full rounded  ${loading ? 'bg-gray-200' : 'hover:bg-green-900 bg-green-500'}`}
                                                 type="button" onClick={(e) => handleOnSubmit(e)}
-                                                disabled={loading}>
+                                                disabled={loading} data-testid="verify-otp">
                                                 {loading ? <ButtonLoader/> : t("Verify")}
                                             </button>
 
                                             <button
                                                 className={`text-white font-bold py-2 mt-5 px-4 w-full rounded  ${resendDisable ? 'bg-gray-200' : 'hover:bg-red-900 bg-red-500'}`}
-                                                onClick={() => handleOnResend()}
+                                                onClick={() => handleOnResend()} data-testid="resend-otp"
                                                 disabled={resendDisable}>{t("Resend OTP")}{" "}{timer > 0 ? `(${timer})`:''}
                                             </button>
 

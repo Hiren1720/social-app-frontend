@@ -140,8 +140,8 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
         setModal({open: true, data: item, title: 'Share'})
     };
     const handleDeletePost = () => {
-        setModal({open: false, data: null, title: null})
-        dispatch(deletePost({_id: modal?.data?._id}))
+        setModal({open: false, data: null, title: null});
+        dispatch(deletePost({_id: modal?.data?._id}));
         setOpen({show: false, postId: ''})
     };
     const handleUpdatePost = (data) => {
@@ -357,7 +357,7 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
                             <div className="flex items-center space-x-8">
                                 <div className="text-xs text-neutral-500 flex items-center">
                                     <BsDot/> {handleDate(item?.createdAt)}</div>
-                                {id && userData._id === id && type === 'Post' &&
+                                {id && userData._id === id && type === 'getPostsByUserId' &&
                                 <BsThreeDotsVertical className="pointer cursor-pointer"
                                                      onClick={() => setOpen({
                                                          show: !open?.show,
@@ -371,15 +371,16 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
                                 className="text-sm text-neutral-600">{item?.content}</div>
                             <Slider {...settings} >
                                 {Array.isArray(item?.imageUrl) ? item?.imageUrl.map((file, index) => {
-                                        if (file.type === 'video') {
-                                            return <video src={`${url}${file.url}`} autoPlay controls={true} key={index}/>
+                                        const fileExtension = file?.split('.').pop().toLowerCase();
+                                        if (fileExtension === 'mp4' || fileExtension === 'webm' || fileExtension === 'ogg') {
+                                            return <video src={file} autoPlay controls={true} key={index} />;
                                         } else {
                                             // return <img src={`${url}${file.url}`} alt='post' key={index}
                                             return <img src={file} alt='post' key={index}
                                                         className="md:h-[400px] h-[300px] w-full py-2 object-contain"/>
                                         }
                                     }) :
-                                    <img src={`${url}${item?.imageUrl}`} alt='post'
+                                    <img src={item?.imageUrl} alt='post'
                                          className="md:h-[400px] h-[300px] w-full object-contain py-2"/>}
                             </Slider>
                         </div>

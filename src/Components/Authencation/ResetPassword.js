@@ -65,7 +65,7 @@ const ResetPassword = () => {
                                                 className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
                                                 id="new password" type={showPassword ? "text" : "password"}
                                                 placeholder="password" name={"password"}
-                                                onChange={(e) => handleOnChange(e)}
+                                                onChange={(e) => handleOnChange(e)} data-testid='new-password'
                                             />
                                         </div>
 
@@ -75,7 +75,7 @@ const ResetPassword = () => {
                                             <input
                                                 className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
                                                 id="confirm password" type={showPassword ? "text" : "password"}
-                                                placeholder="confirm password" name={"confirmPassword"}
+                                                placeholder="confirm password" name={"confirmPassword"} data-testid='confirm-password'
                                                 onChange={(e) => setPasswordValue({
                                                     ...passwordValue,
                                                     confirmPassword: e.target.value
@@ -97,13 +97,13 @@ const ResetPassword = () => {
                                     <div className="mt-8 md:px-32">
                                         <button
                                             className=" text-white font-bold py-2 px-4 w-full rounded hover:bg-green-900 bg-green-500"
-                                            onClick={() => handlePassword()}
+                                            onClick={() => handlePassword()} data-testid='submit'
                                             type="button">
                                             Submit
                                         </button>
                                         <button
                                             className=" text-white font-bold py-2 mt-5 px-4 w-full rounded hover:bg-red-900 bg-red-500 "
-                                            onClick={() => navigate('/login')}
+                                            onClick={() => navigate('/login')} data-testid='cancel'
                                             type="button">
                                             Cancel
                                         </button>

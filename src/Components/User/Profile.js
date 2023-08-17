@@ -34,6 +34,7 @@ const Profile = () => {
     const requests = useSelector(state => state.requestData.requests);
     const requestResult = useSelector(state => state.requestData.requestResult);
     const savedPostResult = useSelector(state => state.postData.savedPostResult);
+    const postResult = useSelector(state => state.postData.postResult);
     const [active, setActive] = useState('Posts');
     const tabs = [{tab: 'Posts', length: user?.posts?.length}, {
         tab: 'Followers', length: user?.followers?.length},
@@ -64,11 +65,11 @@ const Profile = () => {
         // eslint-disable-next-line
     }, [id]);
     useEffect(()=> {
-        if(savedPostResult){
+        if(savedPostResult|| postResult){
             dispatch(getProfile({id: id,isLoading:true}));
         }
         // eslint-disable-next-line
-    },[savedPostResult]);
+    },[savedPostResult,postResult]);
     const renderUserDetails = () => {
         switch (active) {
             case 'Followings':

@@ -36,7 +36,8 @@ const CreatePost = () => {
             if (state.imageUrl !== "") {
                 let file = [];
                 state?.imageUrl?.forEach((img) => {
-                    file.push({selectedFile: `${url}/${img.url}`})
+                    // file.push({selectedFile: `${url}/${img.url}`})
+                    file.push(img)
                 });
                 setFiles([...file])
             }
@@ -134,9 +135,10 @@ const CreatePost = () => {
                         method: 'POST',
                         body: formData
                     };
-                    fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, options)
+                    fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, options)
                         .then(res => res.json())
                         .then(res => {
+                            console.log("res", res)
                             imageFiles.push(res.secure_url);
                             setPost({...post, imageUrl: [...post.imageUrl, ...imageFiles]});
                             setFiles([...files,...imageFiles]);
@@ -148,22 +150,6 @@ const CreatePost = () => {
         }
     }
 
-    const toBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
-    };
-    const tobase64Handler = async (files) => {
-        const filePathsPromises = [];
-        files.forEach(file => {
-            filePathsPromises.push(toBase64(file));
-        });
-        const filePaths = await Promise.all(filePathsPromises);
-        return filePaths.map((base64File) => ({selectedFile: base64File}));
-    }
     const handleCreate = async (e) => {
 
         let mUsers = post?.mentions?.map((ele) => {
@@ -178,10 +164,46 @@ const CreatePost = () => {
         // formData.append('post', JSON.stringify(postData));
         dispatch(createPost({...postData,type: pathName === '/edit-post' ? 'update':'create'}));
     };
+
+    const deleteImage = async (publicId,signature) => {
+        const cloudName = 'socialposts';
+        const apiKey= '169658132968456';
+        const apiSecret= 'ay01j7l33tC4gd_K8-5AK30agDk';
+        const deleteOptions = {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
+                'Access-Control-Allow-Origin' : 'http://localhost:3000/'
+
+            },
+            body: JSON.stringify({ public_id: publicId,signature:signature }),
+        };
+
+        try {
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/resource/image/destroy`, deleteOptions);
+            const result = await response.json();
+            console.log('Deleted:', result);
+
+            // Handle deletion success, e.g., update your state
+        } catch (error) {
+            console.error('Delete Error:', error);
+            // Handle deletion error
+        }
+    };
+
     const handleDeleteImages = (file, id) => {
         files.splice(id, 1);
         post.imageUrl.splice(id, 1);
         setFiles([...files]);
+        console.log("files", file)
+        const parts = file.split('/upload/'); // Split the URL by '/upload/'
+        if (parts.length > 1) {
+            const valueAfterUpload = parts[1].split('/')[0]; // Extract the value after /upload/
+            console.log('Value after /upload/:', valueAfterUpload);
+            deleteImage('IMG20200115175847_jlqdbm','39a815b19ce3b6cd82b743753bc407ffb7defb23')
+        } else {
+            console.error('Value after /upload/ not found in the URL');
+        }
         setPost({...post, imageUrl: post.imageUrl})
 
     }
@@ -198,7 +220,7 @@ const CreatePost = () => {
                             </label>
                             <input
                                 className="appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                                id="grid-first-name" type="text" name='title' value={title}
+                                id="grid-first-name" type="text" name='title' value={title} data-testid='title'
                                 onChange={(e) => handleChange(e)} placeholder="Title"/>
                         </div>
                     </div>
@@ -210,7 +232,7 @@ const CreatePost = () => {
                             </label>
                             <textarea
                                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                name='content' value={content} onChange={(e) => handleChange(e)}/>
+                                name='content' value={content} onChange={(e) => handleChange(e)} data-testid='content'/>
                         </div>
                     </div>
                     <div className="flex flex-wrap -mx-3 mb-6">
@@ -224,7 +246,7 @@ const CreatePost = () => {
                                 onDrop={(e) => {
                                     handleOnImportFile(e.dataTransfer.files);
                                     e.preventDefault();
-                                }}
+                                }} data-testid='dragAnDrop'
                                 onDragOver={e => e.preventDefault()}
                             >
                                 <div className='flex flex-col justify-center gap-[6px] h-full '>
@@ -238,7 +260,7 @@ const CreatePost = () => {
                                             onClick={() => {
                                                 document.getElementById(`fileInput`).click();
                                             }}>
-                                            <input type='file' id={`fileInput`} className='hidden'
+                                            <input type='file' id={`fileInput`} className='hidden' data-testid='fileInput'
                                                    onChange={(e) => {
                                                        handleOnImportFile(e.target.files);
                                                        e.preventDefault();
@@ -258,31 +280,60 @@ const CreatePost = () => {
                             </div> : ''}
 
                             <div className=' mt-2 w-full justify-between  relative'>
-                                {files?.length > 0 ?<div id="gallery" className="flex -m-1 relative">
-                                <div className='grid grid-cols-3 gap-2 mt-2'>{files?.length ? files.map((file, id) =>
-
-                                        <div className="flex justify-between relative mb-2 border border-black border-2 rounded-t-lg"> <img className="rounded-t-lg w-40 h-40" src={file}
-                                            height='150' width='150' alt='PostImage'/>
-                                            {console.log("------------------------------", file)}<GrFormClose size={28} className="absolute top-[8px] right-[16px] bg-white rounded-full cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleDeleteImages(file, id)}/></div>) :
-                                    ''}</div>
-                                </div>:<>
-                                    <div id="gallery" className="flex flex-1 flex-wrap -m-1 mt-2">
-                                        <div id="empty"
-                                            className="h-full w-full text-center flex flex-col items-center justify-center items-center">
-                                            <img className="mx-auto w-32"
-                                                 src="https://user-images.githubusercontent.com/507615/54591670-ac0a0180-4a65-11e9-846c-e55ffce0fe7b.png"
-                                                 alt="no data"/>
-                                            <span className="text-small text-gray-500">No files selected</span>
+                                <div id="gallery" className="flex -m-1 relative" data-testid='gallery'>
+                                    {files?.length > 0 ? (
+                                        <div className="grid grid-cols-3 gap-2 mt-2">
+                                            {files.map((file, id) => {
+                                                const fileExtension = file?.split('.').pop().toLowerCase();
+                                                const isVideo = ['mp4', 'webm', 'ogg'].includes(fileExtension);
+                                                return (
+                                                    <div
+                                                        className="flex justify-between relative mb-2 border border-black border-2 rounded-t-lg"
+                                                        key={id}
+                                                    >
+                                                        {isVideo ? (
+                                                            <video src={file} autoPlay controls={true}/>
+                                                        ) : (
+                                                            <img
+                                                                className="rounded-t-lg w-40 h-40"
+                                                                src={file}
+                                                                height="150"
+                                                                width="150"
+                                                                alt="PostImage"
+                                                            />
+                                                        )}
+                                                        <GrFormClose
+                                                            size={28}
+                                                            className="absolute top-[8px] right-[16px] bg-white rounded-full cursor-pointer hover:bg-gray-200"
+                                                            onClick={() => handleDeleteImages(file, id)}
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
-                                    </div></>}
+                                    ) : (
+                                        <div id="gallery" className="flex flex-1 flex-wrap -m-1 mt-2">
+                                            <div
+                                                id="empty"
+                                                className="h-full w-full text-center flex flex-col items-center justify-center items-center"
+                                            >
+                                                <img
+                                                    className="mx-auto w-32"
+                                                    src="https://user-images.githubusercontent.com/507615/54591670-ac0a0180-4a65-11e9-846c-e55ffce0fe7b.png"
+                                                    alt="no data"
+                                                />
+                                                <span className="text-small text-gray-500">No files selected</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
 
                                 {files?.length > 0 && <div className='ml-1 cursor-pointer mt-2 flex justify-end'>
                                     <label onClick={() => {
-                                            setFiles([]);
-                                            setPost({...post, imageUrl: []})
-                                        }}
-                                       className='flex cursor-pointer items-center bg-gray-800 h-[32px] justify-center rounded-[4px] text-[#FCFCFC] text-[14px] w-[100px]'> Cancel</label>
+                                        setFiles([]);
+                                        setPost({...post, imageUrl: []})
+                                    }}
+                                           className='flex cursor-pointer items-center bg-gray-800 h-[32px] justify-center rounded-[4px] text-[#FCFCFC] text-[14px] w-[100px]'> Cancel</label>
                                 </div>}
                             </div>
                         </div>
@@ -293,7 +344,7 @@ const CreatePost = () => {
                                    htmlFor="grid-password">
                                 Mentions
                             </label>
-                            <MentionsInput value={mentions} onChange={(e, data, value) => {
+                            <MentionsInput value={mentions} data-testid='mention-input' onChange={(e, data, value) => {
                                 handleMentions(e, data, value)
                             }}
                                id="grid-first-name" type="text" name='mention'
@@ -351,7 +402,7 @@ const CreatePost = () => {
                     </div>
                     <div className='row flex h-[60px] md:mt-4 sm:mt-4 '>
                         <div className='w-full mr-1'>
-                            <button onClick={(e) => handleCreate(e)}
+                            <button onClick={(e) => handleCreate(e)} data-testid='create'
                                     className='hover:bg-white disabled:bg-gray-400 bg-gray-800 border disabled:border-gray-400 border-gray-800 rounded-[6px] h-[40px] w-full hover:text-gray-800 text-white disabled:text-white disabled:cursor-no-drop'
                                     disabled={loading}>
                                 {loading ?
@@ -364,7 +415,7 @@ const CreatePost = () => {
                         <div className='w-full ml-1'>
                             <button onClick={() => {
                                 navigate('/')
-                            }}
+                            }} data-testid='cancel'
                                     className='hover:bg-white bg-red-800 text-white border border-red-400 rounded-[6px] h-[40px] w-full hover:text-red-400'>Cancel
                             </button>
                         </div>
