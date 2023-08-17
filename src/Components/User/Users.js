@@ -95,6 +95,7 @@ const Users = () => {
                                 }} className=" absolute right-0 mt-6 mr-5 top-0 "><FaFilter size='20' color={'gray'}/></button>
                             </div>
                         </div>
+
                     </div>
                     <UserSlider data={users} total={totalUsers} receiveUsers={receiveUsers} title={'Users'}/>
                 </div>}
