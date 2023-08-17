@@ -57,6 +57,8 @@ const Users = () => {
     }
     const handleClearSearch = () => {
         setSearchValue('');
+        setPage(0);
+        setUsers([]);
         dispatch(getAllUsers({page:0,pageSize:pageSize,searchValue:'',clearAll:true}));
     }
 
@@ -87,7 +89,9 @@ const Users = () => {
                                 <input type="text" placeholder="Search" value={searchValue} onChange={(e) => setSearchValue(e.target.value)}
                                        className="bg-white border-2 border-gray-300 h-12 w-full px-8 rounded-lg focus:outline-none hover:cursor"
                                        name=""/>
-                                <button type="submit" onClick={() => dispatch(getAllUsers({page, pageSize: 4, searchValue}))} className=" absolute right-0 mt-6 mr-5 top-0 "><FaFilter size='20' color={'gray'}/></button>
+                                <button type="submit" onClick={() => {setUsers([]);
+                                    setPage(0);dispatch(getAllUsers({page:0, pageSize: 4, searchValue}));
+                                }} className=" absolute right-0 mt-6 mr-5 top-0 "><FaFilter size='20' color={'gray'}/></button>
                             </div>
                         </div>
                     </div>
