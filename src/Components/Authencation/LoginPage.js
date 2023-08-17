@@ -166,7 +166,7 @@ const Login = () => {
                                         </div>
                                         <LoginSocialGoogle
                                             client_id={process.env.REACT_APP_GG_APP_ID || ''}
-                                            redirect_uri={'https://social-v1-app.vercel.app'}
+                                            redirect_uri={process.env.REACT_APP_URL || ''}
                                             scope="openid profile email"
                                             discoveryDocs="claims_supported"
                                             access_type="offline"

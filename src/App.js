@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import {BrowserRouter,Routes,Route} from "react-router-dom";
-import io from 'socket.io-client';
 import Login from "./Components/Authencation/LoginPage";
 import Registration from "./Components/Authencation/Registration";
 import Header from "./Components/Layouts/Header";
@@ -25,23 +24,18 @@ import {ssEvents} from "./SSE/sse";
 function App() {
   const dispatch = useDispatch();
   let user = getLocalStorageData('user');
-  // useEffect(()=>{
-  //   if(user && user?._id){
-  //     if ('EventSource' in window) {
-  //       ssEvents.addEventListener(`comment`, function (e) {
-  //
-  //       }, false);
-  //     }
-  //     // socket.emit('joinUserId',user?._id)
-  //   }
-  //   if (!("Notification" in window)) {
-  //     toast.error("Browser does not support desktop notification");
-  //   } else {
-  //     // toast.success("Notifications are supported");
-  //     Notification.requestPermission();
-  //   }
-  //   // eslint-disable-next-line
-  // },[user]);
+  useEffect(()=>{
+    // if(user && user?._id){
+    //   channel.publish("greeting", "hello!");
+    // }
+    if (!("Notification" in window)) {
+      toast.error("Browser does not support desktop notification");
+    } else {
+      // toast.success("Notifications are supported");
+      Notification.requestPermission();
+    }
+    // eslint-disable-next-line
+  },[user]);
 
 
   useEffect(()=>{

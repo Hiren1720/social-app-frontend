@@ -23,7 +23,7 @@ import ButtonLoader from "../ButtonLoader";
 import {toast} from "react-toastify";
 import useWidthHeight from "../../Hooks/useWidthHeight";
 import {createComment} from "../../Actions/commentAction";
-import {ssEvents} from "../../SSE/sse";
+import {ssEvents,channel} from "../../SSE/sse";
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
 const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
@@ -72,10 +72,23 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
                 handleUpdateComment(data,'comments');
             }
         }, false);
-        ssEvents.addEventListener(`likes`, function (e) {
-            let data =JSON.parse(e.data)
-            handleUpdateComment({likes:data?.likes,postId:data?._id},'likes');
-        }, false);
+        channel.subscribe('liked',(data)=> {
+            console.log('data',data?.data)
+            handleUpdateComment({likes:data?.data?.likes,postId:data?.data?._id},'likes');
+            if(data?.data?.likeBy !== userData?._id && data?.data?.createdBy === userData?._id && data?.data?.isLiked){
+                let options = {
+                    body: `${data?.data?.userName} is liked your post.`,
+                    icon: require("../../assets/images/favicon.png"),
+                    dir: "ltr"
+                };
+                toast.success(`${data?.data?.userName} is liked your post.`);
+                new Notification('Social App Notification', options);
+            }
+        })
+        // ssEvents.addEventListener(`likes`, function (e) {
+        //     let data =JSON.parse(e.data)
+        //     handleUpdateComment({likes:data?.likes,postId:data?._id},'likes');
+        // }, false);
     },[]);
 
     function closeModal() {
@@ -93,7 +106,8 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
             isSinglePost: type === 'getPost',
             type
         };
-        dispatch(createLike(data))
+        channel.publish("like", data);
+        // dispatch(createLike(data))
     };
 
     const handleSavePost = (id) => {
