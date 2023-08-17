@@ -67,6 +67,7 @@ const Users = () => {
             {loading ? <Loader/> :
                 <div className='mx-48  max-[1500px]:mx-[30px]'>
                     <div className='flex flex-row mb-2 mt-0 px-3 bg-white fixed z-10 3xl:w-full 2xl:w-[85%] w-[98%]'>
+
                         {/*<div*/}
                         {/*    className="w-[300px] px-3 mb-6 md:mb-0 relative text-gray-600 focus-within:text-gray-400">*/}
                         {/*    <span className="" onClick={()=> { searchValue && handleClearSearch()}}>*/}
