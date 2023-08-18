@@ -45,8 +45,8 @@ const Profile = () => {
     useEffect(() => {
         if (requestResult && requestResult?.success) {
             dispatch(getRequests({type: 'allRequest'}));
-            dispatch(getProfile({id: id}));
-            dispatch(getProfile({id: userData?._id, isLoggedInUser: true}));
+            dispatch(getProfile({id: id,isLoading: true}));
+            dispatch(getProfile({id: userData?._id, isLoggedInUser: true,isLoading: true}));
             dispatch(setRequest());
             if (id === userData?._id) {
                 dispatch(getProfileViewers());
