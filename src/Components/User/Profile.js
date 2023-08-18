@@ -51,6 +51,7 @@ const Profile = () => {
             if (id === userData?._id) {
                 dispatch(getProfileViewers());
             }
+
         }
         // eslint-disable-next-line
     }, [requestResult]);
