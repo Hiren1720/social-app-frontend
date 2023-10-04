@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {BrowserRouter,Routes,Route} from "react-router-dom";
+import {BrowserRouter,Routes,Route,Navigate} from "react-router-dom";
 import Login from "./Components/Authencation/LoginPage";
 import Registration from "./Components/Authencation/Registration";
 import Header from "./Components/Layouts/Header";
@@ -114,12 +114,12 @@ function App() {
     <div className="w-full h-screen ">
       <BrowserRouter>
         <Routes>
-          <Route path='/login' element={<Login/>}  />
-          <Route path='/sign-up' element={<Registration/>}  />
+          <Route path='/login' element={<>{!!user ? <Navigate to="/" replace /> : <Login/> }</>}  />
+          <Route path='/sign-up' element={<>{!!user ? <Navigate to="/" replace /> : <Registration/> }</>}  />
           <Route path='/verify-otp' element={<VerifyOTP/>}  />
           <Route path='/reset-password/:id' element={<ResetPassword/>}  />
-          <Route path='/forget-password' element={<ForgetPassword/>}/>
-          <Route path='/' element={<Header/>} >
+          <Route path='/forget-password' element={<>{!!user ? <Navigate to="/" replace /> : <ForgetPassword/> }</>}/>
+          <Route path='/' element={<>{!!user ? <Header/> : <Navigate to="/login" replace />}</>} >
             <Route index element={<Home />}/>
             <Route path='post' element={<CreatePost/>}  />
             <Route path='edit-post' element={<CreatePost/>}  />

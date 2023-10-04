@@ -1,17 +1,10 @@
-var CryptoJS = require("crypto-js");
-const {secret_key} = require("./config");
+import CryptoJS from "crypto-js";
+const secret_key = process.env.REACT_APP_SECRET_KEY;
 
-const to_Encrypt = (text) => {
-    var encrypted = CryptoJS.AES.encrypt(JSON.stringify(text),secret_key).toString();
-    return encrypted;
+export const to_Encrypt = (text) => {
+    return CryptoJS.AES.encrypt(JSON.stringify(text),secret_key).toString();
 };
-const to_Decrypt = (cipher) => {
-    var decrypted = CryptoJS.AES.decrypt(cipher,secret_key);
-    var decryptedData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
-    return decryptedData;
-};
-
-module.exports = {
-    to_Encrypt,
-    to_Decrypt,
+export const to_Decrypt = (cipher) => {
+    let decrypted = CryptoJS.AES.decrypt(cipher,secret_key);
+    return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
 };

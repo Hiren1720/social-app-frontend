@@ -4,11 +4,12 @@ import {useDispatch, useSelector} from "react-redux";
 import {loginUser, setUserData} from "../../Actions/userActions";
 import {toast} from 'react-toastify';
 import ButtonLoader from "../ButtonLoader";
-import {setLocalStorageData} from "../../Helper/TokenHandler";
+import {getLocalStorageData, setLocalStorageData} from "../../Helper/TokenHandler";
 import {
     LoginSocialGoogle,
 } from 'reactjs-social-login';
 import {useTranslation} from "react-i18next";
+import {to_Encrypt} from "../../Helper/encryptDecrypt";
 
 const url = process.env.REACT_APP_API_URL;
 const Login = () => {
@@ -19,12 +20,15 @@ const Login = () => {
     const user = useSelector(state => state.userData.loginData);
     const loading = useSelector(state => state.userData.loading);
     const [users, setUsers] = useState( JSON.parse(localStorage.getItem('users')) || []);
+    const [remember,setRemember] = useState(false);
+    const credential = getLocalStorageData('credential');
 
     useEffect(() => {
         if (userResult && userResult.success && userResult?.provider) {
-            navigate("/");
+            window.location.href = "/"
         }
         else if(userResult && userResult.success){
+            rememberPassword();
             navigate("/verify-otp");
         }
         else if(userResult?.error){
@@ -40,6 +44,12 @@ const Login = () => {
     const handleOnSubmit = async () => {
         dispatch(loginUser(user));
     };
+    const rememberPassword = () => {
+        if(remember && !credential){
+            let password = to_Encrypt(user.password);
+            setLocalStorageData('credential',{...user,password:password})
+        }
+    }
     const handleOnKeyPress = async (e) => {
         if (e.key === "Enter") {
             await handleOnSubmit();
@@ -92,7 +102,7 @@ const Login = () => {
                                                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
                                                      xmlns="http://www.w3.org/2000/svg">
                                                     <path
-                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                                                 </svg>
                                             </button>
                                         </div>
@@ -140,9 +150,9 @@ const Login = () => {
                                     </div>
                                     <div>
                                         <div className="mb-3 flex flex-wrap content-center mt-5">
-                                            <input id="remember" type="checkbox" className="mr-1 checked:bg-purple-700 w-8"/>
-                                            <label htmlFor="remember" className="mr-auto text-md font-bold">{t("Remember for 30 days")}</label>
-                                            <Link to='/forget-password' className="text-md font-bold text-purple-700 underline">{t("Forgot password?")}</Link>
+                                            <input id="remember" type="checkbox" checked={remember} onChange={(e)=> setRemember(!remember)} className="mr-1 checked:bg-purple-700 w-8" />
+                                            <label htmlFor="remember" className="mr-auto text-md font-bold">{t("Remember Username & Password")}</label>
+                                            <Link to='/forget-password' className="text-md font-bold text-purple-700">{t("Forgot password?")}</Link>
                                         </div>
                                     </div>
                                     <div className="mt-8 md:px-32">

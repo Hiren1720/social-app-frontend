@@ -193,7 +193,7 @@ const Home = () => {
                                                                             <h3>Suggestion </h3>
                                                                         </div>
                                                                         <div>
-                                                                            {profileViewers && profileViewers?.length ? profileViewers.filter(ele => !userData.followings.includes(ele?.author_info[0]?._id)).map((ele,index)=>{
+                                                                            {profileViewers?.length ? profileViewers.filter(ele => !userData.followings.includes(ele?.author_info[0]?._id)).map((ele,index)=>{
                                                                                 let status = getStatus(ele?.author_info[0],requestAll,userData,'Followings',true);
                                                                                 return(
                                                                                 <div className="m-auto text-gray-600 " key={index}>
@@ -202,8 +202,7 @@ const Home = () => {
                                                                                         <div className="flex items-center justify-between px-4 py-3  gap-2 lg:gap-1">
                                                                                             <div className='flex cursor-pointer' onClick={()=> handleProfile(ele?.author_info[0])}>
                                                                                                 <img className="w-12 h-12 rounded-full object-cover mr-4 "
-                                                                                                     src={ele?.author_info[0]?.profile_url ? ele?.author_info[0]?.profile_url.includes('https') ? ele?.author_info[0]?.profile_url :`${url}${ele?.author_info[0]?.profile_url}`:"https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"}
-                                                                                                     alt="avatar"/>
+                                                                                                     src={ele?.author_info[0]?.profile_url} alt="avatar"/>
                                                                                                 <div className="flex items-center justify-between">
                                                                                                     <h2 className="text-lg items-center font-semibold text-gray-900 md:text-sm -mt-1">{ele?.author_info[0]?.name}</h2>
                                                                                                 </div>
