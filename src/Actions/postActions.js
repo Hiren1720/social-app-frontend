@@ -41,3 +41,10 @@ export const deletePost = (payload) => {
         payload
     }
 };
+
+export const deleteFromCloudinary = (payload) => {
+    return {
+        type: types.DELETE_FILES_FROM_CLOUDIANRY_STATE,
+        payload
+    }
+};

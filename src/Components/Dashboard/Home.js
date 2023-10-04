@@ -89,19 +89,6 @@ const Home = () => {
         navigate(`/profile/${data?._id}`);
     };
     const handleOnImportFile = async (fileData) => {
-        // if (fileData.length <= 10 || thought.imageUrl.length < 10) {
-        //     Array.from(fileData).forEach((ele, id) => {
-        //         let extension = ele.name.split('.').pop().replace(' ', '');
-        //         if (extension !== 'jpg' && extension !== 'jpeg' && extension !== 'png' && extension !== 'mp4') {
-        //             setImportError('Post Only JPEG,JPG & PNG File');
-        //         } else {
-        //             setImportError(null);
-        //         }
-        //         setThought({...thought, imageUrl: [thought.imageUrl, ...fileData]});
-        //     })
-        //     let file = await tobase64Handler(Array.from(fileData));
-        //     setFiles([...files, ...file]);
-        // }
         const cloudName = 'socialposts';
         const uploadPreset = 'postimagevideo';
         let imageFiles = [];
@@ -121,9 +108,9 @@ const Home = () => {
                     fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, options)
                         .then(res => res.json())
                         .then(res => {
-                            imageFiles.push(res.secure_url);
+                            let url = {public_id:res.public_id,secure_url:res.secure_url}
+                            imageFiles.push(url);
                             setFiles([...files,...imageFiles]);
-                            console.log('thought?.imageUrl',thought?.imageUrl,imageFiles)
                             setThought({...thought, imageUrl: [...thought?.imageUrl, ...imageFiles]});
                             setImportError(null);
                         })

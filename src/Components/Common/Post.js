@@ -385,16 +385,16 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
                                 className="text-sm text-neutral-600">{item?.content}</div>
                             <Slider {...settings} >
                                 {Array.isArray(item?.imageUrl) ? item?.imageUrl.map((file, index) => {
-                                        const fileExtension = file?.split('.').pop().toLowerCase();
+                                        const fileExtension = file?.secure_url?.split('.').pop().toLowerCase();
                                         if (fileExtension === 'mp4' || fileExtension === 'webm' || fileExtension === 'ogg') {
-                                            return <video src={file} autoPlay controls={true} key={index} />;
+                                            return <video src={file?.secure_url} autoPlay controls={true} key={index} />;
                                         } else {
                                             // return <img src={`${url}${file.url}`} alt='post' key={index}
-                                            return <img src={file} alt='post' key={index}
+                                            return <img src={file.secure_url} alt='post' key={index}
                                                         className="md:h-[400px] h-[300px] w-full py-2 object-contain"/>
                                         }
                                     }) :
-                                    <img src={item?.imageUrl} alt='post'
+                                    <img src={item?.imageUrl?.secure_url} alt='post'
                                          className="md:h-[400px] h-[300px] w-full object-contain py-2"/>}
                             </Slider>
                         </div>
