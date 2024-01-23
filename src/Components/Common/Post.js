@@ -2,8 +2,9 @@ import React, {useEffect, useRef, useState} from 'react';
 import Slider from "react-slick";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {FaFacebookSquare, FaLinkedin, FaWhatsappSquare, FaWindowClose} from "react-icons/fa";
+import {FaFacebookSquare, FaLinkedin, FaWhatsappSquare, FaWindowClose, FaRegComment} from "react-icons/fa";
 import {MdArrowBackIosNew, MdArrowForwardIos, MdDelete, MdModeEditOutline} from "react-icons/md";
+import {IoMdLink} from "react-icons/io";
 import {TfiComment} from 'react-icons/tfi';
 import {
     BsBookmark,
@@ -13,9 +14,10 @@ import {
     BsHandThumbsUpFill,
     BsLink45Deg,
     BsShare,
-    BsThreeDotsVertical
+    BsThreeDotsVertical,
+    BsHeartFill
 } from 'react-icons/bs';
-import {createLike, deletePost, getAllLikes,getPost} from "../../Actions/postActions";
+import {createLike, deletePost, getAllLikes, getPost} from "../../Actions/postActions";
 import {savePost} from "../../Actions/userActions";
 import Modal from "react-modal";
 import ProfilePhoto from "../User/ProfilePhoto";
@@ -23,18 +25,20 @@ import ButtonLoader from "../ButtonLoader";
 import {toast} from "react-toastify";
 import useWidthHeight from "../../Hooks/useWidthHeight";
 import {createComment} from "../../Actions/commentAction";
-import {ssEvents,channel} from "../../SSE/sse";
+import {ssEvents, channel} from "../../SSE/sse";
+
 const url = process.env.REACT_APP_API_URL;
 const appUrl = process.env.REACT_APP_URL;
-const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
+const Post = ({item, userData, type, key, id, handleUpdateComment}) => {
     const comments = useSelector(state => state.postData.comments);
     const commentLoading = useSelector(state => state.postData.commentLoading);
     const likes = useSelector(state => state.postData.likes);
     const likeLoading = useSelector(state => state.postData.likeLoading);
     const [modal, setModal] = useState({open: false, data: null, title: null});
     const [open, setOpen] = useState({show: false, postId: ''});
+    const [showContent, setShowContent] = useState({show: false, postId: ''});
     const [comment, setComment] = useState('');
-    const [isLiked,setIsLiked] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
     const blockRef = useRef();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -49,6 +53,7 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
             bottom: 'auto',
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
+
         },
     };
     useEffect(() => {
@@ -65,17 +70,16 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
     }, []);
 
 
-    useEffect(()=>{
+    useEffect(() => {
         ssEvents.addEventListener(`comment`, function (e) {
-            let data =JSON.parse(e.data)
-            if(item?._id === data?.postId){
-                handleUpdateComment(data,'comments');
+            let data = JSON.parse(e.data)
+            if (item?._id === data?.postId) {
+                handleUpdateComment(data, 'comments');
             }
         }, false);
-        channel.subscribe('liked',(data)=> {
-            console.log('data',data?.data)
-            handleUpdateComment({likes:data?.data?.likes,postId:data?.data?._id},'likes');
-            if(data?.data?.likeBy !== userData?._id && data?.data?.createdBy === userData?._id && data?.data?.isLiked){
+        channel.subscribe('liked', (data) => {
+            handleUpdateComment({likes: data?.data?.likes, postId: data?.data?._id}, 'likes');
+            if (data?.data?.likeBy !== userData?._id && data?.data?.createdBy === userData?._id && data?.data?.isLiked) {
                 let options = {
                     body: `${data?.data?.userName} is liked your post.`,
                     icon: require("../../assets/images/favicon.png"),
@@ -89,15 +93,17 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
         //     let data =JSON.parse(e.data)
         //     handleUpdateComment({likes:data?.likes,postId:data?._id},'likes');
         // }, false);
-    },[]);
+    }, []);
 
     function closeModal() {
         setModal({open: false, data: null, title: null});
     }
+
     function afterOpenModal() {
         subtitle.style.color = '#f00';
     }
-    const handleCreateLike = ({_id,createdBy}) => {
+
+    const handleCreateLike = ({_id, createdBy}) => {
         let data = {
             id: createdBy,
             likeBy: userData?._id,
@@ -106,8 +112,8 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
             isSinglePost: type === 'getPost',
             type
         };
-        channel.publish("like", data);
-        // dispatch(createLike(data))
+        // channel.publish("like", data);
+        dispatch(createLike(data))
     };
 
     const handleSavePost = (id) => {
@@ -239,7 +245,14 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
         return (
             <>
                 <p className="text-sm my-2">Share this link via</p>
-                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                <Slider {...settings} >
+                    {Array.isArray(modal?.data?.imageUrl) ? (
+                        modal?.data?.imageUrl?.map((file, index) => generateCommonStructure(file, index))
+                    ) : (
+                        generateCommonStructure(modal?.data?.imageUrl, 0)
+                    )}
+                </Slider>
+                <div className="mt-5  text-center sm:ml-4  sm:text-left">
                     <div className="w-full flex justify-around">
                         <a href={`whatsapp://send?text=${url}`}
                            data-action="share/whatsapp/share" rel="noreferrer"
@@ -276,8 +289,12 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        nextArrow: <div><MdArrowForwardIos size={15} className="!bg-gray-200 !rounded-full -ml-4 cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/></div>,
-        prevArrow: <div><MdArrowBackIosNew size={15} className="!bg-gray-200 !rounded-full -ml-[4px] cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/></div>
+        nextArrow: <div><MdArrowForwardIos size={15}
+                                           className="!bg-gray-200 !rounded-full -ml-4 cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/>
+        </div>,
+        prevArrow: <div><MdArrowBackIosNew size={15}
+                                           className="!bg-gray-200 !rounded-full -ml-[4px] cursor-pointer hover:!bg-gray-400 !w-10 !h-10 p-2"/>
+        </div>
     };
     const renderDeleteModal = () => {
         return (
@@ -320,6 +337,23 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
             </>
         )
     };
+
+    const generateCommonStructure = (file, index) => {
+        const fileExtension = file?.secure_url?.split('.').pop().toLowerCase();
+        const isVideo = fileExtension === 'mp4' || fileExtension === 'webm' || fileExtension === 'ogg';
+
+        return (
+            <div className='relative' key={index}>
+                {file?.secure_url?.length > 0 ? isVideo ? (
+                    <video src={file?.secure_url} autoPlay controls={true}
+                           className=" h-[350px] w-full object-fill py-2 rounded-2xl"/>
+                ) : (
+                    <img src={file?.secure_url} alt='post' className="h-[350px] w-full object-fill py-2 rounded-2xl"/>
+                ) : ''}
+
+            </div>
+        );
+    }
     return (
         <>
             <div key={key}>
@@ -351,7 +385,7 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
                     </ul>
                 </div>}
                 <div className='flex items-center justify-center w-full p-2 '>
-                    <div className=" p-5 bg-white w-full shadow-lg shadow-gray-400  shadow">
+                    <div className=" px-5 pt-5 pb-2 bg-white w-full shadow-lg shadow-gray-400 rounded-2xl border">
                         <div className="flex w-full items-center  justify-between border-b pb-3">
                             <div className="flex items-center space-x-3">
                                 <div className="" onClick={() => setModal({
@@ -379,64 +413,107 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
                                                      })}/>}
                             </div>
                         </div>
-                        <div className="mt-4 sm:px-6 ">
-                            <div className="mb-3 text-xl font-bold">{item?.title}</div>
+                        <div className=" sm:px-6 relative">
+                            <div className="mb-1 text-xl font-bold">{item?.title}</div>
                             <div
-                                className="text-sm text-neutral-600">{item?.content}</div>
-                            <Slider {...settings} >
-                                {Array.isArray(item?.imageUrl) ? item?.imageUrl.map((file, index) => {
-                                        const fileExtension = file?.secure_url?.split('.').pop().toLowerCase();
-                                        if (fileExtension === 'mp4' || fileExtension === 'webm' || fileExtension === 'ogg') {
-                                            return <video src={file?.secure_url} autoPlay controls={true} key={index} />;
-                                        } else {
-                                            // return <img src={`${url}${file.url}`} alt='post' key={index}
-                                            return <img src={file.secure_url} alt='post' key={index}
-                                                        className="md:h-[400px] h-[300px] w-full py-2 object-contain"/>
-                                        }
-                                    }) :
-                                    <img src={item?.imageUrl?.secure_url} alt='post'
-                                         className="md:h-[400px] h-[300px] w-full object-contain py-2"/>}
-                            </Slider>
-                        </div>
-                        <div>
-                            <div className="sm:px-6 pt-8 pb-2">
-                                {item?.mentions?.length ? item.mentions.map((mention, id) => (
-                                    <span key={id}
-                                          className={`inline-block bg-pink-500 text-white rounded-full px-3 py-1 text-sm font-semibold  mr-2 mb-2`}
-                                          onClick={(e) => handleProfile(e, mention?.id)}>{mention?.name}</span>)) : null}
+                                className="text-sm text-neutral-600">{item?.content?.length > 120 ? item?.content?.slice(0, showContent?.postId === item?._id && showContent.show ? -1 : 120) : item?.content}
+                                &nbsp;<span className="text-sm text-blue-600 font-bold cursor-pointer" onClick={() => {
+                                    setShowContent(showContent.show ? {postId: null, show: false} : {
+                                        postId: item?._id,
+                                        show: !showContent.show
+                                    })
+                                }}>{showContent?.postId === item?._id && showContent.show ? 'show less' : 'show more'}</span>
                             </div>
+                            <Slider {...settings} >
+                                {Array.isArray(item?.imageUrl) ? (
+                                    item?.imageUrl.map((file, index) => generateCommonStructure(file, index))
+                                ) : (
+                                    generateCommonStructure(item?.imageUrl, 0)
+                                )}
+                            </Slider>
                             <div
-                                className="flex items-center justify-between text-slate-500">
-                                <div className="flex space-x-4 md:space-x-8">
-                                    <div
-                                        className="flex items-center text-gray-500 mb-3 flex-wrap max-[560px]:text-[14px] max-[589px]:text-[15px]">
+                                className="flex items-center mt-4 absolute bottom-1 right-2 h-6 w-full justify-end rounded-full p-2 text-xs text-white">
+                                <button
+                                    className="bg-blue-400 border text-white text-lg flex justify-center items-center h-10 w-10 active:bg-red-600 font-bold uppercase rounded-full shadow hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150">
+                                    <FaRegComment/>
+                                </button>
+                                <button
+                                    onClick={() => handleSavePost(item?._id)}
+                                    className={` ${item?.savedBy?.includes(userData?._id) ? 'bg-black ' : 'bg-blue-400'} text-white flex border justify-center items-center h-10 w-10 active:bg-red-600 font-bold uppercase rounded-full shadow hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150`}
+                                    type="button"
+                                >
+                                    <BsBookmarkFill/>
+                                </button>
+                                <button
+                                    className={` ${item?.likes.includes(userData?._id) ? 'bg-red-600 text-white' : 'bg-white text-red-500'} flex border justify-center items-center h-10 w-10 active:bg-red-600 font-bold uppercase rounded-full shadow hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150`}
+                                    type="button"
+                                    onClick={() => handleCreateLike(item)}
+                                >
+                                    <BsHeartFill/>
+                                </button>
+                            </div>
+                        </div>
+                        <div className='sm:px-6 px-0'>
+                            {/*<div className="sm:px-6 pt-8 pb-2">*/}
+                            {/*    {item?.mentions?.length ? item.mentions.map((mention, id) => (*/}
+                            {/*        <span key={id}*/}
+                            {/*              className={`inline-block bg-pink-500 text-white rounded-full px-3 py-1 text-sm font-semibold  mr-2 mb-2`}*/}
+                            {/*              onClick={(e) => handleProfile(e, mention?.id)}>{mention?.name}</span>)) : null}*/}
+                            {/*</div>*/}
+                            <div className='flex justify-between'>
+                                <div className=" w-full  rounded-lg flex gap-2 items-center lg:overflow-visible">
+                                    <div className="flex items-center -space-x-4">
+                                        {item?.likedData?.map((avatar) => (<abbr title={avatar?.userName}><img
+                                            alt={avatar?.userName}
+                                            src={avatar?.profile_url}
+                                            className="relative inline-block h-10 w-10 rounded-full border-2 border-white object-cover object-center hover:z-10 focus:z-10"
+                                        /></abbr>))}
+                                    </div>
+                                   <div className='flex flex-col'>
+                                       <div className='text-sm text-gray-800 '>{item?.likedData[item?.likedData?.length-1]?.userName}{ item?.likedData?.length >= 2 && ',' + " "+ item?.likedData[item?.likedData?.length-2]?.userName}</div>
+                                       {item?.likes.length > 5 && <div className='text-sm text-gray-900 '>and {item?.likes.length -5} more </div>}
+                                       <div className='text-sm text-gray-900 '>liked this</div>
+                                   </div>
+                                </div>
+                                <div
+                                    className="flex items-center justify-between text-slate-500">
+                                    <div className="flex space-x-4 md:space-x-8">
                                         <div
-                                            className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer"
-                                            onClick={() => handleCreateLike(item)}>{item?.likes.includes(userData?._id) ?
-                                            <BsHandThumbsUpFill color='#3C5AF0'/> :
-                                            <BsHandThumbsUp color='#3C5AF0'/>}&nbsp;&nbsp;<span
-                                            onClick={(e) => handleShowLikes(e, item?._id)}>{item?.likes.length} likes</span>
-                                        </div>
-                                        <div
-                                            className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer"
-                                            onClick={() => handleAddComment(item)}>
-                                            <TfiComment/>&nbsp;&nbsp;{item?.comments.length} comments
-                                        </div>
-                                        <div onClick={() => handleOnShare(item)}
-                                             className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer">
-                                            <BsShare/>&nbsp;&nbsp;share
+                                            className="flex items-center gap-3 text-gray-500  max-[560px]:text-[14px] max-[589px]:text-[18px]">
+                                            <div
+                                                className="flex items-center font-bold cursor-pointer"
+                                                // onClick={() => handleCreateLike(item)}
+                                            >
+                                                {/*{item?.likes.includes(userData?._id) ?*/}
+                                                {/*<BsHandThumbsUpFill color='#3C5AF0'/> :*/}
+                                                <BsHandThumbsUp/>
+                                                {/*// }*/}
+                                                &nbsp;&nbsp;
+                                                <span
+                                                    onClick={(e) => handleShowLikes(e, item?._id)}>{item?.likes.length} </span>
+                                            </div>
+                                            <div
+                                                className="flex  items-center font-bold cursor-pointer"
+                                                onClick={() => handleAddComment(item)}>
+                                                <FaRegComment/>&nbsp;&nbsp;{item?.comments.length}
+                                            </div>
+                                            <div onClick={() => handleOnShare(item)}
+                                                 className="flex  items-center font-bold cursor-pointer">
+                                                <IoMdLink size={25}/>
+                                            </div>
+                                            {/*<div onClick={() => handleSavePost(item?._id)}*/}
+                                            {/*     className="flex  items-center font-bold cursor-pointer">*/}
+                                            {/*    {item?.savedBy?.includes(userData?._id) ? <BsBookmarkFill /> :*/}
+                                            {/*        <BsBookmark />*/}
+                                            {/*    }*/}
+                                            {/*</div>*/}
                                         </div>
                                     </div>
-                                </div>
-                                <div onClick={() => handleSavePost(item?._id)}
-                                     className="flex mx-4 max-[550px]:mx-3 items-center font-bold cursor-pointer">
-                                    {item?.savedBy?.includes(userData?._id) ? <BsBookmarkFill size={20}/> :
-                                        <BsBookmark size={20}/>
-                                    }
+
                                 </div>
                             </div>
                             <div className='ml-3 mb-2'>
-                                # post from <span className='ml-1 text-[#79CCF4]'>{item?.device}</span>
+                                {/*# post from <span className='ml-1 text-[#79CCF4]'>{item?.device}</span>*/}
                             </div>
                         </div>
                     </div>
@@ -450,7 +527,7 @@ const Post = ({item, userData, type, key, id,handleUpdateComment}) => {
                 contentLabel="Example Modal"
             >
                 <div className="max-w-2xl mx-auto ">
-                    <div className="p-4 max-w-md bg-white rounded-lg sm:p-8 dark:bg-gray-800 dark:border-gray-700 ">
+                    <div className="p-4 max-w-md bg-white rounded-lg  dark:bg-gray-800 dark:border-gray-700 ">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-xl font-bold leading-none text-gray-900 dark:text-white"
                                 ref={(_subtitle) => (subtitle = _subtitle)}>{modal.title}</h3>

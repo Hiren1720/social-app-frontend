@@ -28,6 +28,10 @@ import {setVisitorTimeSaga} from "./UserSagas/setVisitorTimeSaga";
 import {getDailyUsagesSaga} from "./UserSagas/getDailyUsagesSaga";
 import {savePostSaga} from "./PostSagas/savePostSaga";
 import {deleteFromCloudinarySaga} from "./PostSagas/deleteFromCloudinarySaga";
+
+import {getStoriesSaga} from "./StorySagas/getStoriesSaga";
+
+import {createStoriesSaga} from "./StorySagas/createStoriesSaga";
 export default function* root() {
     yield all([
         userRegisterSaga(),
@@ -58,6 +62,8 @@ export default function* root() {
         setVisitorTimeSaga(),
         getDailyUsagesSaga(),
         setUserStatusSaga(),
-        deleteFromCloudinarySaga()
+        deleteFromCloudinarySaga(),
+        createStoriesSaga(),
+        getStoriesSaga(),
     ]);
 }
