@@ -17,7 +17,7 @@ const Header = () => {
     const pathName = window.location.pathname;
     const navBars = [
         {name:'Home',path:'/',icon:<AiFillHome className="ml-3" size={15}/>,},
-        {name:'Followers',path:'/followers',icon:<HiUsers className="ml-5"/>,},
+        // {name:'Followers',path:'/followers',icon:<HiUsers className="ml-5"/>,},
         {name:'Users',path:'/users',icon:<FaUsers className="ml-3"/>,},
         {name:'Requests',path:'/requests',icon:<FaUserPlus className="ml-5"/>,},
         {name:'Post',path:'/post',icon:<MdAddComment className="ml-2"/>},
@@ -52,6 +52,7 @@ const Header = () => {
             navigate('/login')
         }
         // eslint-disable-next-line
+
     },[]);
     useEffect(()=> {
         if(pathName !== '/'){
@@ -71,7 +72,7 @@ const Header = () => {
     };
     return (
         <>
-            <nav className="relative sticky top-0 bg-[#234e70] z-40 ">
+            <nav className="relative sticky top-0 bg-white z-40 border-b border-neutral-200">
                 <div className="mx-auto max-w-6xl px-2 sm:px-6 lg:px-8">
                     <div className="relative flex h-16 items-center justify-between">
                         <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -108,7 +109,7 @@ const Header = () => {
                                                 {requests?.data?.length}
                                             </div>:null}
                                             <span onClick={()=> {navigate(ele.path); setActive(ele.name)}}
-                                                  className={`px-3 gap-2 cursor-pointer py-2 text-center rounded-md text-sm font-medium ${active === ele.name?'bg-[#234e70] text-[#fa6a48] ':'text-gray-300 hover:bg-[#234e70] hover:text-[#fa6a48] '}`}
+                                                  className={`px-3 gap-2 cursor-pointer py-2 text-center rounded-md text-sm font-medium ${active === ele.name?' text-[#fa6a48] ':'text-gray-300  hover:text-[#fa6a48] '}`}
                                                   aria-current="page">
                                                 {ele?.icon}<span>{ele?.name}</span>
                                             </span>

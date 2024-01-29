@@ -6,6 +6,8 @@ import {blockUser} from "../../Actions/blockUserAction";
 import {getProfile} from "../../Actions/userActions";
 import {BsThreeDotsVertical} from 'react-icons/bs';
 import {BiBlock} from 'react-icons/bi';
+import {FaStar} from 'react-icons/fa';
+import {ImBlocked} from 'react-icons/im';
 import InfiniteScroll from "react-infinite-scroll-component";
 import '../User/User.css'
 import {getStatus} from "../../Helper";
@@ -70,11 +72,9 @@ const UserSlider = ({data, receiveUsers, title, total}) => {
         dispatch(blockUser({userId: userData?._id, blockUserId: item?._id, status: status}));
         setOpen({show: false, blockId: null})
     }
-
-
     return (
         <>
-            <div className='mx-4 w-full overflow-y-scroll h-screen scroll-smooth'>
+            <div className='sm:mx-4 overflow-y-scroll h-screen scroll-smooth'>
                 {data && data?.length > 0 && <InfiniteScroll
                     dataLength={data?.length}
                     next={receiveUsers}
@@ -86,110 +86,55 @@ const UserSlider = ({data, receiveUsers, title, total}) => {
                         </div>
                     }
                 >
-                    <div
-                        className="w-full py-20 min-[750px]:justify-start rounded-b-lg flex-row flex gap-8 grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ">
+
+                    <div className="grid-cols-1 sm:grid lg:grid-cols-4 max-[1100px]:!grid-cols-3 max-[800px]:!grid-cols-2">
                         {data?.map((ele, index) => {
-                            let blockUser = getBlockUser(ele);
                             let status = getStatus(ele, title === 'Followers' ? {} : requests, userData, title, false);
-                            return (<>
-                                    <div key={index}
-                                        className="flip-card w-full md:h-[365px] h-[340px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col justify-center items-center cursor-pointer"
-                                        onMouseLeave={() => setOpen({show: false, blockId: ''})}>
+                            return(<div onClick={(e) => handleProfile(e, ele)}
+                                        className="mx-3 mt-6 flex flex-col items-center rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 sm:shrink-0 sm:grow sm:basis-0">
+                                    <div
+                                        className="star-friend  is-active flex justify-end w-full items-center pr-6 pt-6">
+                                        {blockUser === "unBlock" ? <ImBlocked className='text-gray-500'/> :<FaStar
+                                            className={`${status === 'UnFollow' ? "text-yellow-500" : status === 'Remove' ? 'text-green-500' : 'text-neutral-400'}`}/>}
+                                    </div>
+                                    <a href="#!">
+                                        <img
+                                            className="rounded-full w-20 h-20 "
+                                            src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}${ele?.profile_url}` : "https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
+                                            alt="Los Angeles Skyscrapers"/>
+                                    </a>
+                                    <div className="px-6 pb-6 pt-2 flex flex-col items-center justify-center w-full ">
+                                        <h3 className="text-sm text-black font-bold ">{ele?.name}</h3>
+                                        <p className="textFilter-match text-neutral-400">{ele?.userName}</p>
                                         <div
-                                             className={`absolute right-11 z-10 -mt-[14rem] w-36 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${open.show && open.blockId === ele?._id ? '' : 'hidden'}`}
-                                             role="menu"
-                                             aria-orientation="vertical"
-                                             aria-labelledby="user-menu-button"
-                                             tabIndex="-1">
-                                            <ul className="space-y-2" ref={blockRef}>
-                                                <li className='cursor-pointer'>
-                                                    <div onClick={(e) =>
-                                                        handleBlockAccount(e, ele, blockUser)
-                                                    }
-                                                         className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                                                        <BiBlock/>
-                                                        <span className="ml-3">{blockUser}</span>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div className="flip-card-inner">
-                                            <div className="flip-card-front">
-                                                <img className="object-center object-cover h-full w-full"
-                                                     src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}${ele?.profile_url}` : "https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
-                                                     alt="photo"/>
+                                            className="friend-stats font-bold flex max-[300px]:flex-col justify-center items-center mt-[20px] max-[300px]:divide-y sm:gap-2">
+                                            <div
+                                                className="stat-block text-center py-0 px-4 min-[300px]:border-r-[1px] max-[300px]:py-6">
+                                                <label className="text-[#999] uppercase text-[0.6rem]">Followers</label>
+                                                <div
+                                                    className="stat-number text-[#393a4f] font-[600]"> {ele?.followers?.length}</div>
                                             </div>
-                                            <div className=" flex items-center justify-center flip-card-back">
-
-                                                <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
-                                                    <div
-                                                        className={` float-right cursor-pointer mt-6`}
-                                                        onClick={() => setOpen({
-                                                            show: !open?.show,
-                                                            blockId: ele?._id
-                                                        })}>
-                                                        <BsThreeDotsVertical className="pointer text-black" size={20}/>
-                                                    </div>
-                                                    <h1
-                                                        className="text-2xl font-semibold text-center text-gray-500 mt-4 mb-4">{ele?.userName}</h1>
-
-                                                    <div className='flex justify-center relative'><img
-                                                        className="object-center object-cover h-28 w-28 rounded-full"
-                                                        src={ele?.profile_url ? ele?.profile_url.includes('https') ? ele?.profile_url : `${url}${ele?.profile_url}` : "https://gambolthemes.net/workwise-new/images/resources/pf-icon2.png"}
-                                                        alt="photo"/>
-                                                        <div
-                                                            className={`absolute top-[100px] left-[150px] bottom-auto left-auto z-10 inline-block translate-x-2/4 -translate-y-1/2 rotate-0 skew-x-0 skew-y-0 scale-x-100 scale-y-100 whitespace-nowrap rounded-full bg-${ele?.status ? 'green-700' : 'gray-300'} py-2.5 px-2.5 text-center align-baseline text-xs font-bold leading-none text-white`}>
-                                                        </div>
-                                                    </div>
-                                                    <p className="text-sm text-gray-600 text-justify  mt-2 mb-4">
-                                                        <div
-                                                            className="mt-2 mb-2 flex gap-14 justify-center flex-row">
-                                                            <div className="flex flex-col items-center justify-center">
-                                                                <p
-                                                                    className="text-2xl font-bold text-navy-700 dark:text-white">{ele?.posts?.length}</p>
-                                                                <p className="text-sm font-normal text-gray-600">Posts</p>
-                                                            </div>
-                                                            <div className="flex flex-col items-center justify-center">
-                                                                <p className="text-2xl font-bold text-navy-700 dark:text-white">
-                                                                    {ele?.followers?.length}
-                                                                </p>
-                                                                <p className="text-sm font-normal text-gray-600">Followers</p>
-                                                            </div>
-                                                            <div className="flex flex-col items-center justify-center">
-                                                                <p className="text-2xl font-bold text-navy-700 dark:text-white">
-                                                                    {ele?.followings?.length}
-                                                                </p>
-                                                                <p className="text-sm font-normal text-gray-600">Following</p>
-                                                            </div>
-                                                        </div>
-                                                    </p>
-                                                    <div className="flex justify-center space-x-4 my-2">
-                                                        <button
-                                                            className={`bg-gradient-to-r from-cyan-400 to-cyan-600 text-white px-4 py-2 rounded-md w-1/8  rounded ${ele?._id === userData?._id ? 'hidden' : 'block'} 
-                                                        ${status === 'UnFollow' ? '' : 'bg-[#fa6a48]'}`}
-                                                            onClick={(e) => {
-                                                                blockUser === "unBlock" ? handleBlockAccount(e, ele, blockUser) : handleSendRequest(e, ele, status)
-                                                            }}>{blockUser === "unBlock" ? blockUser : status}
-                                                        </button>
-                                                        <button
-                                                            className="bg-gradient-to-r from-cyan-400 to-cyan-600 text-white px-4 py-2 rounded-md w-1/8">Message
-                                                        </button>
-                                                    </div>
-                                                    <div className=" border-slate-200 text-black text-center w-full px-4 cursor-pointer pt-2"
-                                                         onClick={(e) => handleProfile(e, ele)}>View Profile
-                                                    </div>
-                                                </div>
+                                            <div
+                                                className="stat-block text-center  py-0 px-4 min-[300px]:border-r-[1px] max-[300px]:py-6">
+                                                <label className="text-[#999] uppercase text-[0.6rem]">Posts</label>
+                                                <div
+                                                    className="stat-number text-[#393a4f] font-[600]">{ele?.posts?.length}</div>
+                                            </div>
+                                            <div className="stat-block text-center py-0 px-4 max-[300px]:py-6">
+                                                <label
+                                                    className="text-[#999] uppercase text-[0.6rem]">Followings</label>
+                                                <div
+                                                    className="stat-number text-[#393a4f] font-[600]">{ele?.followings?.length}</div>
                                             </div>
                                         </div>
                                     </div>
-                                </>
+                                </div>
                             )
                         })}
                     </div>
                 </InfiniteScroll>
                 }
             </div>
-
         </>
     )
 };

@@ -17,7 +17,7 @@ export function* verifyOTP({payload}) {
         if(result && result.success && result?.msg !== 'Deleted'){
             setLocalStorageData('accessToken',result.token);
             setLocalStorageData('user',result?.data);
-            let user = users.findIndex(ele => ele?._id === result?.data?._id)
+            let user = users.findIndex(ele => ele?._id === result?.data?._id);
             if(user !== -1){
                 users[user] = {...result?.data,token:result.token};
                 setLocalStorageData('users',users);
