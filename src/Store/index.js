@@ -13,7 +13,7 @@ import rootSaga from '../Sagas'
 // This will be contain our reducer for the application
 import rootReducer from '../Reducers'
 
-const sagaMiddleware = createSagaMiddleware()
+const sagaMiddleware = createSagaMiddleware();
 
 const store = createStore(
     rootReducer,
@@ -21,6 +21,6 @@ const store = createStore(
 )
 
 // Run redux-saga
-sagaMiddleware.run(rootSaga)
+sagaMiddleware.run(rootSaga);
 
 export default store

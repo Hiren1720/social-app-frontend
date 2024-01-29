@@ -10,7 +10,8 @@ const initialState = {
     comments:[],
     likeLoading: false,
     commentLoading:false,
-    commentResult:null
+    commentResult:null,
+    deleteImageResult:null,
 }
 
 const post = (state = initialState, action) => {
@@ -23,6 +24,8 @@ const post = (state = initialState, action) => {
         case types.DELETE_POST_RESPONSE:
         case types.SAVE_POST_RESPONSE:
             return {...state, postResult: action.payload, loading: action.loading};
+        case types.DELETE_FILES_FROM_CLOUDIANRY_RESPONSE:
+            return {...state, deleteImageResult: action.payload, loading: action.loading};
         case types.GET_POST_RESPONSE:
             return {...state, posts: action.payload,total:action.total, loading: action.loading};
         case types.GET_LIKES_COMMENTS_RESPONSE:

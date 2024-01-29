@@ -37,3 +37,6 @@
     color: white;
     transform: rotateY(180deg);
 }
+.StoriesContainer > div> div:nth-child(2){
+    justify-content: center !important;
+}

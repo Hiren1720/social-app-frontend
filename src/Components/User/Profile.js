@@ -129,7 +129,7 @@ const Profile = () => {
             {loading ? <Loader/> :
                 <>
                     {(user) ? <>
-                        <main className="profile-page bg-white">
+                        <main className="profile-page ">
                             <div>
                                 <div
                                     className="relative top-0 w-full h-40 md:h-80 bg-[url('https://hblimg.mmtcdn.com/content/hubble/img/destimg/mmt/activities/m_Munnar_destjulimg_2_l_770_1154.jpg')] bg-no-repeat object-contain bg-cover bg-center ">

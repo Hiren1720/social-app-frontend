@@ -3,7 +3,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {Mention, MentionsInput} from 'react-mentions'
 import {getAllUsers} from "../../Actions/userActions";
 import {useDispatch, useSelector} from "react-redux";
-import {createPost, resetPostResult} from "../../Actions/postActions";
+import {createPost, deleteFromCloudinary, resetPostResult} from "../../Actions/postActions";
 import {getLocalStorageData} from "../../Helper/TokenHandler";
 import {GrFormClose} from 'react-icons/gr';
 import getDeviceName from "../../Helper/getDeviceName";
@@ -17,6 +17,7 @@ const CreatePost = () => {
     const users = useSelector(state => state.userData.users);
     const loading = useSelector(state => state.postData.loading);
     const postResult = useSelector(state => state.postData.postResult);
+    const deleteImageResult = useSelector(state => state.postData.deleteImageResult);
     const [mentionUsers, setMentionUsers] = useState([]);
     const [mentions, setMentions] = useState('');
     const [files, setFiles] = useState([]);
@@ -138,8 +139,8 @@ const CreatePost = () => {
                     fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, options)
                         .then(res => res.json())
                         .then(res => {
-                            console.log("res", res)
-                            imageFiles.push(res.secure_url);
+                            let url = {public_id:res.public_id,secure_url:res.secure_url}
+                            imageFiles.push(url);
                             setPost({...post, imageUrl: [...post.imageUrl, ...imageFiles]});
                             setFiles([...files,...imageFiles]);
                             setImportError(null);
@@ -156,56 +157,16 @@ const CreatePost = () => {
             let user = users.find((item) => ele.trim() === item?.userName)
             return {id: user?._id, name: user?.userName};
         });
-        // let formData = new FormData();
-        // Array.from(post?.imageUrl).forEach(file => {
-        //     formData.append('postImage', file);
-        // });
         let postData = {...post, mentions: mUsers, createdBy: userToken?._id, device: device}
-        // formData.append('post', JSON.stringify(postData));
         dispatch(createPost({...postData,type: pathName === '/edit-post' ? 'update':'create'}));
     };
 
-    const deleteImage = async (publicId,signature) => {
-        const cloudName = 'socialposts';
-        const apiKey= '169658132968456';
-        const apiSecret= 'ay01j7l33tC4gd_K8-5AK30agDk';
-        const deleteOptions = {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
-                'Access-Control-Allow-Origin' : 'http://localhost:3000/'
-
-            },
-            body: JSON.stringify({ public_id: publicId,signature:signature }),
-        };
-
-        try {
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/resource/image/destroy`, deleteOptions);
-            const result = await response.json();
-            console.log('Deleted:', result);
-
-            // Handle deletion success, e.g., update your state
-        } catch (error) {
-            console.error('Delete Error:', error);
-            // Handle deletion error
-        }
-    };
-
-    const handleDeleteImages = (file, id) => {
+    const handleDeleteImages = (id, file) => {
+        dispatch(deleteFromCloudinary(file))
         files.splice(id, 1);
         post.imageUrl.splice(id, 1);
         setFiles([...files]);
-        console.log("files", file)
-        const parts = file.split('/upload/'); // Split the URL by '/upload/'
-        if (parts.length > 1) {
-            const valueAfterUpload = parts[1].split('/')[0]; // Extract the value after /upload/
-            console.log('Value after /upload/:', valueAfterUpload);
-            deleteImage('IMG20200115175847_jlqdbm','39a815b19ce3b6cd82b743753bc407ffb7defb23')
-        } else {
-            console.error('Value after /upload/ not found in the URL');
-        }
         setPost({...post, imageUrl: post.imageUrl})
-
     }
     let {title, content} = post;
     return (
@@ -284,7 +245,7 @@ const CreatePost = () => {
                                     {files?.length > 0 ? (
                                         <div className="grid grid-cols-3 gap-2 mt-2">
                                             {files.map((file, id) => {
-                                                const fileExtension = file?.split('.').pop().toLowerCase();
+                                                const fileExtension = file?.secure_url?.split('.').pop().toLowerCase();
                                                 const isVideo = ['mp4', 'webm', 'ogg'].includes(fileExtension);
                                                 return (
                                                     <div
@@ -292,11 +253,11 @@ const CreatePost = () => {
                                                         key={id}
                                                     >
                                                         {isVideo ? (
-                                                            <video src={file} autoPlay controls={true}/>
+                                                            <video src={file?.secure_url} autoPlay controls={true}/>
                                                         ) : (
                                                             <img
                                                                 className="rounded-t-lg w-40 h-40"
-                                                                src={file}
+                                                                src={file?.secure_url}
                                                                 height="150"
                                                                 width="150"
                                                                 alt="PostImage"
@@ -305,7 +266,7 @@ const CreatePost = () => {
                                                         <GrFormClose
                                                             size={28}
                                                             className="absolute top-[8px] right-[16px] bg-white rounded-full cursor-pointer hover:bg-gray-200"
-                                                            onClick={() => handleDeleteImages(file, id)}
+                                                            onClick={() => handleDeleteImages(id,file)}
                                                         />
                                                     </div>
                                                 );
